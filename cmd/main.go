@@ -1,11 +1,13 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/ankibahuguna/newsapp/internal"
 	"github.com/ankibahuguna/newsapp/pkg/db"
 	"github.com/ankibahuguna/newsapp/pkg/errorHandler"
 	"github.com/labstack/echo/v4"
-	"log"
 )
 
 const (
@@ -26,6 +28,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+  e.GET("/", func (c echo.Context) error{
+    return c.Redirect(http.StatusMovedPermanently, "/articles")
+  })
 
 	internal.SetUpModules(e)
 	// Start Server
