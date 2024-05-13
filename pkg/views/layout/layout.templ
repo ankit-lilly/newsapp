@@ -13,13 +13,14 @@ templ Base(title string) {
 			/>
 			<meta name="google" content="notranslate"/>
 			<link rel="shortcut icon" href="/img/templ.png" type="image/png"/>
-			<script src="https://cdn.tailwindcss.com"></script>
-			<link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
-			<link rel="stylesheet" href="/css/styles.css"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com"/>
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+      <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet"/>
+			<link rel="stylesheet" href="/dist/css/style.css"/>
 			<title>RSS News Reader</title>
 			<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
 		</head>
-		<body class="sample-transition" hx-boost="true">
+		<body class="sample-transition nunito-sans-main-body" hx-boost="true">
 			<main class="pt-40">
 				{ children... }
 			</main>

@@ -38,6 +38,14 @@ func createMigrations() error {
 			password TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
+    `CREATE TABLE IF NOT EXISTS favorites (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id INTEGER NOT NULL,
+			article_id INTEGER NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+			FOREIGN KEY (article_id) REFERENCES articles(id)
+		);`,
 	}
 
 	for _, stmt := range stmts {
