@@ -13,6 +13,8 @@ To run in development mode:
     make run
 ```
 
+To build the executable:
+
 ```shell
     make build
 ```
