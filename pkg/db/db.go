@@ -38,7 +38,7 @@ func createMigrations() error {
 			password TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
-    `CREATE TABLE IF NOT EXISTS favorites (
+		`CREATE TABLE IF NOT EXISTS favorites (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			user_id INTEGER NOT NULL,
 			article_id INTEGER NOT NULL,

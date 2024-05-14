@@ -9,7 +9,7 @@ import (
 )
 
 func CustomHTTPErrorHandler(err error, c echo.Context) {
-  log.Println(err)
+	log.Println(err)
 	code := http.StatusInternalServerError
 	if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code

@@ -11,9 +11,9 @@ import (
 
 func Routes(a *echo.Group, DB *sql.DB) {
 	articleRepository := repository.NewRepository(DB)
-	articleService := services.NewArticleService( articleRepository)
+	articleService := services.NewArticleService(articleRepository)
 	articleHandler := handlers.New(articleService)
 
 	a.GET("", articleHandler.GetArticles)
-  a.GET("/:id", articleHandler.GetArticleDetail)
+	a.GET("/:id", articleHandler.GetArticleDetail)
 }
