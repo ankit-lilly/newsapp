@@ -28,7 +28,7 @@ templ Base(title string, categories map[string]string) {
 			<main class="pt-20" id="main-content" >
         <div 
             id="spinner" 
-            class="p-3 fixed z-index-40 w-full max-h-screen bg-opacity-80 flex items-center justify-center htmx-indicator mt-auto"
+            class="fixed inset-0 max-h-screen w-full z-index-40 bg-black bg-opacity-60 flex items-center justify-center htmx-indicator w-full"
           >
           <span class="loading loading-spinner loading-xs text-secondary"></span>
           <span class="loading loading-spinner loading-sm text-secondary"></span>
@@ -36,7 +36,9 @@ templ Base(title string, categories map[string]string) {
           <span class="loading loading-spinner loading-lg text-secondary"></span>
 
         </div>
+        <div>
 				{ children... }
+        </div>
 			</main>
 		</body>
 	</html>
