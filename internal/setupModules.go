@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/ankibahuguna/newsapp/internal/articles"
+	"github.com/ankibahuguna/newsapp/internal/auth"
 	"github.com/ankibahuguna/newsapp/pkg/db"
 	"github.com/labstack/echo/v4"
 )
@@ -13,7 +14,8 @@ const (
 
 func SetUpModules(e *echo.Echo) {
 
-	a := e.Group("/articles")
+	ar := e.Group("/")
+	au := e.Group("/auth")
 
 	err := db.Init(DB_NAME)
 
@@ -23,5 +25,7 @@ func SetUpModules(e *echo.Echo) {
 
 	dbInstance := db.GetDB()
 
-	articles.Routes(a, dbInstance)
+	articles.Routes(ar, dbInstance)
+	auth.Routes(au, dbInstance)
+
 }

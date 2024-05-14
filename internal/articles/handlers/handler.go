@@ -1,16 +1,27 @@
 package handlers
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/a-h/templ"
 	"github.com/ankibahuguna/newsapp/internal/articles/repository"
 	"github.com/ankibahuguna/newsapp/internal/articles/views"
 	"github.com/labstack/echo/v4"
-	"strconv"
 )
+
+var categories = map[string]string{
+  "National": "news/national",
+	"International": "news/international",
+	"Business": "business",
+	"Sports":   "sport",
+	"Opinion":  "opinion",
+  "Entertainment": "entertainment",
+}
 
 type ArticleService interface {
 	GetAllArticles() ([]repository.Article, error)
-	GetFeed() ([]repository.Article, error)
+	GetFeed(category string) ([]repository.Article, error)
 	GetArticleDetail(id int) (*repository.Article, error)
 }
 
@@ -32,13 +43,23 @@ func (a *ArticleHandler) View(c echo.Context, cmp templ.Component) error {
 
 func (a *ArticleHandler) GetArticles(c echo.Context) error {
 
-	articles, err := a.ArticleService.GetFeed()
+	category := c.Param("category")
+
+	var defaultCategory = "feeder/default.rss"
+
+	if category == "" {
+		category = defaultCategory
+	} else {
+		category = strings.TrimSpace(category) + "/" + defaultCategory
+	}
+
+	articles, err := a.ArticleService.GetFeed(category)
 
 	if err != nil {
 		return err
 	}
 
-	si := views.ShowList("| Home", views.List(articles))
+	si := views.ShowList("| Home", categories, views.List(articles))
 
 	return a.View(c, si)
 }
@@ -58,7 +79,7 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 		tz = c.Request().Header["X-Timezone"][0]
 	}
 
-	si := views.ShowDetail("| Home", views.Detail(tz, *article))
+	si := views.ShowDetail("| Home", categories, views.Detail(tz, *article))
 
 	return a.View(c, si)
 }

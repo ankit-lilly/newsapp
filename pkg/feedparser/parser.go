@@ -85,14 +85,22 @@ func (a *ArticleParser) Parse(url string) (string, error) {
 func (a *ArticleParser) GetRawArticle(url string) (string, error) {
 
 	resp, err := http.Get(url)
+
 	if err != nil {
 		return "", fmt.Errorf("Error fetching article: %s", err)
 	}
+	defer resp.Body.Close()
+	// Check if the request was successful
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("error fetching article: received status code %d", resp.StatusCode)
+	}
+
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("error parsing article: %w", err)
 	}
+
 	var body strings.Builder
 	doc.Find("div.articlebodycontent").Find("p").Not(".related-topics-list").FilterFunction(filterOutCommentShareWidget).Each(func(j int, el *goquery.Selection) {
 		body.WriteString(fmt.Sprintf("<p class='text-gray-300 text-lg mt-4'>%s</p>", el.Text()))

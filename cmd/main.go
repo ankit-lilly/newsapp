@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"strings"
 
 	"github.com/ankibahuguna/newsapp/internal"
@@ -42,10 +41,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	e.GET("/", func(c echo.Context) error {
-		return c.Redirect(http.StatusMovedPermanently, "/articles")
-	})
 
 	internal.SetUpModules(e)
 	// Start Server

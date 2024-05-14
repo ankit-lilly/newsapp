@@ -28,14 +28,15 @@ func (a *ArticleService) GetAllArticles() ([]repository.Article, error) {
 	return a.ArticleRepository.GetAllArticles()
 }
 
-func (a *ArticleService) GetFeed() ([]repository.Article, error) {
-	feedURL := fmt.Sprintf("%s/%s", baseURL, defaultCategory)
+func (a *ArticleService) GetFeed(category string) ([]repository.Article, error) {
+	feedURL := fmt.Sprintf("%v/%v", baseURL, category)
+  fmt.Println("FeedURL", feedURL)
 	feed, err := feedparser.NewFeedFetcher().Fetch(feedURL)
 	if err != nil {
 		return nil, err
 	}
 
-	var articles []repository.Article
+    var articles []repository.Article
 	for _, item := range feed {
 		articles = append(articles, repository.Article{
 			ID:          generateIDFromURL(item.Link),

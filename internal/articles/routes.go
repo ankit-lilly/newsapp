@@ -15,5 +15,6 @@ func Routes(a *echo.Group, DB *sql.DB) {
 	articleHandler := handlers.New(articleService)
 
 	a.GET("", articleHandler.GetArticles)
-	a.GET("/:id", articleHandler.GetArticleDetail)
+  a.GET("category/:category", articleHandler.GetArticles)
+	a.GET("articles/detail/:id", articleHandler.GetArticleDetail)
 }
