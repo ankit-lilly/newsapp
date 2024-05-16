@@ -4,7 +4,7 @@ import (
   "github.com/ankibahuguna/newsapp/pkg/views/navbar"
 )
 
-templ Base(title string, categories map[string]string) {
+templ Base(title string, isAuthorized bool, categories map[string]string) {
 	<!DOCTYPE html>
 	<html lang="en" data-theme="dark">
 		<head>
@@ -18,13 +18,20 @@ templ Base(title string, categories map[string]string) {
 			<link rel="shortcut icon" href="/img/templ.png" type="image/png"/>
       <link rel="preconnect" href="https://fonts.googleapis.com"/>
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-      <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet"/>
-			<link rel="stylesheet" href="/dist/css/style.css"/>
+      <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet"/>
+			<link rel="stylesheet" href="/assets/dist/css/style.css"/>
 			<title>RSS News Reader</title>
-			<script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+			<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
 		</head>
-    <body class="sample-transition nunito-sans-main-body" hx-boost="true"  hx-indicator="#spinner">
-     @navbar.NavBar( categories )
+    <body 
+      class="sample-transition nunito-sans-main-body" 
+      hx-boost="true"  
+      hx-indicator="#spinner"
+      hx-swap="outerHTML"
+      hx-select="#main-content"
+      hx-target="#main-content"
+      >
+     @navbar.NavBar(isAuthorized, categories )
 			<main class="pt-20" id="main-content" >
         <div 
             id="spinner" 

@@ -1,23 +1,18 @@
 package handlers
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/a-h/templ"
 	"github.com/ankibahuguna/newsapp/internal/articles/repository"
 	"github.com/ankibahuguna/newsapp/internal/articles/views"
+	"github.com/ankibahuguna/newsapp/pkg/auth"
+	shared "github.com/ankibahuguna/newsapp/pkg/shared"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
-
-var categories = map[string]string{
-  "National": "news/national",
-	"International": "news/international",
-	"Business": "business",
-	"Sports":   "sport",
-	"Opinion":  "opinion",
-  "Entertainment": "entertainment",
-}
 
 type ArticleService interface {
 	GetAllArticles() ([]repository.Article, error)
@@ -45,6 +40,17 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 
 	category := c.Param("category")
 
+	isAuthorized := c.Get("isAuthorized").(bool)
+
+	if isAuthorized {
+		user := c.Get("user").(*jwt.Token)
+
+		claims := user.Claims.(*auth.JwtClaims)
+
+		fmt.Println("user", claims.Id, claims.Name, claims.ExpiresAt)
+
+	}
+
 	var defaultCategory = "feeder/default.rss"
 
 	if category == "" {
@@ -59,14 +65,15 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 		return err
 	}
 
-	si := views.ShowList("| Home", categories, views.List(articles))
-
-	return a.View(c, si)
+	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
+	return a.View(c, sl)
 }
 
 func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 
 	id, _ := strconv.Atoi(c.Param("id"))
+
+	isAuthorized := c.Get("isAuthorized").(bool)
 
 	article, err := a.ArticleService.GetArticleDetail(id)
 
@@ -79,7 +86,7 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 		tz = c.Request().Header["X-Timezone"][0]
 	}
 
-	si := views.ShowDetail("| Home", categories, views.Detail(tz, *article))
+	sd := views.ShowDetail("| Home", isAuthorized, shared.Categories, views.Detail(tz, *article))
 
-	return a.View(c, si)
+	return a.View(c, sd)
 }

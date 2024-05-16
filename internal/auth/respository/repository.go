@@ -2,11 +2,12 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 )
 
 type User struct {
-	ID        int       `json:"id"`
+	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
@@ -21,12 +22,28 @@ func NewRepository(db *sql.DB) *AuthRepository {
 	return &AuthRepository{DB: db}
 }
 
-func (a *AuthRepository) InsertUser(user User) (int, error) {
-	query := `INSERT INTO users (name, email, password, created_at) VALUES ($1, $2, $3, $4) RETURNING id`
-	var id int
-	err := a.DB.QueryRow(query, user.Name, user.Email, user.Password, user.CreatedAt).Scan(&id)
+func (a *AuthRepository) InsertUser(user User) (int64, error) {
+	query := `INSERT INTO users (name, email, password ) VALUES ($1, $2, $3)`
+	res, err := a.DB.Exec(query, user.Name, user.Email, user.Password)
 	if err != nil {
 		return 0, err
 	}
-	return id, nil
+	lastInsertId, err := res.LastInsertId()
+	return lastInsertId, err
+}
+
+func (a *AuthRepository) GetUserByEmail(email string) (*User, error) {
+	query := `SELECT id, email, password, created_at FROM users WHERE email = $1`
+
+	var user User
+	err := a.DB.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.CreatedAt)
+
+	if err != nil {
+		fmt.Println(err)
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("User with email %s not found", email)
+		}
+		return nil, err
+	}
+	return &user, nil
 }

@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	"github.com/ankibahuguna/newsapp/pkg/errors"
 )
 
 type Article struct {
@@ -110,7 +112,7 @@ func (a *ArticleRepository) GetArticleByID(id int) (*Article, error) {
 	if err != nil {
 		fmt.Println(err)
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("Article not found")
+			return nil, errors.NewNotFoundError("Article not found")
 		}
 		return nil, err
 	}

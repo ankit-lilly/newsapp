@@ -2,7 +2,7 @@ package navbar
 
 import "fmt"
 
-templ NavBar( categories map[string]string) {
+templ NavBar(isAuthorized bool, categories map[string]string) {
 <div class="navbar bg-base-100">
   <div class="navbar-start">
     <div class="dropdown">
@@ -15,13 +15,22 @@ templ NavBar( categories map[string]string) {
         for key, val := range categories {
           <li>
             <a 
-              hx-swap="outerHTML"
-              hx-select="#main-content"
-              hx-target="#main-content"
               href={ templ.URL(fmt.Sprintf("/category/%s",val)) }
              > {key}</a>
           </li>
         }
+        if isAuthorized == false {
+            <li>
+              <a href="/auth/login">Login</a>
+            </li>
+            <li>
+              <a href="/auth/register">Register</a>
+            </li>
+          } else {
+            <li>
+              <a  hx-delete="/auth/logout" href="#">Logout</a>
+            </li>
+          }
       </ul>
     </div>
     <a class="btn btn-ghost text-xl" href="/">NewsApp</a>
@@ -31,15 +40,24 @@ templ NavBar( categories map[string]string) {
         for key, val := range categories {
           <li>
             <a 
-              hx-swap="outerHTML"
-              hx-select="#main-content"
-              hx-target="#main-content"
               href={ templ.URL(fmt.Sprintf("/category/%s",val)) }
               > 
               {key}
             </a>
           </li>
         }
+        if isAuthorized == false {
+            <li>
+              <a href="/auth/login">Login</a>
+            </li>
+            <li>
+              <a href="/auth/register">Register</a>
+            </li>
+          } else {
+            <li>
+              <a  hx-delete="/auth/logout" href="#">Logout</a>
+            </li>
+          }
     </ul>
   </div>
 </div>

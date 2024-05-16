@@ -30,8 +30,8 @@ templ Detail(tz string, article repository.Article) {
 </div>
 }
 
-templ ShowDetail(title string, categories map[string]string, cmp templ.Component) {
-  @layout.Base(title, categories) {
+templ ShowDetail(title string, isAuthorized bool, categories map[string]string, cmp templ.Component) {
+  @layout.Base(title,isAuthorized, categories) {
     @cmp
   }
 }
