@@ -65,7 +65,7 @@ func setTokenCookie(name, token string, expiration time.Time, c echo.Context) {
 	cookie.Name = name
 	cookie.Value = token
 	cookie.Expires = expiration
-  cookie.SameSite = http.SameSiteStrictMode
+	cookie.SameSite = http.SameSiteStrictMode
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 

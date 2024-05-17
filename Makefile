@@ -17,6 +17,12 @@ run:
 	@templ generate
 	@npx concurrently -k "npx tailwindcss -i assets/css/style.css -o assets/dist/css/style.css --minify --watch" "air -c .air.toml"
 
+.PHONY: fmt
+fmt:
+	@echo "Formatting files"
+	@templ fmt .
+	@gofmt -s -w .
+
 .PHONY: build
 build:
 	@echo "Building $(APP_NAME)..."

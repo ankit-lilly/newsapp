@@ -1,6 +1,5 @@
 package errors
 
-
 type ApiError struct {
 	Message string
 	Code    int
@@ -35,4 +34,3 @@ func IsNotFoundError(err error) bool {
 	_, ok := err.(*NotFoundError)
 	return ok
 }
-

@@ -1,7 +1,7 @@
 package layout
 
 import (
-  "github.com/ankibahuguna/newsapp/pkg/views/navbar"
+	"github.com/ankibahuguna/newsapp/pkg/views/navbar"
 )
 
 templ Base(title string, isAuthorized bool, categories map[string]string) {
@@ -11,41 +11,40 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<meta
- 				name="description"
- 				content="RSS News Reader"
+				name="description"
+				content="RSS News Reader"
 			/>
 			<meta name="google" content="notranslate"/>
 			<link rel="shortcut icon" href="/img/templ.png" type="image/png"/>
-      <link rel="preconnect" href="https://fonts.googleapis.com"/>
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-      <link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet"/>
+			<link rel="preconnect" href="https://fonts.googleapis.com"/>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+			<link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet"/>
 			<link rel="stylesheet" href="/assets/dist/css/style.css"/>
 			<title>RSS News Reader</title>
 			<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
 		</head>
-    <body 
-      class="sample-transition nunito-sans-main-body" 
-      hx-boost="true"  
-      hx-indicator="#spinner"
-      hx-swap="outerHTML"
-      hx-select="#main-content"
-      hx-target="#main-content"
-      >
-     @navbar.NavBar(isAuthorized, categories )
-			<main class="pt-20" id="main-content" >
-        <div 
-            id="spinner" 
-            class="fixed inset-0 max-h-screen w-full z-index-40 bg-black bg-opacity-60 flex items-center justify-center htmx-indicator w-full"
-          >
-          <span class="loading loading-spinner loading-xs text-secondary"></span>
-          <span class="loading loading-spinner loading-sm text-secondary"></span>
-          <span class="loading loading-spinner loading-md text-secondary"></span>
-          <span class="loading loading-spinner loading-lg text-secondary"></span>
-
-        </div>
-        <div>
-				{ children... }
-        </div>
+		<body
+			class="sample-transition nunito-sans-main-body"
+			hx-boost="true"
+			hx-indicator="#spinner"
+			hx-swap="outerHTML"
+			hx-select="#main-content"
+			hx-target="#main-content"
+		>
+			@navbar.NavBar(isAuthorized, categories)
+			<main class="pt-20" id="main-content">
+				<div
+					id="spinner"
+					class="fixed inset-0 max-h-screen w-full z-index-40 bg-black bg-opacity-60 flex items-center justify-center htmx-indicator w-full"
+				>
+					<span class="loading loading-spinner loading-xs text-secondary"></span>
+					<span class="loading loading-spinner loading-sm text-secondary"></span>
+					<span class="loading loading-spinner loading-md text-secondary"></span>
+					<span class="loading loading-spinner loading-lg text-secondary"></span>
+				</div>
+				<div>
+					{ children... }
+				</div>
 			</main>
 		</body>
 	</html>

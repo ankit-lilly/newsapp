@@ -17,7 +17,7 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 	if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code
 		message = fmt.Sprintf("%v", he.Message)
-	} else if IsApiError(err){
+	} else if IsApiError(err) {
 		apiErr := err.(*ApiError)
 		code = apiErr.Code
 		message = apiErr.Message

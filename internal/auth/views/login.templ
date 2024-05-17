@@ -1,7 +1,7 @@
 package views
 
 import (
-  "github.com/ankibahuguna/newsapp/pkg/views/layout"
+	"github.com/ankibahuguna/newsapp/pkg/views/layout"
 )
 
 templ Login() {
@@ -11,30 +11,30 @@ templ Login() {
 				Log In
 			</h1>
 			<form
- 				hx-swap="transition:true"
- 				hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
- 				class="rounded-xl drop-shadow-xl flex flex-col gap-4 w-96 p-8"
- 				action=""
- 				method="post"
+				hx-swap="transition:true"
+				hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
+				class="rounded-xl drop-shadow-xl flex flex-col gap-4 w-96 p-8"
+				action=""
+				method="post"
 			>
 				<label class="flex flex-col justify-start gap-2">
 					Email:
 					<input
- 						class="input input-bordered input-primary bg-slate-800"
- 						type="email"
- 						name="email"
- 						required
- 						autofocus
+						class="input input-bordered input-primary bg-slate-800"
+						type="email"
+						name="email"
+						required
+						autofocus
 					/>
 				</label>
 				<label class="flex flex-col justify-start gap-2">
 					Password:
 					<input
- 						class="input input-bordered input-primary bg-slate-800"
- 						type="password"
- 						name="password"
- 						required
- 						minlength="6"
+						class="input input-bordered input-primary bg-slate-800"
+						type="password"
+						name="password"
+						required
+						minlength="6"
 					/>
 				</label>
 				<footer class="card-actions justify-end">
@@ -47,8 +47,8 @@ templ Login() {
 	</section>
 }
 
-templ ShowLogin(title string,isAuthorized bool, categories map[string]string, cmp templ.Component) {
-  @layout.Base(title,isAuthorized, categories) {
-    @cmp
-  }
+templ ShowLogin(title string, isAuthorized bool, categories map[string]string, cmp templ.Component) {
+	@layout.Base(title, isAuthorized, categories) {
+		@cmp
+	}
 }
