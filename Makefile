@@ -8,6 +8,8 @@ AIR_INSTALL_CMD = go install github.com/cosmtrek/air@latest
 install:
 	@echo "Installing deps"
 	@npm i -D daisyui@latest
+	@go mod tidy
+	@go install github.com/a-h/templ/cmd/templ@latest
 	@$(AIR_INSTALL_CMD)
 
 .PHONY: run
