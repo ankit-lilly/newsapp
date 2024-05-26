@@ -63,6 +63,14 @@ func (a *ArticleRepository) InsertArticle(article Article) (int, error) {
 	return id, nil
 }
 
+func (a *ArticleRepository) CreateFavoriteArticle(article_id, user_id int64) error {
+	query := `INSERT INTO favorites (article_id, user_id) VALUES($1, $2)`
+
+	_, err := a.DB.Exec(query, article_id, user_id)
+
+	return err
+}
+
 func (a *ArticleRepository) BulkInsertArticles(articles []Article) error {
 	tx, err := a.DB.Begin()
 	if err != nil {
@@ -123,4 +131,36 @@ func (a *ArticleRepository) UpdateArticleByID(article Article) error {
 	query := `UPDATE articles SET title = $1, description = $2, link = $3, body = $4 WHERE id = $5`
 	_, err := a.DB.Exec(query, article.Title, article.Description, article.Link, article.Body, article.ID)
 	return err
+}
+
+func (a *ArticleRepository) GetFavoritesByUser(user int64) ([]Article, error) {
+
+	query := `SELECT a.id, a.title, a.link, a.description, a.body, a.created_at FROM favorites as f INNER JOIN articles as a ON f.article_id = a.id  WHERE f.user_id = $1`
+
+	rows, err := a.DB.Query(query, user)
+
+	if err != nil {
+		return []Article{}, err
+	}
+	defer rows.Close()
+
+	articles := []Article{}
+
+	for rows.Next() {
+
+		article := Article{}
+
+		rows.Scan(
+			&article.ID,
+			&article.Title,
+			&article.Link,
+			&article.Description,
+			&article.Body,
+			&article.CreatedAt,
+		)
+
+		articles = append(articles, article)
+	}
+
+	return articles, nil
 }

@@ -15,20 +15,28 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 					for key, val := range categories {
 						<li>
 							<a
+								hx-select="#main-content"
 								href={ templ.URL(fmt.Sprintf("/category/%s", val)) }
 							>{ key }</a>
 						</li>
 					}
 					if isAuthorized == false {
 						<li>
-							<a href="/auth/login">Login</a>
+							<a
+								hx-select="#main-content"
+								href="/auth/login"
+							>Login</a>
 						</li>
 						<li>
 							<a href="/auth/register">Register</a>
 						</li>
 					} else {
 						<li>
-							<a hx-delete="/auth/logout" href="#">Logout</a>
+							<a
+								hx-select="#main-content"
+								hx-delete="/auth/logout"
+								href="#"
+							>Logout</a>
 						</li>
 					}
 				</ul>
@@ -40,6 +48,7 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 				for key, val := range categories {
 					<li>
 						<a
+							hx-select="#main-content"
 							href={ templ.URL(fmt.Sprintf("/category/%s", val)) }
 						>
 							{ key }
@@ -48,14 +57,24 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 				}
 				if isAuthorized == false {
 					<li>
-						<a href="/auth/login">Login</a>
+						<a
+							hx-select="#main-content"
+							href="/auth/login"
+						>Login</a>
 					</li>
 					<li>
-						<a href="/auth/register">Register</a>
+						<a
+							hx-select="#main-content"
+							href="/auth/register"
+						>Register</a>
 					</li>
 				} else {
 					<li>
-						<a hx-delete="/auth/logout" href="#">Logout</a>
+						<a
+							hx-select="#main-content"
+							hx-delete="/auth/logout"
+							href="#"
+						>Logout</a>
 					</li>
 				}
 			</ul>

@@ -72,8 +72,18 @@ func (a *ArticleService) GetArticleDetail(id int) (*repository.Article, error) {
 
 	art.Body = detail
 
+	a.ArticleRepository.UpdateArticleByID(*art)
+
 	return art, nil
 
+}
+
+func (a *ArticleService) GetFavoritesByUser(userid int64) ([]repository.Article, error) {
+	return a.ArticleRepository.GetFavoritesByUser(userid)
+}
+
+func (a *ArticleService) CreateFavoriteArticle(article_id, user_id int64) error {
+	return a.ArticleRepository.CreateFavoriteArticle(article_id, user_id)
 }
 
 func generateIDFromURL(url string) int {
@@ -105,5 +115,4 @@ func getTimeFromDateTimeString(dateTime string) time.Time {
 		return time.Now()
 	}
 	return parsedTime
-
 }

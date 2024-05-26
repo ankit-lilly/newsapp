@@ -23,7 +23,7 @@ const (
 
 func cacheControl(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		if strings.HasPrefix(c.Request().URL.Path, "/assets/dist/css/") || strings.HasPrefix(c.Request().URL.Path, "/assets/dist/js/") {
+		if strings.HasPrefix(c.Request().URL.Path, "/assets/dist/css/") || strings.HasPrefix(c.Request().URL.Path, "/assets/js/") {
 			c.Response().Header().Set("Cache-Control", "public, max-age=31536000")
 		}
 		return next(c)

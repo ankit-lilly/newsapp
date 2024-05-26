@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 
@@ -12,12 +14,15 @@ import (
 	shared "github.com/ankibahuguna/newsapp/pkg/shared"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/ollama/ollama/api"
 )
 
 type ArticleService interface {
 	GetAllArticles() ([]repository.Article, error)
 	GetFeed(category string) ([]repository.Article, error)
 	GetArticleDetail(id int) (*repository.Article, error)
+	GetFavoritesByUser(id int64) ([]repository.Article, error)
+	CreateFavoriteArticle(article_id, user_id int64) error
 }
 
 func New(a ArticleService) *ArticleHandler {
@@ -42,15 +47,6 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 
 	isAuthorized := c.Get("isAuthorized").(bool)
 
-	if isAuthorized {
-		user := c.Get("user").(*jwt.Token)
-
-		claims := user.Claims.(*auth.JwtClaims)
-
-		fmt.Println("user", claims.Id, claims.Name, claims.ExpiresAt)
-
-	}
-
 	var defaultCategory = "feeder/default.rss"
 
 	if category == "" {
@@ -67,6 +63,56 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 	return a.View(c, sl)
+}
+
+func (a *ArticleHandler) GetFavoriteArticles(c echo.Context) error {
+
+	isAuthorized := c.Get("isAuthorized").(bool)
+
+	if !isAuthorized {
+		return echo.NewHTTPError(echo.ErrUnauthorized.Code, "You are not authorized to access this page")
+	}
+
+	user := c.Get("user").(*jwt.Token)
+
+	claims := user.Claims.(*auth.JwtClaims)
+
+	articles, err := a.ArticleService.GetFavoritesByUser(claims.Id)
+
+	if err != nil {
+		fmt.Println("error", err)
+		return err
+	}
+
+	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
+	return a.View(c, sl)
+}
+
+func (a *ArticleHandler) CreateFavArticle(c echo.Context) error {
+
+	var article_id int64
+	var err error
+
+	article_id, err = strconv.ParseInt(c.FormValue("article_id"), 10, 64)
+
+	isAuthorized := c.Get("isAuthorized").(bool)
+
+	if !isAuthorized {
+		return echo.NewHTTPError(echo.ErrUnauthorized.Code, "You are not autorized to peform this action")
+	}
+
+	user := c.Get("user").(*jwt.Token)
+
+	claims := user.Claims.(*auth.JwtClaims)
+
+	err = a.ArticleService.CreateFavoriteArticle(article_id, claims.Id)
+
+	if err != nil {
+		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
+	}
+
+	return nil
+
 }
 
 func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
@@ -89,4 +135,49 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 	sd := views.ShowDetail("| Home", isAuthorized, shared.Categories, views.Detail(tz, *article))
 
 	return a.View(c, sd)
+}
+
+func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
+	id, _ := strconv.Atoi(c.Param("id"))
+
+	article, err := a.ArticleService.GetArticleDetail(id)
+
+	if err != nil {
+		return err
+	}
+
+	client, err := api.ClientFromEnvironment()
+	if err != nil {
+		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
+	}
+
+	// By default, GenerateRequest is streaming.
+	req := &api.GenerateRequest{
+		Model:  "llama3",
+		Prompt: fmt.Sprint("Summarize this text:\n %s", article),
+	}
+
+	ctx := context.Background()
+
+	w := c.Response()
+	w.Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
+	w.WriteHeader(http.StatusOK)
+
+	respFunc := func(resp api.GenerateResponse) error {
+		if resp.Done {
+			return nil
+		}
+
+		if _, err := fmt.Fprintf(c.Response(), resp.Response); err != nil {
+			return err
+		}
+		w.Flush()
+		return nil
+	}
+
+	err = client.Generate(ctx, req, respFunc)
+	if err != nil {
+		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
+	}
+	return nil
 }
