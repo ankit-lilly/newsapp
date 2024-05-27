@@ -148,13 +148,15 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	client, err := api.ClientFromEnvironment()
 	if err != nil {
+		fmt.Println(err)
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
 	}
 
 	// By default, GenerateRequest is streaming.
 	req := &api.GenerateRequest{
+		System: "Summarize the input provided concisely, ensuring all important details are included.",
 		Model:  "llama3",
-		Prompt: fmt.Sprint("Summarize this text:\n %s", article),
+		Prompt: fmt.Sprintf("Summarize the following text: %s\n", article.Body),
 	}
 
 	ctx := context.Background()
@@ -169,6 +171,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 		}
 
 		if _, err := fmt.Fprintf(c.Response(), resp.Response); err != nil {
+			fmt.Println(err)
 			return err
 		}
 		w.Flush()
@@ -177,6 +180,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	err = client.Generate(ctx, req, respFunc)
 	if err != nil {
+		fmt.Println(err)
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
 	}
 	return nil

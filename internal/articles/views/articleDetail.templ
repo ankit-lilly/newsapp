@@ -48,11 +48,11 @@ templ Detail(tz string, article repository.Article) {
 				Save to Favorites
 			</button>
 			<button
-        hx-get={ fmt.Sprintf("/articles/detail/%d/summarise", article.ID) }
+				hx-get={ fmt.Sprintf("/articles/detail/%d/summarise", article.ID) }
 				hx-trigger="click"
 				hx-target="#article-body"
-        hx-ext="stream"
-        hx-swap="beforeend"
+				hx-ext="stream"
+				hx-swap="beforeend"
 				class="
             mt-6 
             px-6 
