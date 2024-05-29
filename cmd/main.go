@@ -18,7 +18,6 @@ const (
 	DB_NAME    string = "app_data.db"
 )
 
-
 func main() {
 
 	e := echo.New()

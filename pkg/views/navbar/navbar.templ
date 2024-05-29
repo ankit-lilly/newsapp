@@ -34,6 +34,13 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 					} else {
 						<li>
 							<a
+								hx-target="#container"
+								hx-swap="innerHTML"
+								href="/favorites"
+							>Favorites</a>
+						</li>
+						<li>
+							<a
 								hx-select="#main-content"
 								hx-delete="/auth/logout"
 								href="#"
@@ -71,6 +78,13 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 						>Register</a>
 					</li>
 				} else {
+					<li>
+						<a
+							hx-target="#container"
+							hx-swap="innerHTML"
+							href="/favorites"
+						>Favorites</a>
+					</li>
 					<li>
 						<a
 							hx-select="#main-content"

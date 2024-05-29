@@ -91,9 +91,11 @@ func (a *ArticleHandler) GetFavoriteArticles(c echo.Context) error {
 	}
 
 	htmxRequest := c.Get("htmxRequest").(bool)
+
 	if htmxRequest {
 		return a.View(c, views.List(articles))
 	}
+
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 	return a.View(c, sl)
 }
