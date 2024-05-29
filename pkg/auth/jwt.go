@@ -2,11 +2,13 @@ package auth
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
 	repository "github.com/ankibahuguna/newsapp/internal/auth/respository"
 	"github.com/golang-jwt/jwt/v5"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -74,4 +76,23 @@ func setTokenCookie(name, token string, expiration time.Time, c echo.Context) {
 
 func JWTErrorChecker(err error, c echo.Context) error {
 	return c.Redirect(http.StatusMovedPermanently, c.Echo().Reverse("userSignInForm"))
+}
+
+var JwtConfig = echojwt.Config{
+
+	NewClaimsFunc: func(c echo.Context) jwt.Claims {
+		return new(JwtClaims)
+	},
+	TokenLookup: TokenLookUpKey,
+	SigningKey:  []byte(GetJWTSecret()),
+	SuccessHandler: func(c echo.Context) {
+		c.Set("isAuthorized", true)
+	},
+	ErrorHandler: func(c echo.Context, err error) error {
+		slog.Error(err.Error())
+		c.Set("user", nil)
+		c.Set("isAuthorized", false)
+		return nil
+	},
+	ContinueOnIgnoredError: true,
 }
