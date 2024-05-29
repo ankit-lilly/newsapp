@@ -46,6 +46,7 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 	category := c.Param("category")
 
 	isAuthorized := c.Get("isAuthorized").(bool)
+	htmxRequest := c.Get("htmxRequest").(bool)
 
 	var defaultCategory = "feeder/default.rss"
 
@@ -62,6 +63,11 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 	}
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
+
+	if htmxRequest {
+		return a.View(c, views.List(articles))
+	}
+
 	return a.View(c, sl)
 }
 
@@ -84,6 +90,10 @@ func (a *ArticleHandler) GetFavoriteArticles(c echo.Context) error {
 		return err
 	}
 
+	htmxRequest := c.Get("htmxRequest").(bool)
+	if htmxRequest {
+		return a.View(c, views.List(articles))
+	}
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 	return a.View(c, sl)
 }
@@ -130,6 +140,12 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 	tz := ""
 	if len(c.Request().Header["X-Timezone"]) != 0 {
 		tz = c.Request().Header["X-Timezone"][0]
+	}
+
+	htmxRequest := c.Get("htmxRequest").(bool)
+
+	if htmxRequest {
+		return a.View(c, views.Detail(tz, *article))
 	}
 
 	sd := views.ShowDetail("| Home", isAuthorized, shared.Categories, views.Detail(tz, *article))

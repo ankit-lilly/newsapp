@@ -7,7 +7,7 @@ import (
 )
 
 templ List(articles []repository.Article) {
-	<div class="flex flex-col items-center" id="main-el" hx-get="" hx-trigger="every 60s" hx-swap="outerHTML" hx-target="this" hx-select="#main-el">
+	<div class="flex flex-col items-center" id="main-el" hx-get="" hx-trigger="every 60s" hx-swap="outerHTML" hx-target="this">
 		if len(articles) > 0 {
 			for _, article := range articles {
 				<div class="w-full max-w-4xl rounded overflow-hidden shadow-lg my-4">
@@ -17,7 +17,6 @@ templ List(articles []repository.Article) {
 								hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
 								hx-swap="outerHTML"
 								hx-target="#main-el"
-								hx-select="#article-detail"
 								href={ templ.URL(fmt.Sprintf("/articles/detail/%d", article.ID)) }
 							>
 								{ article.Title }

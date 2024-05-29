@@ -15,7 +15,8 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 					for key, val := range categories {
 						<li>
 							<a
-								hx-select="#main-content"
+								hx-target="#container"
+								hx-swap="innerHTML"
 								href={ templ.URL(fmt.Sprintf("/category/%s", val)) }
 							>{ key }</a>
 						</li>
@@ -48,7 +49,8 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 				for key, val := range categories {
 					<li>
 						<a
-							hx-select="#main-content"
+							hx-target="#container"
+							hx-swap="innerHTML"
 							href={ templ.URL(fmt.Sprintf("/category/%s", val)) }
 						>
 							{ key }

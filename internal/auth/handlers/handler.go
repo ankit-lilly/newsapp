@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -39,7 +38,6 @@ func (a *AuthHandler) View(c echo.Context, cmp templ.Component) error {
 
 func (a *AuthHandler) LoginHandler(c echo.Context) error {
 	isAuthorized := c.Get("isAuthorized").(bool)
-	fmt.Println("What's this value", isAuthorized)
 	if isAuthorized {
 		c.Response().Header().Set("Hx-Redirect", "/")
 		return c.Redirect(http.StatusSeeOther, "/")
@@ -124,7 +122,7 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 func (a *AuthHandler) LogoutUser(c echo.Context) error {
 
 	isAuthorized := c.Get("isAuthorized").(bool)
-	fmt.Println("What's this value", isAuthorized)
+
 	if !isAuthorized {
 		c.Response().Header().Set("Hx-Redirect", "/auth/login")
 		return c.Redirect(http.StatusSeeOther, "/auth/login")

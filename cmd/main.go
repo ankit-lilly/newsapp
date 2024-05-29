@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -42,6 +43,20 @@ func earlyHints(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
+func IsHTMXRequest(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		htmxHeader := c.Request().Header.Get("HX-Request")
+		fmt.Println("Htmx Request here", htmxHeader)
+
+		if htmxHeader == "true" {
+			c.Set("htmxRequest", true)
+		} else {
+			c.Set("htmxRequest", false)
+		}
+		return next(c)
+	}
+}
+
 func main() {
 
 	e := echo.New()
@@ -71,6 +86,7 @@ func main() {
 		ContinueOnIgnoredError: true,
 	}
 	e.Use(echojwt.WithConfig(config))
+	e.Use(IsHTMXRequest)
 
 	e.Static("/assets", "assets")
 
