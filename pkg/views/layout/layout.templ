@@ -41,7 +41,10 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 					<span class="loading loading-spinner loading-md text-secondary"></span>
 					<span class="loading loading-spinner loading-lg text-secondary"></span>
 				</div>
-				<div id="container">
+				<div
+					id="container"
+					hx-indicator="#spinner"
+				>
 					{ children... }
 				</div>
 			</main>
