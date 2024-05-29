@@ -103,7 +103,7 @@ func (a *ArticleParser) GetRawArticle(url string) (string, error) {
 
 	var body strings.Builder
 	doc.Find("div.articlebodycontent").Find("p").Not(".related-topics-list").FilterFunction(filterOutCommentShareWidget).Each(func(j int, el *goquery.Selection) {
-		body.WriteString(fmt.Sprintf("<p class='text-gray-300 text-lg mt-4'>%s</p>", el.Text()))
+		body.WriteString(fmt.Sprintf("<p class='text-lg mt-4'>%s</p>", el.Text()))
 	})
 	return body.String(), nil
 

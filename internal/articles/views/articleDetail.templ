@@ -21,8 +21,8 @@ templ Detail(tz string, article repository.Article) {
 					{ services.ConverDateTime(tz, article.CreatedAt) }
 				</p>
 			</div>
-			<h1 class="text-3xl font-bold text-white mt-2 mb-2">{ article.Title }</h1>
-			<div class="text-gray-300 text-lg mt-4" id="article-body">
+			<h1 class="text-3xl font-bold mt-2 mb-2">{ article.Title }</h1>
+			<div class="mt-4 prose" id="article-body">
 				@templ.Raw(article.Body)
 			</div>
 			<button

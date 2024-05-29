@@ -41,3 +41,43 @@ window.htmx.defineExtension("stream", {
     return text;
   },
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const themeController = document.querySelector("#themeswitch");
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+    themeController.checked = theme === "dracula";
+  }
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    themeController.checked = savedTheme === "dracula";
+  } else {
+    const systemPrefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    const defaultTheme = systemPrefersDark ? "dracula" : "nord";
+    console.log(
+      "No saved theme found, setting theme based on system preference:",
+      defaultTheme
+    );
+    setTheme(defaultTheme);
+  }
+
+  themeController.addEventListener("change", function () {
+    const theme = this.checked ? "dracula" : "nord";
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme); // Save the theme in local storage
+  });
+
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", (e) => {
+      const newColorScheme = e.matches ? "dracula" : "nord";
+      console.log("System theme changed:", newColorScheme);
+      setTheme(newColorScheme);
+    });
+});
