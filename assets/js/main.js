@@ -22,7 +22,22 @@ window.htmx.defineExtension("stream", {
             indicator.style.display = "none";
           }
         }
+
+        if (xhr.readyState === 4) {
+          var indicator = document.querySelector(".htmx-indicator");
+          if (indicator) {
+            indicator.style.display = indicator.getAttribute(
+              "data-initial-display"
+            );
+          }
+        }
       });
+
+      var indicator = document.querySelector(".htmx-indicator");
+      if (indicator) {
+        indicator.setAttribute("data-initial-display", indicator.style.display);
+        indicator.style.display = "flex";
+      }
     }
     return true;
   },
@@ -41,7 +56,6 @@ window.htmx.defineExtension("stream", {
     return text;
   },
 });
-
 
 document.addEventListener("DOMContentLoaded", function () {
   const themeController = document.querySelector("#themeswitch");

@@ -30,7 +30,6 @@ func (a *ArticleService) GetAllArticles() ([]repository.Article, error) {
 
 func (a *ArticleService) GetFeed(category string) ([]repository.Article, error) {
 	feedURL := fmt.Sprintf("%v/%v", baseURL, category)
-	fmt.Println("FeedURL", feedURL)
 	feed, err := feedparser.NewFeedFetcher().Fetch(feedURL)
 	if err != nil {
 		return nil, err
