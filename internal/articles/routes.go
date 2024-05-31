@@ -15,6 +15,7 @@ func Routes(a *echo.Group, DB *sql.DB) {
 	articleHandler := handlers.New(articleService)
 
 	a.GET("", articleHandler.GetArticles)
+	a.GET("funny", articleHandler.GetArticlesFromOnion)
 	a.GET("favorites", articleHandler.GetFavoriteArticles)
 	a.POST("favorites", articleHandler.CreateFavArticle)
 

@@ -21,6 +21,13 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 							>{ key }</a>
 						</li>
 					}
+					<li>
+						<a
+							hx-target="#container"
+							hx-swap="innerHTML"
+							href="/funny"
+						>Funny</a>
+					</li>
 					if isAuthorized == false {
 						<li>
 							<a
@@ -72,6 +79,13 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 						</a>
 					</li>
 				}
+				<li>
+					<a
+						hx-target="#container"
+						hx-swap="innerHTML"
+						href="/funny"
+					>Funny</a>
+				</li>
 				if isAuthorized == false {
 					<li>
 						<a

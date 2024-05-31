@@ -18,6 +18,7 @@ func CacheControl(next echo.HandlerFunc) echo.HandlerFunc {
 func EarlyHints(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		c.Response().Header().Add("Link", "</assets/dist/css/style.css>; rel=preload; as=style")
+		c.Response().Header().Add("Link", "</assets/js/main.js>; rel=preload; as=script")
 		c.Response().WriteHeader(http.StatusEarlyHints)
 
 		return next(c)

@@ -20,6 +20,7 @@ import (
 type ArticleService interface {
 	GetAllArticles() ([]repository.Article, error)
 	GetFeed(category string) ([]repository.Article, error)
+	GetOnionFeed() ([]repository.Article, error)
 	GetArticleDetail(id int) (*repository.Article, error)
 	GetFavoritesByUser(id int64) ([]repository.Article, error)
 	CreateFavoriteArticle(article_id, user_id int64) error
@@ -39,6 +40,26 @@ func (a *ArticleHandler) View(c echo.Context, cmp templ.Component) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
+}
+
+func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
+
+	isAuthorized := c.Get("isAuthorized").(bool)
+	htmxRequest := c.Get("htmxRequest").(bool)
+
+	articles, err := a.ArticleService.GetOnionFeed()
+
+	if err != nil {
+		return err
+	}
+
+	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
+
+	if htmxRequest {
+		return a.View(c, views.List(articles))
+	}
+
+	return a.View(c, sl)
 }
 
 func (a *ArticleHandler) GetArticles(c echo.Context) error {

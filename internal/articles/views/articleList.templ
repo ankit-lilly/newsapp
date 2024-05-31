@@ -22,7 +22,9 @@ templ List(articles []repository.Article) {
 								{ article.Title }
 							</a>
 						</div>
-						<p class="text-base">{ article.Description }</p>
+						<p class="text-base">
+							@templ.Raw(article.Description)
+						</p>
 					</div>
 				</div>
 			}
