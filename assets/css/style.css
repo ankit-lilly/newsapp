@@ -9,6 +9,22 @@
   font-style: normal;
 }
 
+*[hx-swap] {
+  animation: animate-in 1s ease-in-out
+}
+
+@keyframes animate-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px)
+  }
+
+  100% {
+    opacity: 1;
+    transform: traslateY(0);
+  }
+}
+
 .htmx-indicator{
     display:none;
 }
