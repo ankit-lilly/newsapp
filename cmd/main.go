@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/ankibahuguna/newsapp/internal"
 	"github.com/ankibahuguna/newsapp/pkg/auth"
@@ -22,6 +23,12 @@ func main() {
 
 	e := echo.New()
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "5000"
+	}
+
 	e.Use(middleware.Gzip())
 	e.Pre(middlewares.EarlyHints)
 	e.Use(middlewares.CacheControl)
@@ -38,5 +45,5 @@ func main() {
 	}
 
 	internal.SetUpModules(e)
-	e.Logger.Fatal(e.Start(":5000"))
+	e.Logger.Fatal(e.Start(":" + port))
 }

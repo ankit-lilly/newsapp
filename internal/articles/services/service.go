@@ -120,32 +120,31 @@ func (a *ArticleService) CreateFavoriteArticle(article_id, user_id int64) error 
 }
 
 func generateIDFromURL(url string) int {
-	if strings.Contains(url, "onion") {
-		re := regexp.MustCompile(`(\d+)$`)
-		matches := re.FindStringSubmatch(url)
 
+	extractID := func(pattern string) (int, error) {
+		re := regexp.MustCompile(pattern)
+		matches := re.FindStringSubmatch(url)
 		if len(matches) > 1 {
-			id, err := strconv.Atoi(matches[1])
-			fmt.Println(id, "here onion")
-			if err != nil {
-				return int(time.Now().Unix())
-			}
-			fmt.Println(id, "here onion")
+			return strconv.Atoi(matches[1])
+		}
+		return 0, fmt.Errorf("no match found")
+	}
+
+	var id int
+	var err error
+
+	if strings.Contains(url, "onion") {
+		id, err = extractID(`(\d+)$`)
+		if err == nil {
 			return id
 		}
-		return int(time.Now().Unix())
 	}
-	re := regexp.MustCompile(`article(\d+)\.ece`)
-	matches := re.FindStringSubmatch(url)
 
-	if len(matches) > 1 {
-		id, err := strconv.Atoi(matches[1])
-		if err != nil {
-
-			return int(time.Now().Unix())
-		}
+	id, err = extractID(`article(\d+)\.ece`)
+	if err == nil {
 		return id
 	}
+
 	return int(time.Now().Unix())
 }
 
