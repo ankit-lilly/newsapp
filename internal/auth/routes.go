@@ -15,8 +15,10 @@ func Routes(a *echo.Group, DB *sql.DB) {
 	authHandler := handlers.New(authService)
 
 	a.GET("/login", authHandler.LoginHandler)
-	a.GET("/register", authHandler.RegisterHandler)
 	a.POST("/login", authHandler.LoginUser)
+
+	a.GET("/register", authHandler.RegisterHandler)
 	a.POST("/register", authHandler.RegisterUser)
+
 	a.DELETE("/logout", authHandler.LogoutUser)
 }

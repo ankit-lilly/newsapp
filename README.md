@@ -1,5 +1,5 @@
-A simple webapp using HTMX and Go that zips through RSS feeds, serving up fresh news without those annoying ads or pesky paywalls. 
-
+Playing around with HTMX and Templ by building a webapp that lets you read news by parsing RSS feed
+and scraping the articles.
 
 Needs Ollama for news summarization feature to work.
 
