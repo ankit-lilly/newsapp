@@ -116,7 +116,7 @@ func (a *ArticleParser) GetRawArticle(u string) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("failed to get HTML: %w", err)
 		}
-		return html, nil
+		return "<article class='prose mt-4'>" + html + "</article>", nil
 	}
 
 	doc.Find("div.articlebodycontent").Find("p").Not(".related-topics-list").FilterFunction(filterOutCommentShareWidget).Each(func(j int, el *goquery.Selection) {

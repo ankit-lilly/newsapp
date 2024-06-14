@@ -40,6 +40,7 @@ type ArticleHandler struct {
 func (a *ArticleHandler) View(c echo.Context, cmp templ.Component) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
 
+	fmt.Printf("cmp: %v\n", cmp)
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
@@ -57,6 +58,7 @@ func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
+	c.Response().Header().Set("Cache-Control", "private, max-age=1200, must-revalidate")
 	if htmxRequest {
 		return a.View(c, views.List(articles))
 	}
@@ -89,6 +91,7 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
 	if htmxRequest {
+		c.Response().Header().Set("Cache-Control", "private, max-age=1200, must-revalidate")
 		return a.View(c, views.List(articles))
 	}
 
@@ -171,6 +174,8 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 
 	htmxRequest := c.Get("htmxRequest").(bool)
 
+	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
+
 	if htmxRequest {
 		return a.View(c, views.Detail(tz, *article))
 	}
@@ -198,7 +203,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	// By default, GenerateRequest is streaming.
 	req := &api.GenerateRequest{
-		System: "Summarize the input provided concisely, ensuring all important details are included.",
+		System: "Summarize the input provided, ensuring all important details are included.",
 		Model:  "llama3",
 		Prompt: fmt.Sprintf("Summarize the following text: %s\n", article.Body),
 	}

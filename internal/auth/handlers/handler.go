@@ -87,7 +87,7 @@ func (a *AuthHandler) LoginUser(c echo.Context) error {
 	}
 
 	c.Response().Header().Set("Hx-Redirect", "/")
-	return c.Redirect(http.StatusSeeOther, "")
+	return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) RegisterUser(c echo.Context) error {
@@ -116,7 +116,7 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 	}
 
 	c.Response().Header().Set("Hx-Redirect", "/")
-	return c.Redirect(http.StatusSeeOther, "")
+	return c.Redirect(http.StatusSeeOther, "/")
 }
 
 func (a *AuthHandler) LogoutUser(c echo.Context) error {

@@ -32,20 +32,17 @@ templ Detail(tz string, article repository.Article) {
             mt-6 
             px-6 
             py-3 
-            bg-blue-600 
-            hover:bg-blue-700 
-            text-white 
-            font-bold 
-            rounded-lg 
-            shadow 
+            btn btn-outline btn-primary
             transition 
             duration-200 
             ease-in-out 
             transform 
             hover:-translate-y-1
           "
+				_="on click toggle @disabled until htmx:afterOnLoad"
 			>
 				Save to Favorites
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
 			</button>
 			<button
 				hx-get={ fmt.Sprintf("/articles/detail/%d/summarise", article.ID) }
@@ -57,18 +54,11 @@ templ Detail(tz string, article repository.Article) {
             mt-6 
             px-6 
             py-3 
-            bg-blue-600 
-            hover:bg-blue-700 
-            text-white 
-            font-bold 
-            rounded-lg 
-            shadow 
-            transition 
-            duration-200 
-            ease-in-out 
+            btn btn-outline btn-primary
             transform 
             hover:-translate-y-1
           "
+				_="on click toggle @disabled until htmx:afterOnLoad"
 			>Summarize</button>
 		</div>
 	</div>

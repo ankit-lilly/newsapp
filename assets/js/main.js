@@ -63,17 +63,17 @@ document.addEventListener("DOMContentLoaded", function () {
   function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
-    themeController.checked = theme === "dracula";
+    themeController.checked = theme === "coffee";
   }
   const savedTheme = localStorage.getItem("theme");
   if (savedTheme) {
     document.documentElement.setAttribute("data-theme", savedTheme);
-    themeController.checked = savedTheme === "dracula";
+    themeController.checked = savedTheme === "coffee";
   } else {
     const systemPrefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
-    const defaultTheme = systemPrefersDark ? "dracula" : "nord";
+    const defaultTheme = systemPrefersDark ? "coffee" : "nord";
     console.log(
       "No saved theme found, setting theme based on system preference:",
       defaultTheme
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   themeController.addEventListener("change", function () {
-    const theme = this.checked ? "dracula" : "nord";
+    const theme = this.checked ? "coffee" : "nord";
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme); // Save the theme in local storage
   });
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (e) => {
-      const newColorScheme = e.matches ? "dracula" : "nord";
+      const newColorScheme = e.matches ? "coffee" : "nord";
       console.log("System theme changed:", newColorScheme);
       setTheme(newColorScheme);
     });

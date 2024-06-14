@@ -34,3 +34,7 @@
 .htmx-request.htmx-indicator{
     display:flex;
 }
+
+img {
+    margin-bottom: 20px; 
+}
