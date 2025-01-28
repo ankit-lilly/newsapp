@@ -12,6 +12,7 @@ import (
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/ziflex/lecho/v3"
 )
 
 const (
@@ -28,6 +29,17 @@ func main() {
 	if port == "" {
 		port = "3500"
 	}
+
+	logger := lecho.New(
+		os.Stdout,
+		lecho.WithTimestamp(),
+		lecho.WithCaller(),
+	)
+	e.Logger = logger
+
+	e.Use(lecho.Middleware(lecho.Config{
+		Logger: logger,
+	}))
 
 	e.Use(middleware.Gzip())
 	e.Pre(middlewares.EarlyHints)

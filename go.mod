@@ -3,8 +3,8 @@ module github.com/ankibahuguna/newsapp
 go 1.23.2
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.0
-	github.com/a-h/templ v0.2.778
+	github.com/PuerkitoBio/goquery v1.10.1
+	github.com/a-h/templ v0.3.819
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.12.0
@@ -12,11 +12,13 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/mmcdole/gofeed v1.3.0
 	github.com/ollama/ollama v0.3.12
-	golang.org/x/crypto v0.28.0
+	github.com/rs/zerolog v1.29.0
+	github.com/ziflex/lecho/v3 v3.7.0
+	golang.org/x/crypto v0.31.0
 )
 
 require (
-	github.com/andybalholm/cascadia v1.3.2 // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -26,8 +28,8 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	golang.org/x/net v0.29.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 )

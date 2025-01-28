@@ -57,6 +57,14 @@ window.htmx.defineExtension("stream", {
   },
 });
 
+const themeController = document.querySelector("#themeswitch");
+
+themeController.addEventListener("change", function () {
+  const theme = this.checked ? "coffee" : "nord";
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme); // Save the theme in local storage
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   const themeController = document.querySelector("#themeswitch");
 
@@ -80,12 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     setTheme(defaultTheme);
   }
-
-  themeController.addEventListener("change", function () {
-    const theme = this.checked ? "coffee" : "nord";
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme); // Save the theme in local storage
-  });
 
   window
     .matchMedia("(prefers-color-scheme: dark)")

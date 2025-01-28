@@ -1,8 +1,6 @@
 package layout
 
-import (
-	"github.com/ankibahuguna/newsapp/pkg/views/navbar"
-)
+import "github.com/ankibahuguna/newsapp/pkg/views/navbar"
 
 templ Base(title string, isAuthorized bool, categories map[string]string) {
 	<!DOCTYPE html>
@@ -18,7 +16,9 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 			<link rel="shortcut icon" href="/img/templ.png" type="image/png"/>
 			<link rel="preconnect" href="https://fonts.googleapis.com"/>
 			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-			<link rel="preconnect" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet"/>
+			<link rel="preconnect" href="https://fonts.googleapis.com"/>
+			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+			<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inconsolata:wght@200..900&display=swap" rel="stylesheet"/>
 			<link rel="stylesheet" href="/assets/dist/css/style.css"/>
 			<title>RSS News Reader</title>
 			<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
@@ -26,13 +26,13 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 			<script src="/assets/js/main.js" defer></script>
 		</head>
 		<body
-			class="sample-transition nunito-sans-main-body"
+			class="sample-transition comic-neue-light"
 			hx-boost="true"
 			hx-indicator="#spinner"
 			hx-swap="outerHTML"
 		>
 			@navbar.NavBar(isAuthorized, categories)
-			<main class="pt-20" id="main-content">
+			<main class="pt-10" id="main-content">
 				<div
 					id="spinner"
 					class="fixed inset-0 max-h-screen w-full z-index-40 bg-black bg-opacity-60 flex items-center justify-center htmx-indicator w-full"

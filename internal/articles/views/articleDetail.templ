@@ -2,26 +2,26 @@ package views
 
 import (
 	"fmt"
-	"github.com/ankibahuguna/newsapp/pkg/views/layout"
 	"github.com/ankibahuguna/newsapp/internal/articles/repository"
 	"github.com/ankibahuguna/newsapp/internal/articles/services"
+	"github.com/ankibahuguna/newsapp/pkg/views/layout"
 )
 
 templ Detail(tz string, article repository.Article) {
 	<div class="container mx-auto px-4" id="article-detail">
-		<div class="mx-auto my-10 p-6">
+		<div class="mx-auto p-6">
 			<div class="flex justify-between items-center">
-				<button onClick="history.back()" hx-boost class="text-gray-400 hover:text-gray-300">
+				<button onClick="history.back()" hx-boost class="text-2xl hover:text-gray-300">
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
 					</svg>
 					Back
 				</button>
-				<p class="text-sm text-gray-400">
+				<p class="text-sm">
 					{ services.ConverDateTime(tz, article.CreatedAt) }
 				</p>
 			</div>
-			<h1 class="text-3xl font-bold mt-2 mb-2">{ article.Title }</h1>
+			<h1 class="text-2xl font-bold mt-2 mb-2">{ article.Title }</h1>
 			<div class="mt-4 prose" id="article-body">
 				@templ.Raw(article.Body)
 			</div>
@@ -34,7 +34,7 @@ templ Detail(tz string, article repository.Article) {
             py-3 
             btn btn-outline btn-primary
             transition 
-            duration-200 
+            duration-100 
             ease-in-out 
             transform 
             hover:-translate-y-1

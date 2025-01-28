@@ -203,8 +203,8 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	// By default, GenerateRequest is streaming.
 	req := &api.GenerateRequest{
-		System: "Summarize the input provided, ensuring all important details are included.",
-		Model:  "llama3",
+		System: "Summarize the input provided in the speaking style of bro-dude gym bro who went to Stanford, ensuring all important details are included. Don't include additional details.",
+		Model:  "gemma",
 		Prompt: fmt.Sprintf("Summarize the following text: %s\n", article.Body),
 	}
 
