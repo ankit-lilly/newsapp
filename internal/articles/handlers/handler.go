@@ -39,8 +39,6 @@ type ArticleHandler struct {
 
 func (a *ArticleHandler) View(c echo.Context, cmp templ.Component) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-
-	fmt.Printf("cmp: %v\n", cmp)
 	return cmp.Render(c.Request().Context(), c.Response().Writer)
 }
 
@@ -203,7 +201,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	// By default, GenerateRequest is streaming.
 	req := &api.GenerateRequest{
-		System: "Summarize the input provided in the speaking style of bro-dude gym bro who went to Stanford, ensuring all important details are included. Don't include additional details.",
+		System:"Summarize the input while maintaining the speaking style of a well-educated, Stanford-educated gym bro—confident, energetic, and to the point. Preserve all key details without adding extra information.",
 		Model:  "gemma",
 		Prompt: fmt.Sprintf("Summarize the following text: %s\n", article.Body),
 	}

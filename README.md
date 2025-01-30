@@ -1,5 +1,17 @@
-Playing around with HTMX and Templ by building a webapp that lets you read news by parsing RSS feed
-and scraping the articles.
+# What 
+
+A little webapp that I made to read news from 'thehindu.com' by parsing RSS feed and scraping the articles.
+
+This was made as a part of learning htmx and templ.
+
+
+## Dependencies
+
+Go, make, bunx, Ollama
+
+## Installation
+
+Uses tailwindcss for styling. I use bun ( bunx ) for tailwindcss. Feel free to change it in Makefile if you'd like to use npm or yarn.
 
 Needs Ollama for news summarization feature to work.
 
@@ -9,7 +21,13 @@ To install dependencies run:
     make install
 ```
 
-To run in development mode:
+To run the app:
+
+```shell
+     make run
+```
+
+It tries to connect to Ollama at `http://localhost:111434` by default. You can change it by setting `OLLAMA_HOST` environment variable.
 
 ```shell
     OLLAMA_HOST="http://localhost:111434' make run
@@ -28,7 +46,7 @@ To build the executable:
 ## TODO
 
 - Fix error handling with better error messages
-- Get rid of over-complicated ridiculous directory structure
+- Get rid of over-complicated directory structure
 
 
 
