@@ -38,6 +38,7 @@ templ renderNavItems(isAuthorized bool, categories map[string]string, mode strin
 					hx-target="#container"
 					hx-swap="innerHTML"
 					href={ templ.URL(fmt.Sprintf("/category/%s", val)) }
+					preload="mouseover"
 				>{ key }</a>
 			</h2>
 		</li>

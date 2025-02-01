@@ -19,6 +19,7 @@ templ List(articles []repository.Article) {
 									hx-swap="outerHTML"
 									hx-target="#main-el"
 									href={ templ.URL(fmt.Sprintf("/articles/detail/%d", article.ID)) }
+									preload="mouseover"
 								>
 									{ article.Title }
 								</a>

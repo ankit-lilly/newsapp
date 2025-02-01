@@ -23,6 +23,7 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 			<title>RSS News Reader</title>
 			<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
 			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+			<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
 			<script src="/assets/js/main.js" defer></script>
 		</head>
 		<body
@@ -30,6 +31,7 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 			hx-boost="true"
 			hx-indicator="#spinner"
 			hx-swap="outerHTML"
+			hx-ext="preload"
 		>
 			@navbar.NavBar(isAuthorized, categories)
 			<main class="pt-10" id="main-content">
