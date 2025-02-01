@@ -51,7 +51,6 @@ To build the executable:
 
 ## Known Issues
 
-- The theme switcher stops working after you navigate around. You have reload the page to make it work again. It maybe has to do with htmx and partial responses. I'll look into it later.
 - Sometimes there's a double navigation bar. I think it's because of the way I'm using htmx. TFL
 - The error pages need to be fixed as navigatging back makes navbar dissapear since they are just static html pages.
 
