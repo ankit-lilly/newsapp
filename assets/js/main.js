@@ -57,43 +57,71 @@ window.htmx.defineExtension("stream", {
   },
 });
 
-const themeController = document.querySelector("#themeswitch");
+class ThemeManager {
+  constructor() {
+    this.themes = {
+      LIGHT: "nord",
+      DARK: "dracula",
+    };
+    this.controllers = {
+      desktop: document.querySelector("#themeswitch"),
+      mobile: document.querySelector("#themeswitch-mobile"),
+    };
+    this.init();
+  }
 
-themeController.addEventListener("change", function () {
-  const theme = this.checked ? "coffee" : "nord";
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("theme", theme); // Save the theme in local storage
-});
+  init() {
+    this.setupEventListeners();
+    this.loadAndApplyTheme();
+    this.setupSystemThemeListener();
+  }
 
-document.addEventListener("DOMContentLoaded", function () {
-  const themeController = document.querySelector("#themeswitch");
+  setupEventListeners() {
+    Object.values(this.controllers).forEach((controller) => {
+      if (controller) {
+        controller.addEventListener("change", () => {
+          const theme = controller.checked
+            ? this.themes.DARK
+            : this.themes.LIGHT;
+          this.setTheme(theme);
+        });
+      }
+    });
+  }
 
-  function setTheme(theme) {
+  setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
-    themeController.checked = theme === "coffee";
-  }
-  const savedTheme = localStorage.getItem("theme");
-  if (savedTheme) {
-    document.documentElement.setAttribute("data-theme", savedTheme);
-    themeController.checked = savedTheme === "coffee";
-  } else {
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    const defaultTheme = systemPrefersDark ? "coffee" : "nord";
-    console.log(
-      "No saved theme found, setting theme based on system preference:",
-      defaultTheme
-    );
-    setTheme(defaultTheme);
+    Object.values(this.controllers).forEach((controller) => {
+      if (controller) {
+        controller.checked = theme === this.themes.DARK;
+      }
+    });
   }
 
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (e) => {
-      const newColorScheme = e.matches ? "coffee" : "nord";
-      console.log("System theme changed:", newColorScheme);
-      setTheme(newColorScheme);
-    });
-});
+  loadAndApplyTheme() {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      this.setTheme(savedTheme);
+    } else {
+      const systemPrefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      const defaultTheme = systemPrefersDark
+        ? this.themes.DARK
+        : this.themes.LIGHT;
+      this.setTheme(defaultTheme);
+    }
+  }
+
+  setupSystemThemeListener() {
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        const newTheme = e.matches ? this.themes.DARK : this.themes.LIGHT;
+        this.setTheme(newTheme);
+      });
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => new ThemeManager());

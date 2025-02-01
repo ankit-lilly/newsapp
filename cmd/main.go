@@ -42,7 +42,7 @@ func main() {
 	}))
 
 	e.Use(middleware.Gzip())
-	e.Pre(middlewares.EarlyHints)
+	//e.Pre(middlewares.EarlyHints)
 	e.Use(middlewares.CacheControl)
 	e.Use(echojwt.WithConfig(auth.JwtConfig))
 	e.Use(middlewares.IsHTMXRequest)
