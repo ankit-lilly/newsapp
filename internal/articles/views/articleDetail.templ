@@ -29,15 +29,15 @@ templ Detail(tz string, article repository.Article) {
 				hx-post="/favorites"
 				hx-vals={ fmt.Sprintf(`{"article_id": %d}`, article.ID) }
 				class="
-            mt-6 
-            px-6 
-            py-3 
-            btn btn-outline btn-primary
-            transition 
-            duration-100 
-            ease-in-out 
-            transform 
-            hover:-translate-y-1
+                mt-6 
+                px-6 
+                py-3 
+                btn btn-outline btn-primary
+                transition 
+                duration-100 
+                ease-in-out 
+                transform 
+                hover:-translate-y-1
           "
 				_="on click toggle @disabled until htmx:afterOnLoad"
 			>
@@ -50,14 +50,7 @@ templ Detail(tz string, article repository.Article) {
 				hx-target="#article-body"
 				hx-ext="stream"
 				hx-swap="beforeend"
-				class="
-            mt-6 
-            px-6 
-            py-3 
-            btn btn-outline btn-primary
-            transform 
-            hover:-translate-y-1
-          "
+				class="mt-6 px-6 py-3 btn btn-outline btn-primary transform hover:-translate-y-1"
 				_="on click toggle @disabled until htmx:afterOnLoad"
 			>Summarize</button>
 		</div>

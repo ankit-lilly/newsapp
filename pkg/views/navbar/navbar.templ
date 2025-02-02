@@ -12,7 +12,7 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path>
 					</svg>
 				</div>
-				<ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+				<ul tabindex="0" class="menu mobile-navbar menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
 					@renderNavItems(isAuthorized, categories, "mobile")
 				</ul>
 			</div>
@@ -21,19 +21,25 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 			</h1>
 		</div>
 		<div class="navbar-center hidden lg:flex">
-			<ul class="menu menu-horizontal px-1">
+			<ul class="menu desktop-navbar menu-horizontal px-1">
 				@renderNavItems(isAuthorized, categories, "desktop")
 			</ul>
 		</div>
 	</div>
 }
 
+func getStyle(currentPath, linkHref string) string {
+	if currentPath == linkHref {
+		return "font-bold mt-2 mb-2 active"
+	}
+	return "font-bold mt-2 mb-2"
+}
+
 // Helper to render the navigation links
 templ renderNavItems(isAuthorized bool, categories map[string]string, mode string) {
-	// Render category links
 	for key, val := range categories {
 		<li class="comic-neue-bold">
-			<h2 class="font-bold mt-2 mb-2">
+			<h2 class={ getStyle(ctx.Value("currentPath").(string), fmt.Sprintf("/category/%s", val)) }>
 				<a
 					hx-target="#container"
 					hx-swap="innerHTML"
@@ -53,12 +59,12 @@ templ renderNavItems(isAuthorized bool, categories map[string]string, mode strin
 	if !isAuthorized {
 		<li>
 			<h2 class="font-bold mt-2 mb-2">
-				<a hx-select="#main-content" href="/auth/login">Login</a>
+				<a href="/auth/login">Login</a>
 			</h2>
 		</li>
 		<li>
 			<h2 class="font-bold mt-2 mb-2">
-				<a hx-select="#main-content" href="/auth/register">Register</a>
+				<a href="/auth/register">Register</a>
 			</h2>
 		</li>
 	} else {
@@ -69,7 +75,7 @@ templ renderNavItems(isAuthorized bool, categories map[string]string, mode strin
 		</li>
 		<li>
 			<h2 class="font-bold mt-2 mb-2">
-				<a hx-select="#main-content" hx-delete="/auth/logout" href="#">Logout</a>
+				<a hx-delete="/auth/logout" href="#">Logout</a>
 			</h2>
 		</li>
 	}

@@ -34,6 +34,7 @@ func IsHTMXRequest(next echo.HandlerFunc) echo.HandlerFunc {
 		} else {
 			c.Set("htmxRequest", false)
 		}
+		c.Set("currentPath", c.Request().URL.Path)
 		return next(c)
 	}
 }

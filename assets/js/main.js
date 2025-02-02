@@ -60,7 +60,7 @@ window.htmx.defineExtension("stream", {
 class ThemeManager {
   constructor() {
     this.themes = {
-      LIGHT: "nord",
+      LIGHT: "lemonade",
       DARK: "dracula",
     };
     this.controllers = {
@@ -125,3 +125,24 @@ class ThemeManager {
 }
 
 document.addEventListener("DOMContentLoaded", () => new ThemeManager());
+
+
+
+// Listen for an htmx event that indicates content has been swapped and settled
+document.body.addEventListener("htmx:afterSettle", function () {
+  // Get the current path
+  const currentPath = window.location.pathname;
+
+  // Remove 'active' class from all nav links
+  document.querySelectorAll(".desktop-navbar h2.active").forEach((link) => {
+    link.classList.remove("active");
+  });
+
+  // Find the nav link that matches the current path
+  const activeLink = document.querySelector(
+    `.desktop-navbar a[href="${currentPath}"]`
+  );
+  if (activeLink) {
+    activeLink.parentNode.classList.add("active");
+  }
+});

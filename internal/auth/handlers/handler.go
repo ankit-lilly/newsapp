@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"strings"
 	"time"
@@ -32,15 +33,15 @@ type AuthHandler struct {
 
 func (a *AuthHandler) View(c echo.Context, cmp templ.Component) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-
-	return cmp.Render(c.Request().Context(), c.Response().Writer)
+	ctx := context.WithValue(context.Background(), "currentPath", c.Request().URL.Path)
+	return cmp.Render(ctx, c.Response().Writer)
 }
 
 func (a *AuthHandler) LoginHandler(c echo.Context) error {
 	isAuthorized := c.Get("isAuthorized").(bool)
 	if isAuthorized {
 		c.Response().Header().Set("Hx-Redirect", "/")
-		return c.Redirect(http.StatusSeeOther, "/")
+		return c.Redirect(http.StatusOK, "/")
 	}
 	si := views.ShowLogin("| Login", isAuthorized, shared.Categories, views.Login())
 	return a.View(c, si)
@@ -52,7 +53,7 @@ func (a *AuthHandler) RegisterHandler(c echo.Context) error {
 
 	if isAuthorized {
 		c.Response().Header().Set("Hx-Redirect", "/")
-		return c.Redirect(http.StatusSeeOther, "")
+		return c.Redirect(http.StatusOK, "")
 	}
 
 	si := views.ShowRegister("| Register", isAuthorized, shared.Categories, views.Register())
@@ -87,7 +88,7 @@ func (a *AuthHandler) LoginUser(c echo.Context) error {
 	}
 
 	c.Response().Header().Set("Hx-Redirect", "/")
-	return c.Redirect(http.StatusSeeOther, "/")
+	return c.Redirect(http.StatusOK, "/")
 }
 
 func (a *AuthHandler) RegisterUser(c echo.Context) error {
@@ -116,7 +117,7 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 	}
 
 	c.Response().Header().Set("Hx-Redirect", "/")
-	return c.Redirect(http.StatusSeeOther, "/")
+	return c.Redirect(http.StatusOK, "/")
 }
 
 func (a *AuthHandler) LogoutUser(c echo.Context) error {
@@ -125,7 +126,7 @@ func (a *AuthHandler) LogoutUser(c echo.Context) error {
 
 	if !isAuthorized {
 		c.Response().Header().Set("Hx-Redirect", "/auth/login")
-		return c.Redirect(http.StatusSeeOther, "/auth/login")
+		return c.Redirect(http.StatusOK, "/auth/login")
 	}
 
 	duration := -1 * time.Hour
@@ -136,5 +137,5 @@ func (a *AuthHandler) LogoutUser(c echo.Context) error {
 	}
 
 	c.Response().Header().Set("Hx-Redirect", "/")
-	return c.Redirect(http.StatusSeeOther, "/auth/login")
+	return c.Redirect(http.StatusOK, "/auth/login")
 }

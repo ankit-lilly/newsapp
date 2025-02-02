@@ -39,7 +39,8 @@ type ArticleHandler struct {
 
 func (a *ArticleHandler) View(c echo.Context, cmp templ.Component) error {
 	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTML)
-	return cmp.Render(c.Request().Context(), c.Response().Writer)
+	ctx := context.WithValue(context.Background(), "currentPath", c.Request().URL.Path)
+	return cmp.Render(ctx, c.Response().Writer)
 }
 
 func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
@@ -56,7 +57,6 @@ func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
-	c.Response().Header().Set("Cache-Control", "private, max-age=1200, must-revalidate")
 	if htmxRequest {
 		return a.View(c, views.List(articles))
 	}
@@ -89,7 +89,6 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
 	if htmxRequest {
-		c.Response().Header().Set("Cache-Control", "private, max-age=1200, must-revalidate")
 		return a.View(c, views.List(articles))
 	}
 
@@ -130,13 +129,14 @@ func (a *ArticleHandler) CreateFavArticle(c echo.Context) error {
 	var article_id int64
 	var err error
 
-	article_id, err = strconv.ParseInt(c.FormValue("article_id"), 10, 64)
-
 	isAuthorized := c.Get("isAuthorized").(bool)
 
 	if !isAuthorized {
-		return echo.NewHTTPError(echo.ErrUnauthorized.Code, "You are not autorized to peform this action")
+		c.Response().Header().Set("Hx-Redirect", "/auth/login")
+		return c.Redirect(http.StatusUnauthorized, "/auth/login")
 	}
+
+	article_id, err = strconv.ParseInt(c.FormValue("article_id"), 10, 64)
 
 	user := c.Get("user").(*jwt.Token)
 
