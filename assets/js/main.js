@@ -125,14 +125,16 @@ class ThemeManager {
 }
 
 document.addEventListener("DOMContentLoaded", () => new ThemeManager());
-
-
+document.addEventListener("htmx:afterSettle", () => new ThemeManager());
 
 // Listen for an htmx event that indicates content has been swapped and settled
 document.body.addEventListener("htmx:afterSettle", function () {
   // Get the current path
   const currentPath = window.location.pathname;
 
+  if (!currentPath.startsWith("/category")) {
+    return;
+  }
   // Remove 'active' class from all nav links
   document.querySelectorAll(".desktop-navbar h2.active").forEach((link) => {
     link.classList.remove("active");
