@@ -10,8 +10,8 @@ import (
 	"github.com/ankibahuguna/newsapp/internal/auth/respository"
 	"github.com/ankibahuguna/newsapp/internal/auth/views"
 	"github.com/ankibahuguna/newsapp/pkg/auth"
-	"github.com/ankibahuguna/newsapp/pkg/errors"
 	"github.com/ankibahuguna/newsapp/pkg/shared"
+	"github.com/ankibahuguna/newsapp/pkg/views/components"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
@@ -19,6 +19,7 @@ import (
 type AuthService interface {
 	CreateUser(user repository.User) (*repository.User, error)
 	LoginUser(email, pasword string) (*repository.User, error)
+	GetUserByEmail(email string) (*repository.User, error)
 }
 
 func New(a AuthService) *AuthHandler {
@@ -65,7 +66,8 @@ func (a *AuthHandler) LoginUser(c echo.Context) error {
 	email, password := c.FormValue("email"), c.FormValue("password")
 
 	if email == "" || password == "" {
-		return errors.NewApiError("email and passwords are required is required", http.StatusBadRequest)
+		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
+		return a.View(c, components.ErorrBlock("Email/Password is required."))
 	}
 
 	user, err := a.AuthService.LoginUser(email, password)
@@ -74,9 +76,12 @@ func (a *AuthHandler) LoginUser(c echo.Context) error {
 		msg := err.Error()
 
 		if strings.Contains(msg, "not found") || strings.Contains(msg, "Invalid password") {
-			return echo.NewHTTPError(echo.ErrUnauthorized.Code, "Invalid email/password combination")
+			c.Response().Header().Set("HX-Retarget", "#validation-error-block")
+			return a.View(c, components.ErorrBlock("Invalid email/password combination"))
 		}
-		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Something went wrong")
+
+		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
+		return a.View(c, components.ErorrBlock("Something went wrong"))
 	}
 
 	duration := 1 * time.Hour
@@ -96,16 +101,27 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 	name, email, password := c.FormValue("name"), c.FormValue("email"), c.FormValue("password")
 
 	if name == "" || email == "" || password == "" {
-		return errors.NewApiError("Item name is required", http.StatusBadRequest)
+
+		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
+		return a.View(c, components.ErorrBlock("Missing required fields"))
 	}
 
 	user := repository.User{Name: name, Email: email, Password: password}
 
+	userExists, err := a.AuthService.GetUserByEmail(email)
+
+	if userExists != nil {
+		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
+		return a.View(c, components.ErorrBlock("User with this email already exists"))
+	}
+
 	createdUser, err := a.AuthService.CreateUser(user)
 
 	if err != nil {
+
 		log.Error("Couldn't add user", err)
-		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
+		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
+		return a.View(c, components.ErorrBlock("Something went wrong. Please try again"))
 	}
 
 	duration := 1 * time.Hour
@@ -113,7 +129,10 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 
 	if tokenErr != nil {
 		log.Error("Couldn't set cookies", tokenErr)
-		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
+
+		log.Error("Couldn't add user", err)
+		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
+		return a.View(c, components.ErorrBlock("Something went wrong."))
 	}
 
 	c.Response().Header().Set("Hx-Redirect", "/")

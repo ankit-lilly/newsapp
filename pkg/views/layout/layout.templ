@@ -24,6 +24,7 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 			<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
 			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
 			<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
+                        <script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js"></script>
 			<script src="/assets/js/main.js" defer></script>
 		</head>
 		<body
@@ -34,7 +35,7 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 			hx-ext="preload"
 		>
 			@navbar.NavBar(isAuthorized, categories)
-			<main class="pt-8" id="main-content">
+			<main class="pt-8" id="main-content" hx-ext="remove-me">
 				<div
 					id="spinner"
 					class="fixed inset-0 max-h-screen w-full z-index-40 bg-black bg-opacity-60 flex items-center justify-center htmx-indicator w-full"
@@ -48,6 +49,7 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 					id="container"
 					hx-indicator="#spinner"
 				>
+                                <div id="info-block"></div>
 					{ children... }
 				</div>
 			</main>

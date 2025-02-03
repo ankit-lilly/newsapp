@@ -203,7 +203,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 	req := &api.GenerateRequest{
 		System: "Summarize the input while maintaining the speaking style of a well-educated, Stanford-educated gym bro—confident, energetic, and to the point. Preserve all key details without adding extra information.",
 		Model:  "gemma",
-		Prompt: fmt.Sprintf("Summarize the following text: %s\n", article.Body),
+		Prompt: fmt.Sprintf("Summarize the following text preserving all the key details: %s\n", article.Body),
 	}
 
 	ctx := context.Background()
