@@ -22,9 +22,9 @@ type ArticleService interface {
 	GetAllArticles() ([]repository.Article, error)
 	GetFeed(category string) ([]repository.Article, error)
 	GetOnionFeed() ([]repository.Article, error)
-	GetArticleDetail(id int) (*repository.Article, error)
+	GetArticleDetail(id int64) (*repository.Article, error)
 	GetFavoritesByUser(id int64) ([]repository.Article, error)
-	CreateFavoriteArticle(article_id, user_id int64) error
+	CreateFavoriteArticle(article_id, user_id int64) (*repository.Article, error)
 }
 
 func New(a ArticleService) *ArticleHandler {
@@ -88,7 +88,6 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
-	c.Response().Header().Set("Cache-Control", "private, max-age=10, stale-while-revalidate=10")
 	if htmxRequest {
 		return a.View(c, views.List(articles))
 	}
@@ -121,7 +120,7 @@ func (a *ArticleHandler) GetFavoriteArticles(c echo.Context) error {
 		return a.View(c, views.List(articles))
 	}
 
-	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
+	sl := views.ShowList("| Favorites", isAuthorized, shared.Categories, views.List(articles))
 	return a.View(c, sl)
 }
 
@@ -143,23 +142,58 @@ func (a *ArticleHandler) CreateFavArticle(c echo.Context) error {
 
 	claims := user.Claims.(*auth.JwtClaims)
 
-	err = a.ArticleService.CreateFavoriteArticle(article_id, claims.Id)
+	var article *repository.Article
+	article, err = a.ArticleService.CreateFavoriteArticle(article_id, claims.Id)
+
+	if isAuthorized {
+		user := c.Get("user").(*jwt.Token)
+
+		claims := user.Claims.(*auth.JwtClaims)
+
+		c.Logger().Infof("User: %d, Article: %d", claims.Id, article.User)
+
+		if article.User == claims.Id {
+			article.IsFavorite = true
+		} else {
+			article.IsFavorite = false
+		}
+	}
 
 	if err != nil {
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
 	}
 
-	return nil
+	c.Response().Header().Set("HX-Retarget", "#article-detail")
+	return a.View(c, views.Detail("", *article))
 
 }
 
 func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 
-	id, _ := strconv.Atoi(c.Param("id"))
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+
+	if err != nil {
+		c.Logger().Error(err.Error())
+		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
+	}
 
 	isAuthorized := c.Get("isAuthorized").(bool)
 
 	article, err := a.ArticleService.GetArticleDetail(id)
+
+	if isAuthorized {
+		user := c.Get("user").(*jwt.Token)
+
+		claims := user.Claims.(*auth.JwtClaims)
+
+		c.Logger().Infof("User: %d, Article: %d", claims.Id, article.User)
+
+		if article.User == claims.Id {
+			article.IsFavorite = true
+		} else {
+			article.IsFavorite = false
+		}
+	}
 
 	if err != nil {
 		c.Logger().Error(err.Error())
@@ -176,8 +210,6 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 
 	htmxRequest := c.Get("htmxRequest").(bool)
 
-	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
-
 	if htmxRequest {
 		return a.View(c, views.Detail(tz, *article))
 	}
@@ -188,7 +220,13 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 }
 
 func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
-	id, _ := strconv.Atoi(c.Param("id"))
+
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
+
+	if err != nil {
+		c.Logger().Error(err.Error())
+		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
+	}
 
 	article, err := a.ArticleService.GetArticleDetail(id)
 

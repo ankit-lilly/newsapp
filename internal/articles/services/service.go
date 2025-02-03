@@ -86,7 +86,7 @@ func (a *ArticleService) GetFeed(category string) ([]repository.Article, error) 
 	return articles, nil
 }
 
-func (a *ArticleService) GetArticleDetail(id int) (*repository.Article, error) {
+func (a *ArticleService) GetArticleDetail(id int64) (*repository.Article, error) {
 	art, err := a.ArticleRepository.GetArticleByID(id)
 
 	if err != nil {
@@ -115,12 +115,36 @@ func (a *ArticleService) GetFavoritesByUser(userid int64) ([]repository.Article,
 	return a.ArticleRepository.GetFavoritesByUser(userid)
 }
 
-func (a *ArticleService) CreateFavoriteArticle(article_id, user_id int64) error {
-	return a.ArticleRepository.CreateFavoriteArticle(article_id, user_id)
+func (a *ArticleService) CreateFavoriteArticle(article_id, user_id int64) (*repository.Article, error) {
+	isFavorite, err := a.ArticleRepository.IsFavoriteArticle(article_id, user_id)
+
+	if err != nil {
+
+		return nil, err
+	}
+
+	if isFavorite {
+		fmt.Println("Article already favorited, deleting it")
+		err := a.ArticleRepository.DeleteFavoriteArticle(article_id, user_id)
+
+		if err != nil {
+			return nil, err
+		}
+
+		return a.ArticleRepository.GetArticleByID(article_id)
+	}
+
+	fmt.Println("Creating favorite article")
+	err = a.ArticleRepository.CreateFavoriteArticle(article_id, user_id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return a.ArticleRepository.GetArticleByID(article_id)
 }
 
 func generateIDFromURL(url string) int {
-
 	extractID := func(pattern string) (int, error) {
 		re := regexp.MustCompile(pattern)
 		matches := re.FindStringSubmatch(url)

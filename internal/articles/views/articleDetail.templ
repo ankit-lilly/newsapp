@@ -7,6 +7,13 @@ import (
 	"github.com/ankibahuguna/newsapp/pkg/views/layout"
 )
 
+func getClass(article repository.Article) string {
+	if article.IsFavorite {
+		return "mt-6 px-6 py-3 btn btn-outline btn-primary transform hover:-translate-y-1 btn-active"
+	}
+	return " mt-6 px-6 py-3 btn btn-outline btn-primary transition duration-100 ease-in-out transform hover:-translate-y-1"
+}
+
 templ Detail(tz string, article repository.Article) {
 	<div class="container mx-auto px-4" id="article-detail">
 		<div class="mx-auto p-6">
@@ -28,17 +35,7 @@ templ Detail(tz string, article repository.Article) {
 			<button
 				hx-post="/favorites"
 				hx-vals={ fmt.Sprintf(`{"article_id": %d}`, article.ID) }
-				class="
-                mt-6 
-                px-6 
-                py-3 
-                btn btn-outline btn-primary
-                transition 
-                duration-100 
-                ease-in-out 
-                transform 
-                hover:-translate-y-1
-          "
+				class={ getClass(article) }
 				_="on click toggle @disabled until htmx:afterOnLoad"
 			>
 				Save to Favorites

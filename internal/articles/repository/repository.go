@@ -12,8 +12,10 @@ type Article struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	Link        string    `json:"link"`
+	User        int64     `json:"user"`
 	Body        string    `json:"body"`
 	CreatedAt   time.Time `json:"created_at,omitempty"`
+	IsFavorite  bool      `json:"is_favorite"`
 }
 
 type ArticleRepository struct {
@@ -27,8 +29,8 @@ func NewRepository(db *sql.DB) *ArticleRepository {
 func (a *ArticleRepository) GetAllArticles() ([]Article, error) {
 
 	query := `SELECT id, title, link, body, created_at FROM articles ORDER BY created_at DESC`
-
 	rows, err := a.DB.Query(query)
+
 	if err != nil {
 		return []Article{}, err
 	}
@@ -112,22 +114,44 @@ func (a *ArticleRepository) DeleteArticle(id int) error {
 	return nil
 }
 
-func (a *ArticleRepository) GetArticleByID(id int) (*Article, error) {
-	query := `SELECT id, title, description, link, body, created_at FROM articles WHERE id = $1`
+func (a *ArticleRepository) GetArticleByID(id int64) (*Article, error) {
+	query := `SELECT a.id, a.title, a.description, a.link, a.body, a.created_at, f.user_id FROM articles a LEFT JOIN favorites f ON a.id = f.article_id WHERE a.id = $1`
 	var article Article
-	err := a.DB.QueryRow(query, id).Scan(&article.ID, &article.Title, &article.Description, &article.Link, &article.Body, &article.CreatedAt)
+	var userID sql.NullInt64
+	err := a.DB.QueryRow(query, id).Scan(&article.ID, &article.Title, &article.Description, &article.Link, &article.Body, &article.CreatedAt, &userID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.NewNotFoundError("Article not found")
 		}
 		return nil, err
 	}
+
+	if userID.Valid {
+		article.User = userID.Int64
+	}
+
 	return &article, nil
 }
 
 func (a *ArticleRepository) UpdateArticleByID(article Article) error {
 	query := `UPDATE articles SET title = $1, description = $2, link = $3, body = $4 WHERE id = $5`
 	_, err := a.DB.Exec(query, article.Title, article.Description, article.Link, article.Body, article.ID)
+	return err
+}
+
+func (a *ArticleRepository) IsFavoriteArticle(article_id, user_id int64) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM favorites WHERE article_id = $1 AND user_id = $2)`
+	var isFavorite bool
+	err := a.DB.QueryRow(query, article_id, user_id).Scan(&isFavorite)
+	if err != nil {
+		return false, err
+	}
+	return isFavorite, nil
+}
+
+func (a *ArticleRepository) DeleteFavoriteArticle(article_id, user_id int64) error {
+	query := `DELETE FROM favorites WHERE article_id = $1 AND user_id = $2`
+	_, err := a.DB.Exec(query, article_id, user_id)
 	return err
 }
 
@@ -140,14 +164,13 @@ func (a *ArticleRepository) GetFavoritesByUser(user int64) ([]Article, error) {
 	if err != nil {
 		return []Article{}, err
 	}
+
 	defer rows.Close()
 
 	articles := []Article{}
 
 	for rows.Next() {
-
 		article := Article{}
-
 		rows.Scan(
 			&article.ID,
 			&article.Title,
@@ -156,7 +179,6 @@ func (a *ArticleRepository) GetFavoritesByUser(user int64) ([]Article, error) {
 			&article.Body,
 			&article.CreatedAt,
 		)
-
 		articles = append(articles, article)
 	}
 
