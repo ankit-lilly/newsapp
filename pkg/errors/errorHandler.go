@@ -24,6 +24,7 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 	} else if IsNotFoundError(err) {
 		code = http.StatusNotFound
 		message = err.Error()
+		c.Redirect(http.StatusFound, "/404")
 	} else {
 		c.Logger().Error(err)
 	}

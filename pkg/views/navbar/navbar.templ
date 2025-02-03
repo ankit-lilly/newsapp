@@ -1,6 +1,9 @@
 package navbar
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 // Main Navbar Template
 templ NavBar(isAuthorized bool, categories map[string]string) {
@@ -35,17 +38,27 @@ func getStyle(currentPath, linkHref string) string {
 	return "font-bold mt-2 mb-2"
 }
 
+// Map is unordered and will cause navbar item ordering to change on each reload so we sort it
+func sortCategories(categories map[string]string) []string {
+	keys := make([]string, 0, len(categories))
+	for k := range categories {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
+
 // Helper to render the navigation links
 templ renderNavItems(isAuthorized bool, categories map[string]string, mode string) {
-	for key, val := range categories {
+	for _, val := range sortCategories(categories) {
 		<li class="comic-neue-bold">
 			<h2 class={ getStyle(ctx.Value("currentPath").(string), fmt.Sprintf("/category/%s", val)) }>
 				<a
 					hx-target="#container"
 					hx-swap="innerHTML"
-					href={ templ.URL(fmt.Sprintf("/category/%s", val)) }
+					href={ templ.URL(fmt.Sprintf("/category/%s", categories[val])) }
 					preload="mouseover"
-				>{ key }</a>
+				>{ val }</a>
 			</h2>
 		</li>
 	}

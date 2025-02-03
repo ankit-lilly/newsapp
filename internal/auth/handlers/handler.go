@@ -67,7 +67,7 @@ func (a *AuthHandler) LoginUser(c echo.Context) error {
 
 	if email == "" || password == "" {
 		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
-		return a.View(c, components.ErorrBlock("Email/Password is required."))
+		return a.View(c, components.ErrorBlock("Email/Password is required."))
 	}
 
 	user, err := a.AuthService.LoginUser(email, password)
@@ -77,11 +77,11 @@ func (a *AuthHandler) LoginUser(c echo.Context) error {
 
 		if strings.Contains(msg, "not found") || strings.Contains(msg, "Invalid password") {
 			c.Response().Header().Set("HX-Retarget", "#validation-error-block")
-			return a.View(c, components.ErorrBlock("Invalid email/password combination"))
+			return a.View(c, components.ErrorBlock("Invalid email/password combination"))
 		}
 
 		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
-		return a.View(c, components.ErorrBlock("Something went wrong"))
+		return a.View(c, components.ErrorBlock("Something went wrong"))
 	}
 
 	duration := 1 * time.Hour
@@ -103,7 +103,7 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 	if name == "" || email == "" || password == "" {
 
 		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
-		return a.View(c, components.ErorrBlock("Missing required fields"))
+		return a.View(c, components.ErrorBlock("Missing required fields"))
 	}
 
 	user := repository.User{Name: name, Email: email, Password: password}
@@ -112,16 +112,15 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 
 	if userExists != nil {
 		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
-		return a.View(c, components.ErorrBlock("User with this email already exists"))
+		return a.View(c, components.ErrorBlock("User with this email already exists"))
 	}
 
 	createdUser, err := a.AuthService.CreateUser(user)
 
 	if err != nil {
-
 		log.Error("Couldn't add user", err)
 		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
-		return a.View(c, components.ErorrBlock("Something went wrong. Please try again"))
+		return a.View(c, components.ErrorBlock("Something went wrong. Please try again"))
 	}
 
 	duration := 1 * time.Hour
@@ -129,10 +128,8 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 
 	if tokenErr != nil {
 		log.Error("Couldn't set cookies", tokenErr)
-
-		log.Error("Couldn't add user", err)
 		c.Response().Header().Set("HX-Retarget", "#validation-error-block")
-		return a.View(c, components.ErorrBlock("Something went wrong."))
+		return a.View(c, components.ErrorBlock("Something went wrong."))
 	}
 
 	c.Response().Header().Set("Hx-Redirect", "/")

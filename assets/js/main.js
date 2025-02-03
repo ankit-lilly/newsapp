@@ -125,22 +125,20 @@ class ThemeManager {
 }
 
 document.addEventListener("DOMContentLoaded", () => new ThemeManager());
+//Sometimes the theme switcher stops working after navigating around so this is a fix for that
+//TODO: Figure out if it registers duplicate listeners and can cause memory leaks
 document.addEventListener("htmx:afterSettle", () => new ThemeManager());
 
-// Listen for an htmx event that indicates content has been swapped and settled
 document.body.addEventListener("htmx:afterSettle", function () {
-  // Get the current path
   const currentPath = window.location.pathname;
 
   if (!currentPath.startsWith("/category")) {
     return;
   }
-  // Remove 'active' class from all nav links
   document.querySelectorAll(".desktop-navbar h2.active").forEach((link) => {
     link.classList.remove("active");
   });
 
-  // Find the nav link that matches the current path
   const activeLink = document.querySelector(
     `.desktop-navbar a[href="${currentPath}"]`
   );

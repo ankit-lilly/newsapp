@@ -17,7 +17,6 @@ func NewAuthService(authRepo *repository.AuthRepository) *AuthService {
 	}
 }
 
-
 func (a *AuthService) GetUserByEmail(email string) (*repository.User, error) {
 	user, err := a.AuthRepository.GetUserByEmail(email)
 	if err != nil {
@@ -25,7 +24,6 @@ func (a *AuthService) GetUserByEmail(email string) (*repository.User, error) {
 	}
 	return user, nil
 }
-
 
 func (a *AuthService) CreateUser(u repository.User) (*repository.User, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 8)

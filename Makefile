@@ -1,7 +1,5 @@
 APP_NAME = newsapp
-
 BUILD_FLAGS = -ldflags="-s -w"
-
 AIR_INSTALL_CMD = go install github.com/air-verse/air@latest
 
 .PHONY: install

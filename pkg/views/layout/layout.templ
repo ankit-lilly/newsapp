@@ -2,31 +2,47 @@ package layout
 
 import "github.com/ankibahuguna/newsapp/pkg/views/navbar"
 
+templ Head() {
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta
+			name="description"
+			content="RSS News Reader"
+		/>
+		<meta name="google" content="notranslate"/>
+		<link rel="preconnect" href="https://fonts.googleapis.com"/>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+		<link rel="preconnect" href="https://fonts.googleapis.com"/>
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+		<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inconsolata:wght@200..900&display=swap" rel="stylesheet"/>
+		<link rel="stylesheet" href="/assets/dist/css/style.css"/>
+		<title>RSS News Reader</title>
+		<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+		<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
+		<script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js"></script>
+		<script type="text/javascript" src="https://unpkg.com/default-passive-events"></script>
+		<script src="/assets/js/main.js" defer></script>
+	</head>
+}
+
+templ Spinner() {
+	<div
+		id="spinner"
+		class="fixed inset-0 max-h-screen w-full z-index-40 bg-black bg-opacity-60 flex items-center justify-center htmx-indicator w-full"
+	>
+		<span class="loading loading-spinner loading-xs text-secondary"></span>
+		<span class="loading loading-spinner loading-sm text-secondary"></span>
+		<span class="loading loading-spinner loading-md text-secondary"></span>
+		<span class="loading loading-spinner loading-lg text-secondary"></span>
+	</div>
+}
+
 templ Base(title string, isAuthorized bool, categories map[string]string) {
 	<!DOCTYPE html>
 	<html lang="en" data-theme="dracula">
-		<head>
-			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<meta
-				name="description"
-				content="RSS News Reader"
-			/>
-			<meta name="google" content="notranslate"/>
-			<link rel="shortcut icon" href="/img/templ.png" type="image/png"/>
-			<link rel="preconnect" href="https://fonts.googleapis.com"/>
-			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-			<link rel="preconnect" href="https://fonts.googleapis.com"/>
-			<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-			<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inconsolata:wght@200..900&display=swap" rel="stylesheet"/>
-			<link rel="stylesheet" href="/assets/dist/css/style.css"/>
-			<title>RSS News Reader</title>
-			<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
-			<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-			<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
-                        <script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js"></script>
-			<script src="/assets/js/main.js" defer></script>
-		</head>
+		@Head()
 		<body
 			class="sample-transition comic-neue-regular dark:text-primary"
 			hx-boost="true"
@@ -36,20 +52,12 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 		>
 			@navbar.NavBar(isAuthorized, categories)
 			<main class="pt-8" id="main-content" hx-ext="remove-me">
-				<div
-					id="spinner"
-					class="fixed inset-0 max-h-screen w-full z-index-40 bg-black bg-opacity-60 flex items-center justify-center htmx-indicator w-full"
-				>
-					<span class="loading loading-spinner loading-xs text-secondary"></span>
-					<span class="loading loading-spinner loading-sm text-secondary"></span>
-					<span class="loading loading-spinner loading-md text-secondary"></span>
-					<span class="loading loading-spinner loading-lg text-secondary"></span>
-				</div>
+				@Spinner()
 				<div
 					id="container"
 					hx-indicator="#spinner"
 				>
-                                <div id="info-block"></div>
+					<div id="info-block"></div>
 					{ children... }
 				</div>
 			</main>

@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,6 +11,7 @@ import (
 	"github.com/ankibahuguna/newsapp/internal/articles/repository"
 	"github.com/ankibahuguna/newsapp/internal/articles/views"
 	"github.com/ankibahuguna/newsapp/pkg/auth"
+	"github.com/ankibahuguna/newsapp/pkg/errors"
 	shared "github.com/ankibahuguna/newsapp/pkg/shared"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -51,7 +51,7 @@ func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
 	articles, err := a.ArticleService.GetOnionFeed()
 
 	if err != nil {
-		slog.Error(err.Error())
+		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
@@ -82,12 +82,13 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 	articles, err := a.ArticleService.GetFeed(category)
 
 	if err != nil {
-		slog.Error(err.Error())
+		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
+	c.Response().Header().Set("Cache-Control", "private, max-age=10, stale-while-revalidate=10")
 	if htmxRequest {
 		return a.View(c, views.List(articles))
 	}
@@ -110,7 +111,7 @@ func (a *ArticleHandler) GetFavoriteArticles(c echo.Context) error {
 	articles, err := a.ArticleService.GetFavoritesByUser(claims.Id)
 
 	if err != nil {
-		slog.Error(err.Error())
+		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
@@ -161,7 +162,10 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 	article, err := a.ArticleService.GetArticleDetail(id)
 
 	if err != nil {
-		slog.Error(err.Error())
+		c.Logger().Error(err.Error())
+		if errors.IsNotFoundError(err) {
+			return c.Redirect(http.StatusMovedPermanently, "/404")
+		}
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
@@ -189,21 +193,21 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 	article, err := a.ArticleService.GetArticleDetail(id)
 
 	if err != nil {
-		slog.Error(err.Error())
+		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
 	client, err := api.ClientFromEnvironment()
 	if err != nil {
-		fmt.Println(err)
+		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
 	}
 
 	// By default, GenerateRequest is streaming.
 	req := &api.GenerateRequest{
 		System: "Summarize the input while maintaining the speaking style of a well-educated, Stanford-educated gym bro—confident, energetic, and to the point. Preserve all key details without adding extra information.",
-		Model:  "gemma",
-		Prompt: fmt.Sprintf("Summarize the following text preserving all the key details: %s\n", article.Body),
+		Model:  "llama3.2",
+		Prompt: fmt.Sprintf("Summarize the following text: %s\n", article.Body),
 	}
 
 	ctx := context.Background()
@@ -218,7 +222,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 		}
 
 		if _, err := fmt.Fprintf(c.Response(), resp.Response); err != nil {
-			fmt.Println(err)
+			c.Logger().Error(err.Error())
 			return err
 		}
 		w.Flush()
@@ -227,7 +231,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	err = client.Generate(ctx, req, respFunc)
 	if err != nil {
-		fmt.Println(err)
+		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
 	}
 	return nil

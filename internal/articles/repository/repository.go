@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/ankibahuguna/newsapp/pkg/errors"
@@ -118,7 +117,6 @@ func (a *ArticleRepository) GetArticleByID(id int) (*Article, error) {
 	var article Article
 	err := a.DB.QueryRow(query, id).Scan(&article.ID, &article.Title, &article.Description, &article.Link, &article.Body, &article.CreatedAt)
 	if err != nil {
-		fmt.Println(err)
 		if err == sql.ErrNoRows {
 			return nil, errors.NewNotFoundError("Article not found")
 		}

@@ -99,8 +99,6 @@ func (a *ArticleParser) GetRawArticle(u string) (string, error) {
 
 	var body strings.Builder
 	if strings.Contains(u, "onion") {
-		fmt.Println("Onion", u)
-
 		doc.Find("*").Each(func(i int, s *goquery.Selection) {
 			if _, exists := s.Attr("style"); exists {
 				s.RemoveAttr("style")
