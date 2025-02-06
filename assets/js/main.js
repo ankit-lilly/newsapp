@@ -148,7 +148,9 @@ document.body.addEventListener("htmx:wsAfterMessage", function (event) {
     behavior: "smooth",
   });
   const el = document.getElementById("chatloader");
+
   if (
+    el &&
     event.detail.message.includes("assistant") &&
     !event.detail.message.includes("chatloader")
   ) {
