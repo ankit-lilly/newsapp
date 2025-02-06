@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ankibahuguna/newsapp/internal/articles/repository"
 	"github.com/ankibahuguna/newsapp/internal/articles/services"
+	"github.com/ankibahuguna/newsapp/internal/articles/views/components"
 	"github.com/ankibahuguna/newsapp/pkg/views/layout"
 )
 
@@ -16,19 +17,23 @@ func getClass(article repository.Article) string {
 
 templ Detail(tz string, article repository.Article) {
 	<div class="container mx-auto px-4" id="article-detail">
+		<button onClick="history.back()" hx-boost class=" hover:text-gray-300">
+			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6 text-primary">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
+			</svg>
+			Back
+		</button>
 		<div class="mx-auto p-6">
-			<div class="flex justify-between items-center">
-				<button onClick="history.back()" hx-boost class=" hover:text-gray-300">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M11 17l-5-5m0 0l5-5m-5 5h12"></path>
-					</svg>
-					Back
-				</button>
+			<div class="flex justify-between items-center gap-4">
+				<div class="flex justify-evenly items-center gap-4">
+					<h1 class=" font-bold mt-2 mb-2">{ article.Title }</h1>
+					@components.Summary(article.ID)
+					@components.Chat(article.ID)
+				</div>
 				<p class="text-sm">
 					{ services.ConverDateTime(tz, article.CreatedAt) }
 				</p>
 			</div>
-			<h1 class=" font-bold mt-2 mb-2">{ article.Title }</h1>
 			<div class="mt-4 prose" id="article-body">
 				@templ.Raw(article.Body)
 			</div>
@@ -41,15 +46,6 @@ templ Detail(tz string, article repository.Article) {
 				Save to Favorites
 				<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
 			</button>
-			<button
-				hx-get={ fmt.Sprintf("/articles/detail/%d/summarise", article.ID) }
-				hx-trigger="click"
-				hx-target="#article-body"
-				hx-ext="stream"
-				hx-swap="beforeend"
-				class="mt-6 px-6 py-3 btn btn-outline btn-primary transform hover:-translate-y-1"
-				_="on click toggle @disabled until htmx:afterOnLoad"
-			>Summarize</button>
 		</div>
 	</div>
 }

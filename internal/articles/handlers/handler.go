@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 	shared "github.com/ankibahuguna/newsapp/pkg/shared"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
+	"github.com/olahol/melody"
 	"github.com/ollama/ollama/api"
 )
 
@@ -27,14 +29,27 @@ type ArticleService interface {
 	CreateFavoriteArticle(article_id, user_id int64) (*repository.Article, error)
 }
 
-func New(a ArticleService) *ArticleHandler {
+func New(a ArticleService, m *melody.Melody, ollamaClient *api.Client) *ArticleHandler {
 	return &ArticleHandler{
 		ArticleService: a,
+		m:              m,
+		ollama:         ollamaClient,
 	}
 }
 
 type ArticleHandler struct {
 	ArticleService ArticleService
+	m              *melody.Melody
+	ollama         *api.Client
+}
+
+func (a *ArticleHandler) WebSocketResponse(ctx context.Context, cmp templ.Component, session *melody.Session) error {
+	buffer := bytes.Buffer{}
+	cmp.Render(ctx, &buffer)
+	a.m.BroadcastFilter(buffer.Bytes(), func(q *melody.Session) bool {
+		return q.Request.URL.Path == session.Request.URL.Path && q.Request.Header.Get("Sec-WebSocket-Key") == session.Request.Header.Get("Sec-WebSocket-Key")
+	})
+	return nil
 }
 
 func (a *ArticleHandler) View(c echo.Context, cmp templ.Component) error {
@@ -235,12 +250,6 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
-	client, err := api.ClientFromEnvironment()
-	if err != nil {
-		c.Logger().Error(err.Error())
-		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
-	}
-
 	// By default, GenerateRequest is streaming.
 	req := &api.GenerateRequest{
 		System: "Summarize the input while maintaining the speaking style of a well-educated, Stanford-educated gym bro—confident, energetic, and to the point. Preserve all key details without adding extra information.",
@@ -267,7 +276,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 		return nil
 	}
 
-	err = client.Generate(ctx, req, respFunc)
+	err = a.ollama.Generate(ctx, req, respFunc)
 	if err != nil {
 		c.Logger().Error(err.Error())
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")

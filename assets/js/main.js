@@ -13,18 +13,20 @@ window.htmx.defineExtension("stream", {
       var lastLength = 0;
       xhr.addEventListener("readystatechange", function () {
         if (xhr.readyState === 2 || xhr.readyState === 3) {
+          //Add sibling elements to the target element
           var newText = xhr.responseText.substring(lastLength);
           element["__streamedChars"] = lastLength;
           lastLength = xhr.responseText.length;
           element.innerHTML += newText;
-          var indicator = document.querySelector(".htmx-indicator");
+          element.scrollIntoView();
+          var indicator = document.querySelector(".summary-stream-indicator");
           if (indicator) {
             indicator.style.display = "none";
           }
         }
 
         if (xhr.readyState === 4) {
-          var indicator = document.querySelector(".htmx-indicator");
+          var indicator = document.querySelector(".summary-stream-indicator");
           if (indicator) {
             indicator.style.display = indicator.getAttribute(
               "data-initial-display"
@@ -33,7 +35,7 @@ window.htmx.defineExtension("stream", {
         }
       });
 
-      var indicator = document.querySelector(".htmx-indicator");
+      var indicator = document.querySelector(".summary-stream-indicator");
       if (indicator) {
         indicator.setAttribute("data-initial-display", indicator.style.display);
         indicator.style.display = "flex";
@@ -128,6 +130,38 @@ document.addEventListener("DOMContentLoaded", () => new ThemeManager());
 //Sometimes the theme switcher stops working after navigating around so this is a fix for that
 //TODO: Figure out if it registers duplicate listeners and can cause memory leaks
 document.addEventListener("htmx:afterSettle", () => new ThemeManager());
+
+/*
+ * This is a hack to remove the loading indicator when the assistant replies.
+ */
+document.body.addEventListener("htmx:wsAfterMessage", function (event) {
+  const messageContent = document.getElementById("notifications");
+  const input = document.getElementById("chat_message_input");
+  input.scrollIntoView({
+    behavior: "smooth",
+    block: "end",
+    inline: "nearest",
+  });
+
+  window.scrollTo({
+    top: messageContent.scrollHeight,
+    behavior: "smooth",
+  });
+  const el = document.getElementById("chatloader");
+  if (
+    event.detail.message.includes("assistant") &&
+    !event.detail.message.includes("chatloader")
+  ) {
+    const parentNode = el.parentNode;
+
+    console.info(`Removing loading indicator`);
+
+    //we need sibiling of parent to remove the header as oob-swap removes the wrapper div
+    const siblingOfParent = parentNode.previousSibling;
+    parentNode.remove();
+    siblingOfParent.remove();
+  }
+});
 
 document.body.addEventListener("htmx:afterSettle", function () {
   const currentPath = window.location.pathname;
