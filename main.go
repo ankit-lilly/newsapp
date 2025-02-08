@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-//go:embed assets
+//go:embed assets/dist
 var staticFiles embed.FS
 
 const (

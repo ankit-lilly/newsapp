@@ -13,6 +13,7 @@ install:
 run:
 	@echo "Running ${APP_NAME} in development mode"
 	@templ generate
+	@esbuild --minify assets/js/main.js --outfile=assets/dist/js/main.js
 	@bunx concurrently -k "bunx tailwindcss -i assets/css/style.css -o assets/dist/css/style.css --minify --watch" "air -c .air.toml"
 
 .PHONY: fmt
@@ -26,6 +27,7 @@ build:
 	@echo "Building $(APP_NAME)..."
 	@templ generate
 	@bunx tailwindcss -i assets/css/style.css -o assets/dist/css/style.css --minify
+	@esbuild --minify assets/js/main.js --outfile=assets/dist/js/main.js
 	@go build $(BUILD_FLAGS) -o $(APP_NAME) main.go
 
 .PHONY: clean

@@ -49,6 +49,7 @@ window.htmx.defineExtension("stream", {
 
         // Process and append new content
         const newContent = detail.xhr.responseText.slice(lastLength);
+
         element["__streamedChars"] = lastLength;
         lastLength = detail.xhr.responseText.length;
 
@@ -64,17 +65,11 @@ window.htmx.defineExtension("stream", {
       if (detail.xhr.readyState === 4) {
         element["__streamedChars"] = 0;
         isAutoScrolling = true; // Reset auto-scroll for next time
+        element.__streamed = true;
       }
     });
 
     return true;
-  },
-
-  transformResponse(text, _xhr, element) {
-    const target = element["__target"] || element;
-    const lastLength = target["__streamedChars"] || 0;
-
-    return lastLength ? text.slice(lastLength) : text;
   },
 });
 

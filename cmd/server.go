@@ -29,6 +29,7 @@ func NewServer(staticFiles embed.FS) *Server {
 		lecho.WithCaller(),
 	)
 
+	e.HideBanner = true
 	e.Logger = logger
 	e.Use(lecho.Middleware(lecho.Config{Logger: logger}))
 	e.Use(middleware.Gzip())

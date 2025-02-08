@@ -74,7 +74,7 @@ func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
-	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
+	c.Response().Header().Set("Cache-Control", "private, max-age=30, stale-while-revalidate=30")
 
 	if htmxRequest {
 		c.Response().Header().Set("Vary", "HX-Request")
@@ -109,7 +109,7 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
-	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
+	c.Response().Header().Set("Cache-Control", "private, max-age=30, stale-while-revalidate=30")
 
 	if htmxRequest {
 		c.Response().Header().Set("Vary", "HX-Request")
@@ -241,7 +241,7 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 
 	htmxRequest := c.Get("htmxRequest").(bool)
 
-	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
+	c.Response().Header().Set("Cache-Control", "private, max-age=30, stale-while-revalidate=30")
 
 	if htmxRequest {
 		c.Response().Header().Set("Vary", "HX-Request")
@@ -272,7 +272,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	systemPrompt := "Summarize the input in a clear, simple, and conversational manner while preserving all important details, including minor ones. Ensure completeness and accuracy without adding extra information or omitting any key points"
+	systemPrompt := "Summarize the input in a clear, simple, and conversational manner while preserving all important details, including minor ones. Ensure completeness and accuracy without adding extra information or omitting any key points."
 	promptText := fmt.Sprintf("Summarize the following text: %s\n", article.Body)
 
 	llmHandler := llm.New(a.ollama, "llama3.2")
