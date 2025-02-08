@@ -15,7 +15,7 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path>
 					</svg>
 				</div>
-				<ul tabindex="0" class="menu mobile-navbar menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+				<ul tabindex="0" class="menu mobile-navbar menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52" htmx-indicator="#spinner">
 					@renderNavItems(isAuthorized, categories, "mobile")
 				</ul>
 			</div>
@@ -24,7 +24,7 @@ templ NavBar(isAuthorized bool, categories map[string]string) {
 			</h1>
 		</div>
 		<div class="navbar-center hidden lg:flex">
-			<ul class="menu desktop-navbar menu-horizontal px-1">
+			<ul class="menu desktop-navbar menu-horizontal px-1" hx-indicator="#spinner">
 				@renderNavItems(isAuthorized, categories, "desktop")
 			</ul>
 		</div>

@@ -1,12 +1,13 @@
-package main
+package cmd
 
 import (
-	"log"
+	"context"
+	"embed"
+	"net/http"
 	"os"
 
 	"github.com/ankibahuguna/newsapp/internal"
 	"github.com/ankibahuguna/newsapp/pkg/auth"
-	"github.com/ankibahuguna/newsapp/pkg/db"
 	"github.com/ankibahuguna/newsapp/pkg/errors"
 	"github.com/ankibahuguna/newsapp/pkg/middlewares"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -15,47 +16,40 @@ import (
 	"github.com/ziflex/lecho/v3"
 )
 
-const (
-	SECRET_KEY string = "secret"
-	DB_NAME    string = "app_data.db"
-)
+type Server struct {
+	echo   *echo.Echo
+	logger *lecho.Logger
+}
 
-func main() {
-
+func NewServer(staticFiles embed.FS) *Server {
 	e := echo.New()
-
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "3500"
-	}
-
 	logger := lecho.New(
 		os.Stdout,
 		lecho.WithTimestamp(),
 		lecho.WithCaller(),
 	)
+
 	e.Logger = logger
-
-	e.Use(lecho.Middleware(lecho.Config{
-		Logger: logger,
-	}))
-
+	e.Use(lecho.Middleware(lecho.Config{Logger: logger}))
 	e.Use(middleware.Gzip())
-	//e.Pre(middlewares.EarlyHints)
 	e.Use(middlewares.CacheControl)
 	e.Use(echojwt.WithConfig(auth.JwtConfig))
 	e.Use(middlewares.IsHTMXRequest)
-
 	e.HTTPErrorHandler = errors.CustomHTTPErrorHandler
-	e.Static("/assets", "assets")
 
-	err := db.Init(DB_NAME)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	e.GET("/assets/*", echo.WrapHandler(http.FileServer(http.FS(staticFiles))))
 	internal.SetUpModules(e)
-	e.Logger.Fatal(e.Start(":" + port))
+
+	return &Server{
+		echo:   e,
+		logger: logger,
+	}
+}
+
+func (s *Server) Start(port string) error {
+	return s.echo.Start(":" + port)
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.echo.Shutdown(ctx)
 }

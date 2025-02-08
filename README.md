@@ -1,4 +1,6 @@
-# What 
+# What
+
+## HTMX, Tailwind, Go and Ollama demo
 
 A little webapp that I made to read news from 'thehindu.com' by parsing RSS feed and scraping the articles.
 
@@ -45,13 +47,4 @@ To build the executable:
 
 ## TODO
 
-- Fix error handling with better error messages
-- Get rid of over-complicated directory structure
-
-
-## Known Issues
-
-- Sometimes there's a double navigation bar. I think it's because of the way I'm using htmx. TFL
-- The error pages need to be fixed as navigatging back makes navbar dissapear since they are just static html pages.
-
-
+- Get rid of over-complicated directory structure and redo the project structure.

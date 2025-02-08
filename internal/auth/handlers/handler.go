@@ -12,6 +12,7 @@ import (
 	"github.com/ankibahuguna/newsapp/pkg/auth"
 	"github.com/ankibahuguna/newsapp/pkg/shared"
 	"github.com/ankibahuguna/newsapp/pkg/views/components"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 )
@@ -92,7 +93,7 @@ func (a *AuthHandler) LoginUser(c echo.Context) error {
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
-	c.Response().Header().Set("Hx-Redirect", "/")
+	c.Response().Header().Set("HX-Redirect", "/?v="+uuid.New().String())
 	return c.Redirect(http.StatusOK, "/")
 }
 
@@ -132,7 +133,7 @@ func (a *AuthHandler) RegisterUser(c echo.Context) error {
 		return a.View(c, components.ErrorBlock("Something went wrong."))
 	}
 
-	c.Response().Header().Set("Hx-Redirect", "/")
+	c.Response().Header().Set("HX-Redirect", "/?v="+uuid.New().String())
 	return c.Redirect(http.StatusOK, "/")
 }
 
@@ -152,6 +153,6 @@ func (a *AuthHandler) LogoutUser(c echo.Context) error {
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
-	c.Response().Header().Set("Hx-Redirect", "/")
+	c.Response().Header().Set("HX-Redirect", "/?v="+uuid.New().String())
 	return c.Redirect(http.StatusOK, "/auth/login")
 }

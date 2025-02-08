@@ -13,8 +13,10 @@ import (
 	"github.com/ankibahuguna/newsapp/internal/articles/views"
 	"github.com/ankibahuguna/newsapp/pkg/auth"
 	"github.com/ankibahuguna/newsapp/pkg/errors"
+	"github.com/ankibahuguna/newsapp/pkg/llm"
 	shared "github.com/ankibahuguna/newsapp/pkg/shared"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/olahol/melody"
 	"github.com/ollama/ollama/api"
@@ -72,7 +74,10 @@ func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
+	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
+
 	if htmxRequest {
+		c.Response().Header().Set("Vary", "HX-Request")
 		return a.View(c, views.List(articles))
 	}
 
@@ -103,7 +108,10 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 
 	sl := views.ShowList("| Home", isAuthorized, shared.Categories, views.List(articles))
 
+	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
+
 	if htmxRequest {
+		c.Response().Header().Set("Vary", "HX-Request")
 		return a.View(c, views.List(articles))
 	}
 
@@ -147,7 +155,7 @@ func (a *ArticleHandler) CreateFavArticle(c echo.Context) error {
 	isAuthorized := c.Get("isAuthorized").(bool)
 
 	if !isAuthorized {
-		c.Response().Header().Set("Hx-Redirect", "/auth/login")
+		c.Response().Header().Set("Hx-Redirect", "/auth/login?v="+uuid.New().String())
 		return c.Redirect(http.StatusUnauthorized, "/auth/login")
 	}
 
@@ -192,23 +200,13 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
-	isAuthorized := c.Get("isAuthorized").(bool)
+	isAuthorized, ok := c.Get("isAuthorized").(bool)
+
+	if !ok {
+		return echo.NewHTTPError(echo.ErrUnauthorized.Code, "You are not authorized to access this page")
+	}
 
 	article, err := a.ArticleService.GetArticleDetail(id)
-
-	if isAuthorized {
-		user := c.Get("user").(*jwt.Token)
-
-		claims := user.Claims.(*auth.JwtClaims)
-
-		c.Logger().Infof("User: %d, Article: %d", claims.Id, article.User)
-
-		if article.User == claims.Id {
-			article.IsFavorite = true
-		} else {
-			article.IsFavorite = false
-		}
-	}
 
 	if err != nil {
 		c.Logger().Error(err.Error())
@@ -218,6 +216,22 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
+	if isAuthorized {
+		user, ok := c.Get("user").(*jwt.Token)
+
+		if !ok {
+			return echo.NewHTTPError(echo.ErrUnauthorized.Code, "You are not authorized to access this page")
+		}
+
+		claims, ok := user.Claims.(*auth.JwtClaims)
+
+		if !ok {
+			return echo.NewHTTPError(echo.ErrUnauthorized.Code, "You are not authorized to access this page")
+		}
+
+		article.IsFavorite = (article.User == claims.Id)
+	}
+
 	tz := ""
 	if len(c.Request().Header["X-Timezone"]) != 0 {
 		tz = c.Request().Header["X-Timezone"][0]
@@ -225,7 +239,10 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 
 	htmxRequest := c.Get("htmxRequest").(bool)
 
+	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
+
 	if htmxRequest {
+		c.Response().Header().Set("Vary", "HX-Request")
 		return a.View(c, views.Detail(tz, *article))
 	}
 
@@ -250,36 +267,49 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "Internal server error")
 	}
 
-	// By default, GenerateRequest is streaming.
-	req := &api.GenerateRequest{
-		System: "Summarize the input while maintaining the speaking style of a well-educated, Stanford-educated gym bro—confident, energetic, and to the point. Preserve all key details without adding extra information.",
-		Model:  "llama3.2",
-		Prompt: fmt.Sprintf("Summarize the following text: %s\n", article.Body),
-	}
+	ctx := c.Request().Context()
 
-	ctx := context.Background()
+	systemPrompt := "Summarize the input in a clear, simple, and conversational manner while preserving all important details, including minor ones. Ensure completeness and accuracy without adding extra information or omitting any key points"
+	promptText := fmt.Sprintf("Summarize the following text: %s\n", article.Body)
+
+	llmHandler := llm.New(a.ollama, "llama3.2")
+
+	outputChan, errChan := llmHandler.GenerateRequest(ctx, promptText, systemPrompt, true)
 
 	w := c.Response()
 	w.Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
 	w.WriteHeader(http.StatusOK)
 
-	respFunc := func(resp api.GenerateResponse) error {
-		if resp.Done {
-			return nil
-		}
+	// Each chunk received on outputChan is written immediately to the response.
+	for {
+		select {
+		case chunk, ok := <-outputChan:
+			if !ok {
+				outputChan = nil
+				continue
+			}
 
-		if _, err := fmt.Fprintf(c.Response(), resp.Response); err != nil {
-			c.Logger().Error(err.Error())
-			return err
+			if _, err := fmt.Fprintf(w, chunk); err != nil {
+				fmt.Println(err)
+				return err
+			}
+
+			w.Flush() // flush the writer to push data to the client
+
+		case err, ok := <-errChan:
+			if ok && err != nil {
+				c.Logger().Error(err.Error())
+				return echo.NewHTTPError(http.StatusInternalServerError, "something went wrong")
+			} else {
+				errChan = nil
+			}
 		}
-		w.Flush()
-		return nil
+		// Break out when both channels are done.
+		if outputChan == nil && errChan == nil {
+			break
+		}
 	}
 
-	err = a.ollama.Generate(ctx, req, respFunc)
-	if err != nil {
-		c.Logger().Error(err.Error())
-		return echo.NewHTTPError(echo.ErrInternalServerError.Code, "something went wrong")
-	}
 	return nil
+
 }

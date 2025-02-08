@@ -1,0 +1,57 @@
+package components
+
+import "fmt"
+
+func getColor(score int) string {
+
+	if score >= -4 && score <= 4 {
+		return "absolute bottom-0 right-0 w-2 h-2 rounded-full bg-green-500"
+	}
+
+	if score < -15 {
+		return "absolute bottom-0 right-0 w-2 h-2 rounded-full bg-yellow-500"
+	}
+
+	return "absolute bottom-0 right-0 w-2 h-2 rounded-full bg-red-500"
+}
+
+func getLeaningText(score int) string {
+	if score >= -4 && score <= 4 {
+		return "Neutral"
+	}
+	if score < -15 {
+		return "Left-Leaning"
+	}
+	return "Right-Leaning"
+}
+
+templ NeutralityIndicator(score int, reasoning string, keywords []string) {
+	<div class="tooltip pointer-events-auto" data-tip={ fmt.Sprintf("Neutrality Score: %s", getLeaningText(score)) } hx-swap-oob="outerHTML:#neutrality_indicator">
+		<button
+			class="tooltip btn btn-ghost btn-circle btn-sm relative"
+			onclick="neutrality_dialog.showModal()"
+			data-tip={ fmt.Sprintf("Neutrality Score: %s", getLeaningText(score)) }
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M3 6h18"></path>
+				<path d="M7 12h10"></path>
+				<path d="M3 18h18"></path>
+				<path d="M12 21V3"></path>
+			</svg>
+			<div class={ getColor(score) }></div>
+		</button>
+		<dialog id="neutrality_dialog" class="modal modal-center sm:modal-middle">
+			<div class="modal-box">
+				<div class="flex flex-wrap gap-4">
+					for _, keyword := range keywords {
+						<div class="badge badge-primary p-2">{ keyword }</div>
+					}
+				</div>
+				<div class="mx-auto p-6" id="summary">{ reasoning }</div>
+				<div class="modal-action">
+					<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="neutrality_dialog.close()">✕</button>
+				</div>
+			</div>
+		</dialog>
+	</div>
+}

@@ -15,16 +15,15 @@ templ Head() {
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 		<link rel="preconnect" href="https://fonts.googleapis.com"/>
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-		<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inconsolata:wght@200..900&display=swap" rel="stylesheet"/>
+		<link rel="preload"  href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Inconsolata:wght@200..900&display=swap" rel="stylesheet"/>
 		<link rel="stylesheet" href="/assets/dist/css/style.css"/>
 		<title>RSS News Reader</title>
-		<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
-		<script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
-		<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
-		<script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js"></script>
-		<script type="text/javascript" src="https://unpkg.com/default-passive-events"></script>
-		<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js"></script>
-		<script src="/assets/js/main.js" defer></script>
+		<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous" defer></script>
+		<script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js" defer></script>
+		<script src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js" defer></script>
+		<script type="text/javascript" src="https://unpkg.com/default-passive-events" ></script>
+		<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js" defer></script>
+		<script src="/assets/dist/js/main.js" defer></script>
 	</head>
 }
 
@@ -47,7 +46,6 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 		<body
 			class="sample-transition comic-neue-light"
 			hx-boost="true"
-			hx-indicator="#spinner"
 			hx-swap="outerHTML"
 			hx-ext="preload"
 		>
@@ -56,7 +54,6 @@ templ Base(title string, isAuthorized bool, categories map[string]string) {
 				@Spinner()
 				<div
 					id="container"
-					hx-indicator="#spinner"
 				>
 					<div id="info-block"></div>
 					{ children... }

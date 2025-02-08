@@ -13,6 +13,7 @@ templ articleItem(article repository.Article) {
 			<div class="font-bold text-xl mb-2">
 				<h1 class="font-bold mt-2 mb-2 transform hover:-translate-y-1">
 					<a
+						hx-indicator="#spinner"
 						hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
 						hx-swap="outerHTML"
 						hx-target="#main-el"
@@ -31,7 +32,7 @@ templ articleItem(article repository.Article) {
 }
 
 templ List(articles []repository.Article) {
-	<div class="flex flex-col items-center" id="main-el" hx-get="" hx-trigger="every 60s" hx-swap="outerHTML" hx-target="this">
+	<div class="flex flex-col items-center" id="main-el" hx-get="" hx-trigger="every 40s" hx-swap="outerHTML" hx-target="#main-el" hx-indicator="#spinner">
 		if len(articles) > 0 {
 			for _, article := range articles {
 				@articleItem(article)

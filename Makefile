@@ -26,7 +26,7 @@ build:
 	@echo "Building $(APP_NAME)..."
 	@templ generate
 	@bunx tailwindcss -i assets/css/style.css -o assets/dist/css/style.css --minify
-	@go build $(BUILD_FLAGS) -o $(APP_NAME) ./cmd/main.go
+	@go build $(BUILD_FLAGS) -o $(APP_NAME) main.go
 
 .PHONY: clean
 clean:
