@@ -81,6 +81,7 @@ func (a *ArticleHandler) GetArticlesFromOnion(c echo.Context) error {
 		return a.View(c, views.List(articles))
 	}
 
+	c.Response().Header().Set("Vary", "Http-Request")
 	return a.View(c, sl)
 }
 
@@ -115,6 +116,7 @@ func (a *ArticleHandler) GetArticles(c echo.Context) error {
 		return a.View(c, views.List(articles))
 	}
 
+	c.Response().Header().Set("Vary", "Http-Request")
 	return a.View(c, sl)
 }
 
@@ -246,6 +248,7 @@ func (a *ArticleHandler) GetArticleDetail(c echo.Context) error {
 		return a.View(c, views.Detail(tz, *article))
 	}
 
+	c.Response().Header().Set("Vary", "Http-Request")
 	sd := views.ShowDetail("| Home", isAuthorized, shared.Categories, views.Detail(tz, *article))
 
 	return a.View(c, sd)

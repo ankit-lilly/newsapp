@@ -41,6 +41,7 @@ func (a *AuthHandler) View(c echo.Context, cmp templ.Component) error {
 
 func (a *AuthHandler) LoginHandler(c echo.Context) error {
 	isAuthorized := c.Get("isAuthorized").(bool)
+	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
 	if isAuthorized {
 		c.Response().Header().Set("Hx-Redirect", "/")
 		return c.Redirect(http.StatusOK, "/")
@@ -53,6 +54,7 @@ func (a *AuthHandler) RegisterHandler(c echo.Context) error {
 
 	isAuthorized := c.Get("isAuthorized").(bool)
 
+	c.Response().Header().Set("Cache-Control", "private, max-age=86400, stale-while-revalidate=30")
 	if isAuthorized {
 		c.Response().Header().Set("Hx-Redirect", "/")
 		return c.Redirect(http.StatusOK, "")
