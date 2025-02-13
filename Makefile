@@ -42,5 +42,4 @@ clean:
 	@rm -f $(APP_NAME)
 	@rm -rf assets/dist
 	@rm -rf node_modules
-	@rm -rf package*
 	@rm -rf tmp
