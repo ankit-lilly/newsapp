@@ -1,5 +1,12 @@
 version: 2
 
+before:
+  # Templates for the commands to be ran.
+  hooks:
+  - make clean
+  - make install
+  - make build
+
 builds:
   - env:
       - CGO_ENABLED=0
