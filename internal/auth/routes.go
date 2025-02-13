@@ -3,9 +3,9 @@ package auth
 import (
 	"database/sql"
 
-	handlers "github.com/ankibahuguna/newsapp/internal/auth/handlers"
-	repository "github.com/ankibahuguna/newsapp/internal/auth/respository"
-	services "github.com/ankibahuguna/newsapp/internal/auth/services"
+	handlers "github.com/ankit-lilly/newsapp/internal/auth/handlers"
+	repository "github.com/ankit-lilly/newsapp/internal/auth/respository"
+	services "github.com/ankit-lilly/newsapp/internal/auth/services"
 	"github.com/labstack/echo/v4"
 )
 

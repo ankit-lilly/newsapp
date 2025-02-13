@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	repository "github.com/ankibahuguna/newsapp/internal/auth/respository"
+	repository "github.com/ankit-lilly/newsapp/internal/auth/respository"
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"

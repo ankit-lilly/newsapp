@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/ankibahuguna/newsapp/pkg/errors"
+	"github.com/ankit-lilly/newsapp/pkg/errors"
 )
 
 type Article struct {

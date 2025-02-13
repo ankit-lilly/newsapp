@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ankibahuguna/newsapp/internal/articles/repository"
-	"github.com/ankibahuguna/newsapp/pkg/feedparser"
+	"github.com/ankit-lilly/newsapp/internal/articles/repository"
+	"github.com/ankit-lilly/newsapp/pkg/feedparser"
 )
 
 const (

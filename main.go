@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"embed"
-	"github.com/ankibahuguna/newsapp/cmd"
-	"github.com/ankibahuguna/newsapp/pkg/db"
+	"github.com/ankit-lilly/newsapp/cmd"
+	"github.com/ankit-lilly/newsapp/pkg/db"
 	"log"
 	"os"
 	"os/signal"

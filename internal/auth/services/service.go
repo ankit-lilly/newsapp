@@ -3,7 +3,7 @@ package services
 import (
 	"fmt"
 
-	"github.com/ankibahuguna/newsapp/internal/auth/respository"
+	"github.com/ankit-lilly/newsapp/internal/auth/respository"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -2,11 +2,11 @@ package internal
 
 import (
 	"context"
-	"github.com/ankibahuguna/newsapp/internal/articles"
-	"github.com/ankibahuguna/newsapp/internal/auth"
-	"github.com/ankibahuguna/newsapp/pkg/db"
-	"github.com/ankibahuguna/newsapp/pkg/shared"
-	"github.com/ankibahuguna/newsapp/pkg/views/pages"
+	"github.com/ankit-lilly/newsapp/internal/articles"
+	"github.com/ankit-lilly/newsapp/internal/auth"
+	"github.com/ankit-lilly/newsapp/pkg/db"
+	"github.com/ankit-lilly/newsapp/pkg/shared"
+	"github.com/ankit-lilly/newsapp/pkg/views/pages"
 	"github.com/labstack/echo/v4"
 )
 

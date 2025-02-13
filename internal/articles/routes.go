@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/ankibahuguna/newsapp/internal/articles/handlers"
-	"github.com/ankibahuguna/newsapp/internal/articles/repository"
-	"github.com/ankibahuguna/newsapp/internal/articles/services"
+	"github.com/ankit-lilly/newsapp/internal/articles/handlers"
+	"github.com/ankit-lilly/newsapp/internal/articles/repository"
+	"github.com/ankit-lilly/newsapp/internal/articles/services"
 	"github.com/labstack/echo/v4"
 	"github.com/olahol/melody"
 	"github.com/ollama/ollama/api"

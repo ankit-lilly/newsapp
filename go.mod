@@ -1,4 +1,4 @@
-module github.com/ankibahuguna/newsapp
+module github.com/ankit-lilly/newsapp
 
 go 1.23.2
 
