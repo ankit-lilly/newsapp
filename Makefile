@@ -6,6 +6,7 @@ AIR_INSTALL_CMD = go install github.com/air-verse/air@latest
 install:
 	@echo "Installing deps"
 	@go install github.com/a-h/templ/cmd/templ@latest
+	@bun install
 	@$(AIR_INSTALL_CMD)
 
 .PHONY: run
