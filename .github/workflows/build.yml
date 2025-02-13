@@ -1,8 +1,6 @@
 name: build
 on:
   push:
-    branches:
-      - 'main'
     tags:
       - 'v*'
   pull_request:
@@ -18,8 +16,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-      - run: make clean && make install
-      - uses: goreleaser/goreleaser-action@v2
+      - run: make clean && make install && make generate
+      - uses: goreleaser/goreleaser-action@v5
         if: success() && startsWith(github.ref, 'refs/tags/')
         with:
           version: latest

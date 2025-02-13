@@ -1,13 +1,8 @@
 # .goreleaser.yaml
 version: 2
 
-env:
-  - BUN_INSTALL=$HOME/.bun
-  - PATH=$BUN_INSTALL/bin:$PATH
-
 before:
   hooks:
-    - curl -fsSL https://bun.sh/install | bash
     - make install
     - make build
 
@@ -39,7 +34,6 @@ archives:
       - goos: windows
         format: zip
     files:
-      - assets/dist/**/*
       - README*
       - LICENSE*
 
