@@ -26,7 +26,7 @@ templ Detail(tz string, article repository.Article) {
 		<div class="mx-auto p-6">
 			<div class="flex justify-between items-center gap-4">
 				<div class="flex justify-evenly items-center gap-4">
-					<h1 class=" font-bold mt-2 mb-2">{ article.Title }</h1>
+					<h1 class="font-bold mt-2 mb-2">{ article.Title }</h1>
 					@components.Summary(article.ID)
 					@components.Chat(article.ID)
 					if article.IsFavorite {

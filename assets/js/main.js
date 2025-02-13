@@ -1,4 +1,3 @@
-// HTMX extension for handling streaming responses with smooth scrolling
 window.htmx.defineExtension("stream", {
   onEvent(name, evt) {
     if (name !== "htmx:beforeRequest") return true;
@@ -6,65 +5,33 @@ window.htmx.defineExtension("stream", {
     const { detail } = evt;
     let element = detail.elt;
 
-    // Handle custom target if specified
     if (detail.requestConfig.target) {
       element["__target"] = detail.requestConfig.target;
       element = detail.requestConfig.target;
     }
 
-    // Set up streaming response handling
     let lastLength = 0;
     let isFirstChunk = true;
-    let isAutoScrolling = true;
 
-    // Add scroll event listener to detect manual scrolling
-    const container = element.closest(".modal-content") || element;
-    container.addEventListener("wheel", () => {
-      // If user scrolls manually, temporarily disable auto-scroll
-      const scrollBottom =
-        container.scrollHeight - container.scrollTop - container.clientHeight;
-      isAutoScrolling = scrollBottom < 50; // Re-enable if user scrolls near bottom
-    });
-
-    // Smooth scroll function
-    const smoothScrollToBottom = () => {
-      if (!isAutoScrolling) return;
-
-      const scrollTarget = container.scrollHeight - container.clientHeight;
-      container.scrollTo({
-        top: scrollTarget,
-        behavior: "smooth",
-      });
-    };
-
+    detail.requestConfig.swap = "none";
     detail.xhr.addEventListener("readystatechange", () => {
-      // Handle streaming states (HEADERS_RECEIVED or LOADING)
       if (detail.xhr.readyState === 2 || detail.xhr.readyState === 3) {
         if (isFirstChunk) {
-          // Remove loading indicator on first chunk
           const loader = element.querySelector(".my-summary-loader-icon");
           loader?.remove();
           isFirstChunk = false;
         }
 
-        // Process and append new content
         const newContent = detail.xhr.responseText.slice(lastLength);
 
         element["__streamedChars"] = lastLength;
         lastLength = detail.xhr.responseText.length;
 
         element.innerHTML += newContent;
-
-        // Smooth scroll if we're near the bottom
-        if (newContent.length > 0) {
-          smoothScrollToBottom();
-        }
       }
 
-      // Reset on completion (DONE state)
       if (detail.xhr.readyState === 4) {
         element["__streamedChars"] = 0;
-        isAutoScrolling = true; // Reset auto-scroll for next time
         element.__streamed = true;
       }
     });
@@ -344,6 +311,15 @@ document.body.addEventListener("htmx:wsAfterMessage", (event) => {
         siblingOfParent.remove();
       }
     }
+  }
+});
+document.body.addEventListener("htmx:beforeSwap", function (evt) {
+  // If the target element has already been updated by our stream,
+  // cancel the final swap.
+  const target = evt.detail.target;
+  if (target.__streamed) {
+    evt.detail.shouldSwap = false;
+    evt.preventDefault();
   }
 });
 

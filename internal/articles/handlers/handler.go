@@ -272,10 +272,10 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 
 	ctx := c.Request().Context()
 
-	systemPrompt := "Summarize the input in a clear, simple, and conversational manner while preserving all important details, including minor ones. Ensure completeness and accuracy without adding extra information or omitting any key points."
+	systemPrompt := "Summarize the input in a clear, simple, and conversational manner while preserving all important details. Tue summary should be concise and complete."
 	promptText := fmt.Sprintf("Summarize the following text: %s\n", article.Body)
 
-	llmHandler := llm.New(a.ollama, "llama3.2")
+	llmHandler := llm.New(a.ollama, "olmo2")
 
 	outputChan, errChan := llmHandler.GenerateRequest(ctx, promptText, systemPrompt, true)
 

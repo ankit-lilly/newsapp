@@ -17,6 +17,7 @@ templ articleItem(article repository.Article) {
 						hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
 						hx-swap="outerHTML"
 						hx-target="#main-el"
+						hx-select="#article-detail"
 						href={ templ.URL(fmt.Sprintf("/articles/detail/%d", article.ID)) }
 						preload="mouseover"
 					>
@@ -31,8 +32,21 @@ templ articleItem(article repository.Article) {
 	</div>
 }
 
+/*
+We include hx-vals to burst the cache every 40 seconds
+*/
+
 templ List(articles []repository.Article) {
-	<div class="flex flex-col items-center" id="main-el" hx-get="" hx-trigger="every 40s" hx-swap="outerHTML" hx-target="#main-el" hx-indicator="#spinner">
+	<div
+		class="flex flex-col items-center"
+		id="main-el"
+		hx-get=""
+		hx-vals="js:{date: new Date().getTime()}"
+		hx-trigger="every 40s"
+		hx-swap="outerHTML"
+		hx-target="#main-el"
+		hx-indicator="#spinner"
+	>
 		if len(articles) > 0 {
 			for _, article := range articles {
 				@articleItem(article)
