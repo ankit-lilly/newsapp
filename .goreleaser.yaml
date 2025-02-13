@@ -32,7 +32,7 @@ archives:
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        format: ['zip']
+        format: [ zip ]
 
 changelog:
   sort: asc
