@@ -17,6 +17,7 @@ templ articleItem(article repository.Article) {
 						hx-headers="js:{'X-TimeZone': Intl.DateTimeFormat().resolvedOptions().timeZone}"
 						hx-swap="outerHTML"
 						hx-target="#main-el"
+                                                hx-select="#article-detail"
 						href={ templ.URL(fmt.Sprintf("/articles/detail/%d", article.ID)) }
 						preload="mouseover"
 					>
