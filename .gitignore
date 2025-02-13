@@ -8,3 +8,5 @@ package-lock.json
 assets/dist
 *_templ.go
 *.db
+
+dist/
