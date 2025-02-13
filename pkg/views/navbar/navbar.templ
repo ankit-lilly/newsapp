@@ -2,8 +2,8 @@ package navbar
 
 import (
 	"fmt"
+	"github.com/ankibahuguna/newsapp/pkg/views/components/ui"
 	"sort"
-        "github.com/ankibahuguna/newsapp/pkg/views/components/ui"
 )
 
 // Main Navbar Template
@@ -98,4 +98,3 @@ templ renderNavItems(isAuthorized bool, categories map[string]string, mode strin
 		@ui.ThemeToggler(mode)
 	</li>
 }
-
