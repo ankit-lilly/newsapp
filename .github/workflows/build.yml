@@ -19,6 +19,7 @@ jobs:
           go-version: 1.23.2
           cache: true
       - run: go mod tidy
+      - run: ls -la
       - run: make clean && make install
       - uses: docker/login-action@v1
         with:
