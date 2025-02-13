@@ -17,7 +17,7 @@ jobs:
         with:
           bun-version: latest
       - run: make clean && make install && make generate
-      - uses: goreleaser/goreleaser-action@v5
+      - uses: goreleaser/goreleaser-action@v6
         if: success() && startsWith(github.ref, 'refs/tags/')
         with:
           version: latest
