@@ -5,6 +5,7 @@ AIR_INSTALL_CMD = go install github.com/air-verse/air@latest
 .PHONY: install
 install:
 	@echo "Installing deps"
+	@bun add tailwindcss @tailwindcss/cli
 	@bun install -D daisyui@latest
 	@go install github.com/a-h/templ/cmd/templ@latest
 	@$(AIR_INSTALL_CMD)
