@@ -3,7 +3,6 @@ tmp
 main
 newsapp
 node_modules
-package.json
 package-lock.json
 assets/dist
 *_templ.go
