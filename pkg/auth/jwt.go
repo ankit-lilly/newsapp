@@ -79,7 +79,6 @@ func JWTErrorChecker(err error, c echo.Context) error {
 }
 
 var JwtConfig = echojwt.Config{
-
 	NewClaimsFunc: func(c echo.Context) jwt.Claims {
 		return new(JwtClaims)
 	},

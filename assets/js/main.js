@@ -303,8 +303,6 @@ document.body.addEventListener("htmx:wsAfterMessage", (event) => {
   ) {
     const parentNode = loader.parentNode;
     if (parentNode) {
-      console.info("Removing loading indicator");
-      // Remove the parent node and its previous sibling, if they exist.
       const siblingOfParent = parentNode.previousSibling;
       parentNode.remove();
       if (siblingOfParent && siblingOfParent.parentNode) {
