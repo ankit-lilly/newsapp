@@ -3,6 +3,7 @@ package articles
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	"github.com/ankit-lilly/newsapp/internal/articles/handlers"
 	"github.com/ankit-lilly/newsapp/internal/articles/repository"
@@ -37,4 +38,16 @@ func Routes(a *echo.Group, DB *sql.DB) {
 	m.HandleMessage(articleHandler.HandleChatMessage)
 
 	a.GET("articles/detail/:id/summarise", articleHandler.SummariseArticle)
+
+	go func() {
+		ticker := time.NewTicker(24 * time.Hour)
+		defer ticker.Stop() 
+
+		for range ticker.C {
+			err := articleRepository.DeleteOlderArticles()
+			if err != nil {
+				log.Println("Error running cron job:", err)
+			}
+		}
+	}()
 }

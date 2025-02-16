@@ -297,7 +297,7 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 				return err
 			}
 
-			w.Flush() // flush the writer to push data to the client
+			w.Flush()
 
 		case err, ok := <-errChan:
 			if ok && err != nil {
@@ -307,7 +307,6 @@ func (a *ArticleHandler) SummariseArticle(c echo.Context) error {
 				errChan = nil
 			}
 		}
-		// Break out when both channels are done.
 		if outputChan == nil && errChan == nil {
 			break
 		}

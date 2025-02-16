@@ -184,3 +184,12 @@ func (a *ArticleRepository) GetFavoritesByUser(user int64) ([]Article, error) {
 
 	return articles, nil
 }
+
+func (a *ArticleRepository) DeleteOlderArticles() error {
+	query := `DELETE FROM articles
+WHERE created_at < datetime('now', '-2 days')
+  AND NOT EXISTS (SELECT 1 FROM favorites WHERE favorites.article_id = articles.id)`
+
+	_, err := a.DB.Exec(query)
+	return err
+}
