@@ -11,6 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/ankit-lilly/newsapp/internal/models"
+	"github.com/ankit-lilly/newsapp/internal/prompts"
 	"github.com/ankit-lilly/newsapp/internal/repositories"
 	"github.com/ankit-lilly/newsapp/internal/services/llm"
 	"github.com/ankit-lilly/newsapp/internal/services/providers"
@@ -64,9 +65,8 @@ func (s *ArticleService) GetArticleSummary(ctx context.Context, portalName, id s
 		return nil, errChan
 	}
 
-	systemPrompt := `You are a helpful AI assistant that can help users understand the contents of an article by summarizing the articles in simple and concise terms. You don't miss any details and you are very accurate in your summaries.`
 	prompt := fmt.Sprintf("Summarize the article %q", article.Content)
-	return s.llm.GenerateRequest(ctx, systemPrompt, prompt, true)
+	return s.llm.GenerateRequest(ctx, prompts.SUMMARY, prompt, true)
 }
 
 func (s *ArticleService) SendChatRequest(ctx context.Context, history []api.Message) (api.Message, error) {

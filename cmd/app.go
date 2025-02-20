@@ -32,7 +32,10 @@ type App struct {
 func NewApp(cfg *config.Config) *App {
 	e := echo.New()
 	e.HideBanner = true
-	e.Debug = true
+
+	if cfg.IsDev {
+		e.Debug = true
+	}
 
 	if err := db.Init(cfg.DatabaseURL); err != nil {
 		e.Logger.Fatalf("failed to initialize database: %v", err)

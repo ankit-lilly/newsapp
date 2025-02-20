@@ -6,11 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/url"
 	"strings"
 
 	"github.com/a-h/templ"
+	"github.com/ankit-lilly/newsapp/internal/prompts"
 	"github.com/ankit-lilly/newsapp/internal/services"
+
 	"github.com/ankit-lilly/newsapp/internal/templates/components/articles"
 	"github.com/labstack/echo/v4"
 	"github.com/olahol/melody"
@@ -36,10 +39,11 @@ type WebsocketMessage struct {
 
 func (h *ChatHandler) HandleConnect(s *melody.Session) {
 	sessionid := s.Request.Header.Get("Sec-WebSocket-Key")
-	fmt.Println("Connected to chat, sessionid:", sessionid)
+	slog.Info("Connected to chat, sessionid:", sessionid)
 	link, portalName, err := h.extractKeysFromSession(s)
 	if err != nil {
-		s.Write([]byte(err.Error()))
+		slog.Error(err.Error(), err)
+		h.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}
 
@@ -50,20 +54,16 @@ func (h *ChatHandler) HandleConnect(s *melody.Session) {
 
 	articleDetail, err := h.articleService.GetArticleById(s.Request.Context(), portalName, link)
 	if err != nil {
-		s.Write([]byte(err.Error()))
+		slog.Error(err.Error(), err)
+		h.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}
 
 	// Initialize chat history in the session keys.
-	initialSystemMessage := api.Message{
-		Role:    "system",
-		Content: fmt.Sprintf("You are an AI assistant answering questions about this blog post. Your goal is to help users understand the post. This means answering questions about terms, references, or words mentioned in the post. Do not answer any off-topic questions that are directly or indirectly related to the post. If the question is not related to the contents of the post in any way then say that you don't know the answer.\n\nPost content:\n%s", articleDetail.Content),
-	}
-	s.Keys["history"] = []api.Message{initialSystemMessage}
+	s.Keys["history"] = prompts.GetChatPrompt(articleDetail.Content)
 
-	// Retrieve and update the history.
 	history := s.Keys["history"].([]api.Message)
-	if len(history) <= 1 {
+	if len(history) <= 3 {
 		cmp := articles.Assistant(greeting.Role, greeting.Content)
 		h.WebSocketResponse(s.Request.Context(), cmp, s)
 		// Append greeting to history.
@@ -120,12 +120,12 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 	s.Keys["history"] = history
 
 	a.WebSocketResponse(s.Request.Context(), articles.User("user", wsMessage.Chat_mesage), s)
-	// Display a loading indicator while the AI processes the request.
 	a.WebSocketResponse(s.Request.Context(), articles.AssistantLoader(), s)
 
 	resp, err := a.articleService.SendChatRequest(s.Request.Context(), history)
 	if err != nil {
-		s.Write([]byte(err.Error()))
+		slog.Error(err.Error(), err)
+		a.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}
 
@@ -134,10 +134,12 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 		Role:    resp.Role,
 		Content: resp.Content,
 	})
+
 	s.Keys["history"] = history
 
 	formatedContent := strings.Split(resp.Content, "\n\n")
 	paragraphWrapped := make([]string, 0)
+
 	for _, content := range formatedContent {
 		paragraphWrapped = append(paragraphWrapped, fmt.Sprintf("<p class='text-lg mt-4'>%s</p>", strings.TrimSpace(content)))
 	}

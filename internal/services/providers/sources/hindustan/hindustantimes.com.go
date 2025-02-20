@@ -7,10 +7,12 @@ import (
 	"net/http"
 	"strings"
 
+	"maps"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/ankit-lilly/newsapp/internal/models"
 	"github.com/ankit-lilly/newsapp/internal/services/feed"
-	"maps"
+	"github.com/ankit-lilly/newsapp/internal/services/providers/formatter"
 )
 
 type HindustanTimes struct {
@@ -93,8 +95,8 @@ func (t *HindustanTimes) Parse(url string) (models.Article, error) {
 
 	var body strings.Builder
 
-	doc.Find("div.detail").Find("p").Each(func(j int, el *goquery.Selection) {
-		body.WriteString(fmt.Sprintf("<p class='text-lg mt-4'>%s</p>", el.Text()))
+	doc.Find("div.detail").Children().Each(func(j int, el *goquery.Selection) {
+		body.WriteString(formatter.FormatNode(el))
 	})
 
 	title := strings.TrimSpace(doc.Find("h1.hdg1").Text())
