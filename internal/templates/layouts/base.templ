@@ -1,0 +1,28 @@
+package layouts
+
+import "github.com/ankit-lilly/newsapp/internal/templates/components/ui"
+import "github.com/ankit-lilly/newsapp/internal/templates/components/partials"
+
+templ Base(title string) {
+	<!DOCTYPE html>
+	<html lang="en" data-theme="dracula">
+		@partials.Head()
+		<body
+			class="sample-transition comic-neue-light"
+			hx-boost="true"
+			hx-swap="outerHTML"
+			hx-ext="preload"
+		>
+			@partials.NavBar()
+			<main class="pt-8" id="main-content" hx-ext="remove-me">
+				@ui.Spinner()
+				<div id="flash"></div>
+				<div
+					id="container"
+				>
+					{ children... }
+				</div>
+			</main>
+		</body>
+	</html>
+}

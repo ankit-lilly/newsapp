@@ -1,0 +1,150 @@
+package partials
+
+import (
+	"fmt"
+	"github.com/ankit-lilly/newsapp/internal/services/providers"
+	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
+)
+
+templ NavBar() {
+	<div
+		class="navbar bg-base-100"
+		hx-target="#container"
+		hx-indicator="#spinner"
+		hx-swap="innerHTML"
+	>
+		<div class="flex-1">
+			<a class="btn btn-ghost text-xl" href="/">
+				NewsApp
+			</a>
+		</div>
+		<div class="flex-none">
+			@DesktopNav()
+			@MobileNav()
+		</div>
+	</div>
+}
+
+func getStyle(currentPath, linkHref string) string {
+	if currentPath == linkHref {
+		return "font-bold mt-2 mb-2 active"
+	}
+	return "font-bold mt-2 mb-2"
+}
+
+templ GetUserNav(currentPath string, isAuthorized bool) {
+	if isAuthorized {
+		<li>
+			<summary class={ getStyle(currentPath, "/favorites") }>
+				<a href="/favorites">Favorites</a>
+			</summary>
+		</li>
+		<li>
+			<summary class={ getStyle(currentPath, "/logout") }>
+				<a
+					hx-delete="/logout"
+					href="/logout"
+				>Logout</a>
+			</summary>
+		</li>
+	} else {
+		<li>
+			<summary
+				class={ getStyle(currentPath, "/login") }
+			>
+				<a
+					href="/login"
+				>Login</a>
+			</summary>
+		</li>
+		<li>
+			<summary
+				class={ getStyle(currentPath, "/register") }
+			>
+				<a
+					href="/register"
+				>Register</a>
+			</summary>
+		</li>
+	}
+}
+
+templ NavItems(currentPath string) {
+	for _, p := range providers.GetProviderCategories() {
+		if p.HasChildren {
+			<li>
+				<details>
+					<summary
+						class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.Name)) }
+					>{ p.Name }</summary>
+					<ul class="p-2">
+						for key, value := range p.Categories {
+							<li>
+								<a
+									onclick="this.closest('details').removeAttribute('open')"
+									class={ getStyle(currentPath, fmt.Sprintf("/news/%s/%s", p.Name, value)) }
+									href={ templ.URL(fmt.Sprintf("/news/%s/%s", p.ID, value)) }
+									preload="mouseover"
+								>{ key }</a>
+							</li>
+						}
+					</ul>
+				</details>
+			</li>
+		} else {
+			<li class>
+				<summary
+					class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.Name)) }
+				>
+					<a
+						href={ templ.URL(fmt.Sprintf("/news/%s", p.ID)) }
+						preload="mouseover"
+					>{ p.Name }</a>
+				</summary>
+			</li>
+		}
+	}
+	@GetUserNav(currentPath, ctx.Value("isAuthorized").(bool))
+	<li>
+		@ui.ToggleTheme("light")
+	</li>
+}
+
+templ DesktopNav() {
+	<div class="hidden lg:flex">
+		<ul
+			class="navbar menu menu-horizontal px-1"
+		>
+			@NavItems(ctx.Value("currentPath").(string))
+		</ul>
+	</div>
+}
+
+templ MobileNav() {
+	<div class="lg:hidden">
+		<div class="dropdown">
+			<div tabindex="0" role="button" class="btn btn-ghost">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="h-5 w-5"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 6h16M4 12h8m-8 6h16"
+					></path>
+				</svg>
+			</div>
+			<ul
+				tabindex="0"
+				class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+			>
+				@NavItems(ctx.Value("currentPath").(string))
+			</ul>
+		</div>
+	</div>
+}

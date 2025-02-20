@@ -1,0 +1,10 @@
+node_modules
+temp
+dist
+.idea
+.vscode
+*.db
+*.log
+tmp
+.env
+*templ.go

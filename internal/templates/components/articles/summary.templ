@@ -1,0 +1,44 @@
+package articles
+
+import "fmt"
+import "net/url"
+
+templ Summary(portal string, id string) {
+	<div class="tooltip pointer-events-auto" data-tip="Summrize">
+		<svg
+			hx-get={ fmt.Sprintf("/articles/%s/%s/summarise", portal, url.QueryEscape(id)) }
+			hx-target="#summary"
+			hx-ext="stream"
+			hx-once
+			hx-swap="beforeend"
+			class="w-6 h-6 stroke-current text-primary"
+			onclick="summary_dialog.showModal()"
+			viewBox="0 0 24 24"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<!-- Document base -->
+			<path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+			<!-- Summary lines -->
+			<path d="M8 13H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+			<path d="M8 17H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+			<path d="M8 9H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+			<!-- Corner fold -->
+			<path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path>
+		</svg>
+	</div>
+	<dialog id="summary_dialog" class="modal modal-center sm:modal-middle">
+		<div class="modal-box">
+			<article class="prose mt-4" id="summary">
+				<div class="text-center text-primary flex justify-center my-summary-loader-icon">
+					<span class="loading loading-ring loading-sm text-primary"></span>
+					<span class="loading loading-ring loading-md text-primary"></span>
+					<span class="loading loading-ring loading-lg text-primary"></span>
+				</div>
+			</article>
+			<div class="modal-action">
+				<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="summary_dialog.close()">✕</button>
+			</div>
+		</div>
+	</dialog>
+}

@@ -1,0 +1,30 @@
+package articles
+
+import (
+	"fmt"
+	"github.com/ankit-lilly/newsapp/internal/models"
+	"net/url"
+)
+
+templ ArticleItem(article models.Article) {
+	<div class="px-6 py-4">
+		<div class="font-bold text-xl mb-2">
+			<h1 class="font-bold mt-2 mb-2 transform hover:-translate-y-1">
+				<a
+					hx-indicator="#spinner"
+					hx-swap="outerHTML"
+					hx-target="#main-el"
+					hx-params="none"
+					hx-disinherit="hx-vals"
+					href={ templ.URL(fmt.Sprintf("/articles/%s/%s", article.Portal, url.QueryEscape(article.Link))) }
+					preload="mouseover"
+				>
+					{ article.Title }
+				</a>
+			</h1>
+		</div>
+		<p class="text-base comic-neue-light-italic">
+			@templ.Raw(article.Description)
+		</p>
+	</div>
+}

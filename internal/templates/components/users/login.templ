@@ -1,0 +1,44 @@
+package users
+
+templ Login() {
+	<section class="card w-fit mx-auto mb-8">
+		<div class="card-body pb-2">
+			<div id="validation-error-block"></div>
+			<h1 class="card-title border-b border-b-slate-600 pb-[4px]">
+				Log In
+			</h1>
+			<form
+				hx-target="#flash"
+				class="rounded-xl drop-shadow-xl flex flex-col gap-4 w-96"
+				action=""
+				method="post"
+			>
+				<label class="flex flex-col justify-start gap-2">
+					Email:
+					<input
+						class="input input-bordered input-primary"
+						type="email"
+						name="email"
+						required
+						autofocus
+					/>
+				</label>
+				<label class="flex flex-col justify-start gap-2">
+					Password:
+					<input
+						class="input input-bordered input-primary"
+						type="password"
+						name="password"
+						required
+						minlength="6"
+					/>
+				</label>
+				<footer class="card-actions justify-end">
+					<button class="badge badge-primary px-6 py-4 hover:scale-[1.1]">
+						Sign In
+					</button>
+				</footer>
+			</form>
+		</div>
+	</section>
+}

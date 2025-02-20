@@ -1,0 +1,9 @@
+package pages
+
+import "github.com/ankit-lilly/newsapp/internal/templates/layouts"
+
+templ Index(title string, cmp templ.Component) {
+	@layouts.Base(title) {
+		@cmp
+	}
+}
