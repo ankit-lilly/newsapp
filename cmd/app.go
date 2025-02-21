@@ -70,7 +70,7 @@ func (a *App) Init(staticFiles embed.FS) error {
 	errorHandler := handlers.ErrorHandler{}
 	a.echo.HTTPErrorHandler = errorHandler.CustomHTTPErrorHandler
 
-	authMiddleware := middlewares.NewAuthMiddleware(auth.NewJwtService())
+	authMiddleware := middlewares.NewAuthMiddleware(a.jwtService)
 
 	a.echo.Use(middlewares.CacheControl)
 	a.echo.Use(middlewares.IsHTMXRequest)

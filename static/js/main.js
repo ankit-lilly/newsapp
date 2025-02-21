@@ -1,3 +1,5 @@
+import * as smd from "streaming-markdown"
+
 window.htmx.defineExtension("stream", {
   onEvent(name, evt) {
     if (name !== "htmx:beforeRequest") return true;
@@ -13,6 +15,9 @@ window.htmx.defineExtension("stream", {
     let lastLength = 0;
     let isFirstChunk = true;
 
+    const renderer = smd.default_renderer(element);
+    const parser = smd.parser(renderer);
+
     detail.requestConfig.swap = "none";
     detail.xhr.addEventListener("readystatechange", () => {
       if (detail.xhr.readyState === 2 || detail.xhr.readyState === 3) {
@@ -27,7 +32,8 @@ window.htmx.defineExtension("stream", {
         element["__streamedChars"] = lastLength;
         lastLength = detail.xhr.responseText.length;
 
-        element.innerHTML += newContent;
+        smd.parser_write(parser, newContent);
+        //element.append(newContent)
       }
 
       if (detail.xhr.readyState === 4) {

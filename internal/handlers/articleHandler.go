@@ -152,7 +152,6 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 				return nil
 			}
 
-			content = strings.ReplaceAll(content, "\n\n", "<br><br>")
 			if _, err := fmt.Fprintf(w, content); err != nil {
 				c.Echo().Logger.Error(err)
 				return h.View(c, ui.ErrorBlock(err.Error()))
