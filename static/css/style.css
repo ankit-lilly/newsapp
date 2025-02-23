@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin 'daisyui';
 
 @plugin "daisyui" {
@@ -54,7 +54,6 @@
   font-style: italic;
 }
 
-
 .htmx-indicator {
   display: none;
 }
@@ -86,4 +85,16 @@ img {
   font-size: 14px;
   white-space: nowrap;
   z-index: 10;
+}
+
+picture {
+  display: block;
+  margin: 0 auto;
+  max-width: 60%;
+}
+
+img {
+  margin-bottom: 20px;
+  display: flex;
+  width: 500px;
 }

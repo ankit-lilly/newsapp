@@ -65,7 +65,7 @@ func (s *ArticleService) GetArticleSummary(ctx context.Context, portalName, id s
 		return nil, errChan
 	}
 
-	prompt := fmt.Sprintf("Summarize the article %q", article.Content)
+	prompt := fmt.Sprintf("Summarize the following article: %q", article.Content)
 	return s.llm.GenerateRequest(ctx, prompts.SUMMARY, prompt, true)
 }
 
@@ -128,6 +128,9 @@ func (s *ArticleService) GetRandomArticles(ctx context.Context) ([]models.Articl
 	)
 
 	for _, provider := range providers.Registry {
+    if provider.ID() == "natgeo" {
+      continue
+    }
 		provider := provider
 		eg.Go(func() error {
 			var category string

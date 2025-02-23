@@ -37,3 +37,7 @@ func (a *Article) Synopsis() string {
 	}
 	return a.Content[:200] + "..."
 }
+
+func (a *Article) RawContent() string {
+	return a.Content
+}

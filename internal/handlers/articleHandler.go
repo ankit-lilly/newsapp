@@ -77,16 +77,11 @@ func (h *ArticleHandler) List(c echo.Context) error {
 
 func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 
-	encodedLink, portalName, err := h.parseAndValidateIdAndPortal(c)
-	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
-	}
-	link, err := url.QueryUnescape(encodedLink)
+	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
 	if err != nil {
 		return h.View(c, ui.ErrorBlock(err.Error()))
 	}
-
 	articleDetail, err := h.articleService.GetArticleById(c.Request().Context(), portalName, link)
 
 	if err != nil {
@@ -126,13 +121,7 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 
 func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 
-	encodedLink, portalName, err := h.parseAndValidateIdAndPortal(c)
-
-	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
-	}
-
-	link, err := url.QueryUnescape(encodedLink)
+	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
 	if err != nil {
 		return h.View(c, ui.ErrorBlock(err.Error()))
@@ -146,6 +135,7 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 
 	for {
 		select {
+
 		case content, ok := <-contentChan:
 			if !ok {
 				contentChan = nil
@@ -157,6 +147,7 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 				return h.View(c, ui.ErrorBlock(err.Error()))
 			}
 			c.Response().Flush()
+
 		case err, ok := <-errChan:
 			if ok && err != nil {
 				c.Echo().Logger.Error(err.Error())
@@ -177,17 +168,7 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 
 func (h *ArticleHandler) CreateFavoriteArticle(c echo.Context) error {
 
-	encodedLink, portalName, err := h.parseAndValidateIdAndPortal(c)
-
-	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
-	}
-
-	link, err := url.QueryUnescape(encodedLink)
-
-	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
-	}
+	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
 	if !h.isAuthorized(c) {
 		return h.RedirectToLogin(c)
@@ -294,7 +275,14 @@ func (h *ArticleHandler) parseAndValidateIdAndPortal(c echo.Context) (string, st
 	if portalName == "" {
 		return "", "", errors.New("portal is required")
 	}
-	return encodedLink, portalName, nil
+
+	link, err := url.QueryUnescape(encodedLink)
+	if err != nil {
+		c.Echo().Logger.Error(err.Error())
+		return "", "", errors.New("Invalid link")
+	}
+
+	return link, portalName, nil
 }
 
 func (h *ArticleHandler) isAuthorized(c echo.Context) bool {

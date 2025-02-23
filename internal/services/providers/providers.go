@@ -10,6 +10,7 @@ import (
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hindu"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hindustan"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/martinfowler"
+	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/natgeo"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/techcrunch"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/verge"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/wired"
@@ -91,6 +92,7 @@ func Init() {
 	fiercepharma := fiercepharma.NewFiercePharma()
 	martinfowler := martinfowler.NewMartinFowler()
 	davecheney := davecheney.NewDaveCheney()
+  natgeo := natgeo.NewNatGeo()
 
 	Register(thehindu)
 	Register(hindustanTimes)
@@ -100,4 +102,5 @@ func Init() {
 	Register(fiercepharma)
 	Register(davecheney)
 	Register(martinfowler)
+  Register(natgeo)
 }

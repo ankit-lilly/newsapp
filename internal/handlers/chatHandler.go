@@ -59,21 +59,19 @@ func (h *ChatHandler) HandleConnect(s *melody.Session) {
 		return
 	}
 
-	// Initialize chat history in the session keys.
 	s.Keys["history"] = prompts.GetChatPrompt(articleDetail.Content)
 
 	history := s.Keys["history"].([]api.Message)
+
 	if len(history) <= 3 {
 		cmp := articles.Assistant(greeting.Role, greeting.Content)
 		h.WebSocketResponse(s.Request.Context(), cmp, s)
-		// Append greeting to history.
 		history = append(history, greeting)
 		s.Keys["history"] = history
 	}
 }
 
 func (h *ChatHandler) HandleDisconnect(s *melody.Session) {
-	// Clear the session's history on disconnect.
 	delete(s.Keys, "history")
 	s.Write([]byte("disconnected"))
 }
@@ -99,7 +97,8 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 		return
 	}
 
-	// Retrieve the chat history from session keys.
+	slog.Debug("Received message:", wsMessage)
+
 	historyRaw, ok := s.Keys["history"]
 	if !ok {
 		s.Write([]byte("Invalid session"))
@@ -112,7 +111,6 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 		return
 	}
 
-	// Append user's message to the session's chat history.
 	history = append(history, api.Message{
 		Role:    "user",
 		Content: wsMessage.Chat_mesage,
@@ -122,14 +120,16 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 	a.WebSocketResponse(s.Request.Context(), articles.User("user", wsMessage.Chat_mesage), s)
 	a.WebSocketResponse(s.Request.Context(), articles.AssistantLoader(), s)
 
+	slog.Debug("Chat history:", history)
+
 	resp, err := a.articleService.SendChatRequest(s.Request.Context(), history)
+
 	if err != nil {
 		slog.Error(err.Error(), err)
 		a.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}
 
-	// Append assistant's response to the session's chat history.
 	history = append(history, api.Message{
 		Role:    resp.Role,
 		Content: resp.Content,

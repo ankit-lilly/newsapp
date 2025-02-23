@@ -19,6 +19,7 @@ window.htmx.defineExtension("stream", {
     const parser = smd.parser(renderer);
 
     detail.requestConfig.swap = "none";
+
     detail.xhr.addEventListener("readystatechange", () => {
       if (detail.xhr.readyState === 2 || detail.xhr.readyState === 3) {
         if (isFirstChunk) {
@@ -39,6 +40,7 @@ window.htmx.defineExtension("stream", {
       if (detail.xhr.readyState === 4) {
         element["__streamedChars"] = 0;
         element.__streamed = true;
+        smd.parser_end(parser)
       }
     });
 
