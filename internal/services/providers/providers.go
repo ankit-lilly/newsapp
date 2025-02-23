@@ -20,9 +20,9 @@ import (
 Providers interface is used to define the methods that each provider should implement.
 */
 type Providers interface {
-	Categories() map[string]string
-	ID() string
-	Name() string
+	GetCategories() map[string]string
+	GetID() string
+	GetName() string
 	FeedURL(category string) string
 	Fetch(category string) ([]models.Article, error)
 	Parse(url string) (models.Article, error)
@@ -41,7 +41,7 @@ type ProviderCategory struct {
 var Registry = map[string]Providers{}
 
 func Register(p Providers) {
-	Registry[p.ID()] = p
+	Registry[p.GetID()] = p
 }
 
 func Get(id string) (Providers, error) {
@@ -65,9 +65,9 @@ func GetProviderCategories() []ProviderCategory {
 
 		var portalcats ProviderCategory
 
-		portalcats.ID = portal.ID()
-		portalcats.Name = portal.Name()
-		portalcats.Categories = portal.Categories()
+		portalcats.ID = portal.GetID()
+		portalcats.Name = portal.GetName()
+		portalcats.Categories = portal.GetCategories()
 		portalcats.HasChildren = portal.HasCategories()
 		providersCategory = append(providersCategory, portalcats)
 	}
@@ -85,22 +85,22 @@ Init registers all the providers.
 
 func Init() {
 	thehindu := hindu.NewTheHinduCom()
-	hindustanTimes := hindustan.NewHindusTanTimes()
-	wired := wired.NewWired()
+	fiercepharma := fiercepharma.NewFiercePharma()
+	davecheney := davecheney.NewDaveCheney()
+	hindustan := hindustan.NewHindustanTimes()
+	martinfowler := martinfowler.NewMartinFowler()
 	techcrunch := techcrunch.NewTechcrunch()
 	verge := verge.NewVerge()
-	fiercepharma := fiercepharma.NewFiercePharma()
-	martinfowler := martinfowler.NewMartinFowler()
-	davecheney := davecheney.NewDaveCheney()
-  natgeo := natgeo.NewNatGeo()
+	wired := wired.NewWired()
+	natgeo := natgeo.NewNatGeo()
 
 	Register(thehindu)
-	Register(hindustanTimes)
-	Register(techcrunch)
-	Register(wired)
-	Register(verge)
+	Register(natgeo)
 	Register(fiercepharma)
 	Register(davecheney)
+	Register(wired)
+	Register(hindustan)
 	Register(martinfowler)
-  Register(natgeo)
+	Register(techcrunch)
+	Register(verge)
 }

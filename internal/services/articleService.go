@@ -128,19 +128,19 @@ func (s *ArticleService) GetRandomArticles(ctx context.Context) ([]models.Articl
 	)
 
 	for _, provider := range providers.Registry {
-    if provider.ID() == "natgeo" {
-      continue
-    }
+		if provider.GetID() == "natgeo" {
+			continue
+		}
 		provider := provider
 		eg.Go(func() error {
 			var category string
 			if provider.HasCategories() {
-				category = slices.Collect(maps.Values(provider.Categories()))[rand.Intn(len(provider.Categories()))]
+				category = slices.Collect(maps.Values(provider.GetCategories()))[rand.Intn(len(provider.GetCategories()))]
 			} else {
 				category = ""
 			}
 
-			articles, err := s.GetAll(ctx, category, provider.ID())
+			articles, err := s.GetAll(ctx, category, provider.GetID())
 
 			if err != nil {
 				return err

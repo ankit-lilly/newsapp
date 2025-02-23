@@ -7,27 +7,27 @@ import (
 	"strings"
 )
 
-type FeedFetcher struct {
+type RSSFetcher struct {
 	parser *gofeed.Parser
 	portal string
 }
 
-func NewFeedFetcher(portal string) *FeedFetcher {
-	return &FeedFetcher{parser: gofeed.NewParser(), portal: portal}
+func NewRSSFetcher(portal string) *RSSFetcher {
+	return &RSSFetcher{
+		parser: gofeed.NewParser(),
+		portal: portal,
+	}
 }
 
-func (f *FeedFetcher) Fetch(url string) ([]models.Article, error) {
-
+func (f *RSSFetcher) Fetch(url string) ([]models.Article, error) {
 	feed, err := f.parser.ParseURL(url)
-
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse RSS feed: %w", err)
 	}
 
-	var article []models.Article
-
+	var articles []models.Article
 	for _, item := range feed.Items {
-		article = append(article, models.Article{
+		articles = append(articles, models.Article{
 			Title:       strings.TrimSpace(item.Title),
 			Description: strings.TrimSpace(item.Description),
 			Link:        strings.TrimSpace(item.Link),
@@ -35,5 +35,5 @@ func (f *FeedFetcher) Fetch(url string) ([]models.Article, error) {
 			Portal:      f.portal,
 		})
 	}
-	return article, nil
+	return articles, nil
 }
