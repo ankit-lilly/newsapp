@@ -137,7 +137,7 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 
 	s.Keys["history"] = history
 
-	formatedContent := strings.Split(resp.Content, "\n\n")
+	formatedContent := strings.Split(resp.Content, "\n")
 	paragraphWrapped := make([]string, 0)
 
 	for _, content := range formatedContent {
