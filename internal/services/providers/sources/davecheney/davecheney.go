@@ -65,7 +65,3 @@ func (t *DaveCheney) Fetch(category string) ([]models.Article, error) {
 
 	return articles, nil
 }
-
-func (t *DaveCheney) IsCategoryValid(category string) bool {
-	return (category == "")
-}

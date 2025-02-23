@@ -74,6 +74,8 @@ templ Chat(portal string, id string) {
 						hx-on:submit="this.reset()"
 						ws-send
 					>
+						<input ws-send type="hidden" name="portal" value={ portal }/>
+						<input ws-send type="hidden" name="articleid" value={ url.QueryEscape(id) }/>
 						<input
 							name="chat_message"
 							type="text"

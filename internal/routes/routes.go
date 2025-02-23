@@ -13,7 +13,6 @@ import (
 	"github.com/olahol/melody"
 )
 
-// RegisterRoutes wires up the application's routes and dependencies.
 func RegisterRoutes(e *echo.Echo, db *sql.DB, llmHandler *llm.LLMHandler) {
 
 	articleRepository := repositories.NewArticleRepository(db)

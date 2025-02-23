@@ -63,7 +63,3 @@ func (t *FiercePharma) Fetch(category string) ([]models.Article, error) {
 
 	return articles, nil
 }
-
-func (t *FiercePharma) IsCategoryValid(category string) bool {
-	return (category == "")
-}

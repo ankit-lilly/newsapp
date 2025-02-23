@@ -31,6 +31,15 @@ func createMigrations() error {
 			password TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 		);`,
+		`
+    CREATE TABLE IF NOT EXISTS chat_history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      session_id TEXT NOT NULL,
+      article_id TEXT NOT NULL,
+      portal TEXT NOT NULL,
+      history JSON NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );`,
 		`CREATE TABLE IF NOT EXISTS articles (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			user_id INTEGER NOT NULL,

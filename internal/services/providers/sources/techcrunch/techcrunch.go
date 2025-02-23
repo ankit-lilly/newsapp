@@ -42,7 +42,3 @@ func (t *Techcrunch) FeedURL(category string) string {
 func (t *Techcrunch) Fetch(category string) ([]models.Article, error) {
 	return t.Fetcher.Fetch(t.FeedURL(category))
 }
-
-func (t *Techcrunch) IsCategoryValid(category string) bool {
-	return (category == "")
-}

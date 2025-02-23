@@ -5,8 +5,6 @@ import (
 	"github.com/ankit-lilly/newsapp/internal/models"
 	"github.com/ankit-lilly/newsapp/internal/services/feed"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources"
-	"maps"
-	"slices"
 )
 
 const ID = "thehindu"
@@ -70,11 +68,4 @@ func (t *TheHinduCom) FeedURL(category string) string {
 
 func (t *TheHinduCom) Fetch(category string) ([]models.Article, error) {
 	return t.Fetcher.Fetch(t.FeedURL(category))
-}
-
-func (t *TheHinduCom) IsCategoryValid(category string) bool {
-	if category == "" {
-		return true
-	}
-	return slices.Contains(slices.Collect(maps.Values(t.Categories)), category)
 }

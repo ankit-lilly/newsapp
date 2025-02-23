@@ -8,8 +8,6 @@ import (
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources"
 )
 
-//https://martinfowler.com/feed.atom
-
 type MartinFowler struct {
 	sources.Source
 }

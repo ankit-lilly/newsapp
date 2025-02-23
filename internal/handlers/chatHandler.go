@@ -35,11 +35,13 @@ func NewChatHandler(articleService *services.ArticleService, ws *melody.Melody) 
 
 type WebsocketMessage struct {
 	Chat_mesage string `json:"chat_message"`
+	Portal      string `json:"portal"`
+	ArticleId   string `json:"articleid"`
 }
 
 func (h *ChatHandler) HandleConnect(s *melody.Session) {
 	sessionid := s.Request.Header.Get("Sec-WebSocket-Key")
-	slog.Info("Connected to chat, sessionid:", sessionid)
+	slog.Debug("Connected to chat, sessionid:", sessionid)
 	link, portalName, err := h.extractKeysFromSession(s)
 	if err != nil {
 		slog.Error(err.Error(), err)
@@ -52,18 +54,19 @@ func (h *ChatHandler) HandleConnect(s *melody.Session) {
 		Content: "How can I help you today?",
 	}
 
-	articleDetail, err := h.articleService.GetArticleById(s.Request.Context(), portalName, link)
+	articleDetail, err := h.articleService.GetRawArticle(s.Request.Context(), portalName, link)
+
 	if err != nil {
 		slog.Error(err.Error(), err)
 		h.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}
 
-	s.Keys["history"] = prompts.GetChatPrompt(articleDetail.Content)
+	s.Keys["history"] = prompts.GetChatPrompt(articleDetail)
 
 	history := s.Keys["history"].([]api.Message)
 
-	if len(history) <= 3 {
+	if len(history) <= 2 {
 		cmp := articles.Assistant(greeting.Role, greeting.Content)
 		h.WebSocketResponse(s.Request.Context(), cmp, s)
 		history = append(history, greeting)
@@ -97,7 +100,7 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 		return
 	}
 
-	slog.Debug("Received message:", wsMessage)
+	slog.Info("Received message:", wsMessage)
 
 	historyRaw, ok := s.Keys["history"]
 	if !ok {
@@ -185,8 +188,12 @@ func (h *ChatHandler) parseAndValidateIdAndPortal(c echo.Context) (string, strin
 func (a *ChatHandler) WebSocketResponse(ctx context.Context, cmp templ.Component, session *melody.Session) error {
 	var buffer bytes.Buffer
 	cmp.Render(ctx, &buffer)
-	a.ws.BroadcastFilter(buffer.Bytes(), func(q *melody.Session) bool {
-		return q.Request.URL.Path == session.Request.URL.Path && q.Request.Header.Get("Sec-WebSocket-Key") == session.Request.Header.Get("Sec-WebSocket-Key")
-	})
-	return nil
+
+	return session.Write(buffer.Bytes())
+	/*
+		a.ws.BroadcastFilter(buffer.Bytes(), func(q *melody.Session) bool {
+			return q.Request.URL.Path == session.Request.URL.Path && q.Request.Header.Get("Sec-WebSocket-Key") == session.Request.Header.Get("Sec-WebSocket-Key")
+		})
+		return nil
+	*/
 }

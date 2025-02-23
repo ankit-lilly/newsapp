@@ -16,6 +16,7 @@ import (
 	"github.com/ankit-lilly/newsapp/internal/services/llm"
 	"github.com/ankit-lilly/newsapp/internal/services/providers"
 	"github.com/ollama/ollama/api"
+	"jaytaylor.com/html2text"
 )
 
 type ArticleService struct {
@@ -55,8 +56,22 @@ func (s *ArticleService) GetArticleById(ctx context.Context, portalName, id stri
 
 }
 
-func (s *ArticleService) GetArticleSummary(ctx context.Context, portalName, id string) (<-chan string, <-chan error) {
+func (s *ArticleService) GetRawArticle(ctx context.Context, portalName, id string) (string, error) {
 	article, err := s.GetArticleById(ctx, portalName, id)
+
+	if err != nil {
+		return "", err
+	}
+
+	articleText, err := html2text.FromString(article.Content)
+	if err != nil {
+		return "", err
+	}
+	return articleText, nil
+}
+
+func (s *ArticleService) GetArticleSummary(ctx context.Context, portalName, id string) (<-chan string, <-chan error) {
+	article, err := s.GetRawArticle(ctx, portalName, id)
 
 	errChan := make(chan error, 1)
 
@@ -65,7 +80,7 @@ func (s *ArticleService) GetArticleSummary(ctx context.Context, portalName, id s
 		return nil, errChan
 	}
 
-	prompt := fmt.Sprintf("Summarize the following article: %q", article.Content)
+	prompt := fmt.Sprintf("Summarize the following article: %q", article)
 	return s.llm.GenerateRequest(ctx, prompts.SUMMARY, prompt, true)
 }
 

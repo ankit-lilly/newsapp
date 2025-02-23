@@ -19,9 +19,6 @@ import (
 	"github.com/ollama/ollama/api"
 )
 
-func main() {
-}
-
 type App struct {
 	echo         *echo.Echo
 	db           *sql.DB
@@ -77,7 +74,7 @@ func (a *App) Init(staticFiles embed.FS) error {
 	a.echo.Use(authMiddleware.JWT())
 	a.echo.GET("/static/*", echo.WrapHandler(http.FileServer(http.FS(staticFiles))))
 
-	llmHandler := llm.New(a.ollamaClient, "llama3.2")
+  llmHandler := llm.New(a.ollamaClient, "llama3.2:latest")
 	routes.RegisterRoutes(a.echo, a.db, llmHandler)
 
 	return nil

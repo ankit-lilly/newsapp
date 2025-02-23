@@ -34,10 +34,6 @@ func NewVerge() *Verge {
 	}
 }
 
-func (t *Verge) HasCategories() bool {
-	return false
-}
-
 func (t *Verge) FeedURL(category string) string {
 	feedURL := fmt.Sprintf("%s/%s", t.BaseURL, "rss/index.xml")
 	return feedURL

@@ -14,7 +14,6 @@ Capture key points and essential details, present clear and concise information,
 
 - Answer questions about terms, concepts, and references used in the post
 - Clarify the meaning of specific words or phrases from the post
-- Explain any technical concepts mentioned in the post
 - Provide context for references made within the post
 
 I will not:
@@ -41,12 +40,8 @@ func GetChatPrompt(content string) []api.Message {
 			Content: CHAT,
 		},
 		{
-			Role:    "user",
+			Role:    "system",
 			Content: fmt.Sprintf(CHAT_USER, content),
-		},
-		{
-			Role:    "assistant",
-			Content: CHAT_ASSISTANT,
 		},
 	}
 

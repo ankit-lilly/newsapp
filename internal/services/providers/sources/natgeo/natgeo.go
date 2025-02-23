@@ -36,7 +36,9 @@ func NewNatGeo() *NatGeo {
 				SubtitleSelector: "div.[data-testid='ContentHeaderHed']",
 				DateSelector:     "div.dateTime",
 				TitleProcessor:   func(title string) string { return strings.TrimSpace(title) },
-				ContentFilter:    sources.ContentFilter{},
+				ContentFilter: sources.ContentFilter{
+					RemoveSelectors: []string{"button", ".natgeo-ad"},
+				},
 			},
 		},
 	}
@@ -48,8 +50,4 @@ func (t *NatGeo) FeedURL(category string) string {
 
 func (t *NatGeo) Fetch(category string) ([]models.Article, error) {
 	return t.Fetcher.Fetch(t.FeedURL(category))
-}
-
-func (t *NatGeo) IsCategoryValid(category string) bool {
-	return (category == "")
 }
