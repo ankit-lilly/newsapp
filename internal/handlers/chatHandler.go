@@ -188,12 +188,5 @@ func (h *ChatHandler) parseAndValidateIdAndPortal(c echo.Context) (string, strin
 func (a *ChatHandler) WebSocketResponse(ctx context.Context, cmp templ.Component, session *melody.Session) error {
 	var buffer bytes.Buffer
 	cmp.Render(ctx, &buffer)
-
 	return session.Write(buffer.Bytes())
-	/*
-		a.ws.BroadcastFilter(buffer.Bytes(), func(q *melody.Session) bool {
-			return q.Request.URL.Path == session.Request.URL.Path && q.Request.Header.Get("Sec-WebSocket-Key") == session.Request.Header.Get("Sec-WebSocket-Key")
-		})
-		return nil
-	*/
 }

@@ -4,9 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
-
 	"github.com/ankit-lilly/newsapp/internal/models"
+	"log/slog"
 )
 
 var (
@@ -30,6 +29,7 @@ func (a *userRepository) InsertUser(ctx context.Context, user *models.User) (int
 	query := `INSERT INTO users (username, email, password ) VALUES ($1, $2, $3)`
 	res, err := a.DB.Exec(query, user.Username, user.Email, user.Password)
 	if err != nil {
+		slog.Error("Error inserting user", err)
 		return 0, err
 	}
 	lastInsertId, err := res.LastInsertId()
@@ -43,7 +43,7 @@ func (a *userRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 	err := a.DB.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.Password, &user.CreatedAt)
 
 	if err != nil {
-		fmt.Println(err)
+		slog.Error("Error getting user", err)
 		if err == sql.ErrNoRows {
 			return nil, NoRecordsFound
 		}
