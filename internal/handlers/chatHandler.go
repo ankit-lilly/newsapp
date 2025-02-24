@@ -35,8 +35,6 @@ func NewChatHandler(articleService *services.ArticleService, ws *melody.Melody) 
 
 type WebsocketMessage struct {
 	Chat_mesage string `json:"chat_message"`
-	Portal      string `json:"portal"`
-	ArticleId   string `json:"articleid"`
 }
 
 func (h *ChatHandler) HandleConnect(s *melody.Session) {

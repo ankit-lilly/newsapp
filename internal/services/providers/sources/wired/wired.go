@@ -34,7 +34,7 @@ func NewWired() *Wired {
 			Fetcher:    feed.NewRSSFetcher(ID),
 			ParseConfig: sources.ParseConfig{
 				TitleSelector:    "title",
-				ContentSelector:  "div.article__body",
+				ContentSelector:  "[class*='ArticlePageChunks']",
 				SubtitleSelector: "div.[data-testid='ContentHeaderHed']",
 				DateSelector:     "div.dateTime",
 				ContentFilter: sources.ContentFilter{
