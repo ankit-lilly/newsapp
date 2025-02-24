@@ -11,6 +11,7 @@ import (
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hindustan"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/martinfowler"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/natgeo"
+	scientificamerican "github.com/ankit-lilly/newsapp/internal/services/providers/sources/scientificAmerican"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/techcrunch"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/verge"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/wired"
@@ -93,6 +94,7 @@ func Init() {
 	verge := verge.NewVerge()
 	wired := wired.NewWired()
 	natgeo := natgeo.NewNatGeo()
+	scientificamerican := scientificamerican.NewScientificAmerican()
 
 	Register(thehindu)
 	Register(natgeo)
@@ -103,4 +105,5 @@ func Init() {
 	Register(martinfowler)
 	Register(techcrunch)
 	Register(verge)
+	Register(scientificamerican)
 }
