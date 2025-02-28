@@ -72,6 +72,11 @@ func (p *Source) HasCategories() bool {
 }
 
 func (p *Source) IsCategoryValid(category string) bool {
+
+	if p.GetID() == "highscalability" {
+		return strings.HasPrefix(category, "page/") || category == ""
+	}
+
 	if !p.HasCategories() {
 		return category == ""
 	}

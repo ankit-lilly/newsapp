@@ -1,4 +1,4 @@
-import * as smd from "streaming-markdown"
+import * as smd from "streaming-markdown";
 
 window.htmx.defineExtension("stream", {
   onEvent(name, evt) {
@@ -40,7 +40,7 @@ window.htmx.defineExtension("stream", {
       if (detail.xhr.readyState === 4) {
         element["__streamedChars"] = 0;
         element.__streamed = true;
-        smd.parser_end(parser)
+        smd.parser_end(parser);
       }
     });
 
@@ -141,7 +141,7 @@ class ThemeManager {
 
     this.themes = {
       LIGHT: "lemonade",
-      DARK: "coffee",
+      DARK: "everforest",
     };
 
     // Get the theme toggle controls.
@@ -195,7 +195,9 @@ class ThemeManager {
    * Handles the change event on a theme controller.
    */
   handleControllerChange(event) {
+    console.info("Why is this not working");
     const theme = event.target.checked ? this.themes.DARK : this.themes.LIGHT;
+    console.info(`Setting theme to ${theme}`);
     this.setTheme(theme);
   }
 
@@ -339,14 +341,14 @@ document.body.addEventListener("htmx:afterSettle", () => {
     return;
   }
 
-  document.querySelectorAll(".active").forEach((heading) => {
-    heading.classList.remove("active");
+  document.querySelectorAll(".menu-active").forEach((heading) => {
+    heading.classList.remove("menu-active");
   });
 
   const activeLink = document.querySelector(`.navbar a[href="${currentPath}"]`);
 
   if (activeLink) {
-    activeLink.classList.add("active");
-    activeLink?.parentNode?.classList?.add("active");
+    activeLink.classList.add("menu-active");
+    activeLink?.parentNode?.classList?.add("menu-active");
   }
 });

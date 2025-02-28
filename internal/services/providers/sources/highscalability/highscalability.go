@@ -1,6 +1,7 @@
 package highscalability
 
 import (
+	"log/slog"
 	"strings"
 
 	"github.com/ankit-lilly/newsapp/internal/models"
@@ -45,10 +46,14 @@ func NewHighScalability() *HighScalability {
 }
 
 func (t *HighScalability) FeedURL(category string) string {
-	return t.BaseURL + "/page/2"
+	if category == "" {
+		category = "/page/2"
+	}
+	return t.BaseURL + "/" + category
 }
 
 func (t *HighScalability) Fetch(category string) ([]models.Article, error) {
+	slog.Info("Fetching articles", category)
 	articles, err := t.Fetcher.Fetch(t.FeedURL(category))
 
 	if err != nil {

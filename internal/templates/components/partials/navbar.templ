@@ -3,6 +3,7 @@ package partials
 import (
 	"fmt"
 	"github.com/ankit-lilly/newsapp/internal/services/providers"
+  "strings"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
 )
 
@@ -26,10 +27,10 @@ templ NavBar() {
 }
 
 func getStyle(currentPath, linkHref string) string {
-	if currentPath == linkHref {
-		return "font-bold mt-2 mb-2 active"
+	if strings.TrimSpace(currentPath) == strings.TrimSpace(linkHref) {
+		return "font-bold mt-2 mb-2 menu-active"
 	}
-	return "font-bold mt-2 mb-2"
+	return "font-bold mt-2 mb-2" 
 }
 
 templ GetUserNav(currentPath string, isAuthorized bool) {
@@ -75,14 +76,14 @@ templ NavItems(currentPath string) {
 			<li>
 				<details>
 					<summary
-						class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.Name)) }
+						class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.ID)) }
 					>{ p.Name }</summary>
 					<ul class="p-2">
 						for key, value := range p.Categories {
 							<li>
 								<a
 									onclick="this.closest('details').removeAttribute('open')"
-									class={ getStyle(currentPath, fmt.Sprintf("/news/%s/%s", p.Name, value)) }
+									class={ getStyle(currentPath, fmt.Sprintf("/news/%s/%s", p.ID, value)) }
 									href={ templ.URL(fmt.Sprintf("/news/%s/%s", p.ID, value)) }
 									preload="mouseover"
 								>{ key }</a>
@@ -94,7 +95,7 @@ templ NavItems(currentPath string) {
 		} else {
 			<li class>
 				<summary
-					class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.Name)) }
+					class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.ID)) }
 				>
 					<a
 						href={ templ.URL(fmt.Sprintf("/news/%s", p.ID)) }
@@ -113,7 +114,7 @@ templ NavItems(currentPath string) {
 templ DesktopNav() {
 	<div class="hidden lg:flex">
 		<ul
-			class="navbar menu menu-horizontal px-1"
+			class="navbar menu menu-horizontal flex-wrap"
 		>
 			@NavItems(ctx.Value("currentPath").(string))
 		</ul>

@@ -6,6 +6,21 @@ import (
 	"net/url"
 )
 
+func getURL(portal string, page string) string {
+	return fmt.Sprintf("/news/%s/%s", portal, page)
+}
+
+templ Pager(portal, page string) {
+	<div id="pagerEl" hx-swap-oob="outerHTML:#pagerEl">
+		<div
+			hx-get={ getURL(portal, page) }
+			hx-trigger="intersect once"
+			hx-target="#main-el"
+			hx-swap="beforeend"
+		></div>
+	</div>
+}
+
 templ ArticleList(articles []models.Article) {
 	<div
 		class="flex flex-col items-center"

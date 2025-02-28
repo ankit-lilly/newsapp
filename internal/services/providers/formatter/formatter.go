@@ -34,7 +34,7 @@ func FormatNode(sel *goquery.Selection) string {
 	case tag == "a":
 		href, _ := sel.Attr("href")
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<a href='%s' class='link-primary hover:underline'>%s</a>", href, content)
+		return fmt.Sprintf("<a href='%s' class='link-accent link'>%s</a>", href, content)
 
 	case tag == "code":
 		content := processNodeContents(sel)
@@ -58,19 +58,19 @@ func FormatNode(sel *goquery.Selection) string {
 
 	case tag == "h1":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<h1 class='text-3xl font-bold mt-6 mb-2'>%s</h1>", content)
+		return fmt.Sprintf("<h1 class='text-xl font-bold mt-6 mb-2'>%s</h1>", content)
 
 	case tag == "h2":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<h2 class='text-2xl font-semibold mt-5 mb-2'>%s</h2>", content)
+		return fmt.Sprintf("<h2 class='text-xl font-semibold mt-5 mb-2'>%s</h2>", content)
 
 	case tag == "h3":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<h3 class='text-xl font-medium mt-4 mb-2'>%s</h3>", content)
+		return fmt.Sprintf("<h3 class='text-xl text-secondary font-medium mt-4 mb-2'>%s</h3>", content)
 
 	case tag == "h4", tag == "h5", tag == "h6":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<%s class='font-medium mt-3 mb-2'>%s</%s>", tag, content, tag)
+		return fmt.Sprintf("<%s class='font-medium text-secondary  mt-3 mb-2'>%s</%s>", tag, content, tag)
 
 	case tag == "pre":
 		content := processNodeContents(sel)
@@ -78,7 +78,7 @@ func FormatNode(sel *goquery.Selection) string {
 
 	case tag == "blockquote":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<blockquote class='border-l-4 border-gray-300 pl-4 italic mt-4'>%s</blockquote>", content)
+		return fmt.Sprintf("<blockquote class='border-l-4 border-gray-300 pl-4 italic mt-4 text-secondary'>%s</blockquote>", content)
 
 	case tag == "table":
 		content := processNodeContents(sel)

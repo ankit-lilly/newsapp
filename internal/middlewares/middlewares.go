@@ -32,6 +32,7 @@ func IsHTMXRequest(next echo.HandlerFunc) echo.HandlerFunc {
 		if htmxHeader == "true" {
 			c.Set("htmxRequest", true)
 		} else {
+			c.Request().Header.Set("HX-Request", "false")
 			c.Set("htmxRequest", false)
 		}
 		c.Set("currentPath", c.Request().URL.Path)

@@ -35,13 +35,38 @@ func (h *ArticleHandler) ListByCategory(c echo.Context) error {
 	articleList, err := h.articleService.GetAll(c.Request().Context(), category, portal)
 
 	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
+		return h.RenderError(c, err)
 	}
+
+	c.Echo().Logger.Info("High Scalability", category)
+
+	if portal != "highscalability" {
+		return h.Render(c, RenderProps{
+			Title:            "Posts",
+			Component:        articles.ArticleList(articleList),
+			WrapperComponent: pages.Index,
+		})
+	}
+
+	if category == "" {
+		category = "page/3"
+	}
+
+	categoryNum := strings.Split(category, "/")[1]
+
+	categoryNumInt, err := strconv.Atoi(categoryNum)
+
+	if err != nil {
+		return h.RenderError(c, err)
+	}
+
+	newCategory := fmt.Sprintf("page/%d", categoryNumInt+1)
 
 	return h.Render(c, RenderProps{
 		Title:            "Posts",
-		Component:        articles.ArticleList(articleList),
+		Component:        ui.Merge([]templ.Component{articles.ArticleList(articleList), articles.Pager(portal, newCategory)}),
 		WrapperComponent: pages.Index,
+		CacheStrategy:    "no-cache",
 	})
 }
 
@@ -61,13 +86,18 @@ func (h *ArticleHandler) List(c echo.Context) error {
 	}
 
 	if err != nil {
-		return h.Render(c, RenderProps{
-			Title:            "Error",
-			Component:        ui.ErrorBlock(err.Error()),
-			WrapperComponent: pages.Index,
-		})
+		return h.RenderError(c, err)
 	}
 
+	if portalName == "highscalability" {
+		c.Echo().Logger.Info("High Scalability")
+		return h.Render(c, RenderProps{
+			Title:            "Posts",
+			Component:        ui.Merge([]templ.Component{articles.ArticleList(articleList), articles.Pager(portalName, "page/3")}),
+			WrapperComponent: pages.Index,
+			CacheStrategy:    "no-cache",
+		})
+	}
 	return h.Render(c, RenderProps{
 		Title:            "Posts",
 		Component:        articles.ArticleList(articleList),
@@ -80,12 +110,12 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
 	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
+		return h.RenderError(c, err)
 	}
 	articleDetail, err := h.articleService.GetArticleById(c.Request().Context(), portalName, link)
 
 	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
+		return h.RenderError(c, err)
 	}
 
 	if !h.isAuthorized(c) {
@@ -101,7 +131,7 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 	if ok {
 		articleId, err := h.articleService.IsFavorite(c.Request().Context(), link, userId)
 		if err != nil && err.Error() != "sql: no rows in result set" {
-			return h.View(c, ui.ErrorBlock("Error checking if article is favorite"))
+			return h.RenderError(c, errors.New("Error checking if article is favorite"))
 		}
 
 		if articleId != 0 {
@@ -124,7 +154,7 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
 	if err != nil {
-		return h.View(c, ui.ErrorBlock(err.Error()))
+		return h.RenderError(c, err)
 	}
 
 	contentChan, errChan := h.articleService.GetArticleSummary(c.Request().Context(), portalName, link)
@@ -142,7 +172,7 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 				return nil
 			}
 
-			if _, err := fmt.Fprintf(w, content); err != nil {
+			if _, err := fmt.Fprintf(w, "%s", content); err != nil {
 				c.Echo().Logger.Error(err)
 				return h.View(c, ui.ErrorBlock(err.Error()))
 			}
@@ -283,14 +313,4 @@ func (h *ArticleHandler) parseAndValidateIdAndPortal(c echo.Context) (string, st
 	}
 
 	return link, portalName, nil
-}
-
-func (h *ArticleHandler) isAuthorized(c echo.Context) bool {
-	isAuthorized, ok := c.Get("isAuthorized").(bool)
-
-	if !ok || !isAuthorized {
-		return false
-	}
-
-	return true
 }

@@ -143,10 +143,8 @@ func (s *ArticleService) GetRandomArticles(ctx context.Context) ([]models.Articl
 	)
 
 	for _, provider := range providers.Registry {
-		if provider.GetID() == "natgeo" {
-			continue
-		}
 		provider := provider
+
 		eg.Go(func() error {
 			var category string
 			if provider.HasCategories() {
@@ -167,8 +165,10 @@ func (s *ArticleService) GetRandomArticles(ctx context.Context) ([]models.Articl
 				j := rand.Intn(i + 1)
 				articles[i], articles[j] = articles[j], articles[i]
 			}
-
-			articles = articles[:rand.Intn(len(articles))]
+			maxArticles := 2
+			if len(articles) > maxArticles {
+				articles = articles[:maxArticles]
+			}
 			results = append(results, articles...)
 			mu.Unlock()
 			return nil
