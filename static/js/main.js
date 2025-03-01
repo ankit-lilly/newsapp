@@ -144,32 +144,22 @@ class ThemeManager {
       DARK: "everforest",
     };
 
-    // Get the theme toggle controls.
-    this.controllers = {
-      desktop: document.querySelector("#themeswitch"),
-      mobile: document.querySelector("#themeswitch-mobile"),
-    };
-
-    // Bind the event handlers so they can be removed later.
     this.handleControllerChange = this.handleControllerChange.bind(this);
     this.handleSystemThemeChange = this.handleSystemThemeChange.bind(this);
 
     this.init();
   }
 
-  /**
-   * Initialize the theme manager by setting up event listeners,
-   * applying the saved (or default) theme, and listening for system changes.
-   */
   init() {
+    this.controllers = {
+      desktop: document.querySelector("#themeswitch"),
+      mobile: document.querySelector("#themeswitch-mobile"),
+    };
     this.setupControllerListeners();
     this.applySavedOrDefaultTheme();
     this.setupSystemThemeListener();
   }
 
-  /**
-   * Removes all event listeners. Called before re-initialization to prevent duplicates.
-   */
   destroy() {
     Object.values(this.controllers).forEach((controller) => {
       if (controller) {
@@ -180,9 +170,6 @@ class ThemeManager {
     mediaQuery.removeEventListener("change", this.handleSystemThemeChange);
   }
 
-  /**
-   * Add change event listeners to each theme controller.
-   */
   setupControllerListeners() {
     Object.values(this.controllers).forEach((controller) => {
       if (controller) {
@@ -191,9 +178,6 @@ class ThemeManager {
     });
   }
 
-  /**
-   * Handles the change event on a theme controller.
-   */
   handleControllerChange(event) {
     console.info("Why is this not working");
     const theme = event.target.checked ? this.themes.DARK : this.themes.LIGHT;
@@ -201,10 +185,6 @@ class ThemeManager {
     this.setTheme(theme);
   }
 
-  /**
-   * Applies the given theme by updating the DOM attribute, saving to localStorage,
-   * and synchronizing the state of all controllers.
-   */
   setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
@@ -215,9 +195,6 @@ class ThemeManager {
     });
   }
 
-  /**
-   * Loads the saved theme from localStorage (if any) or applies the system default.
-   */
   applySavedOrDefaultTheme() {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) {
@@ -289,9 +266,10 @@ document.addEventListener("htmx:afterSettle", () => {
   window.themeManager = new ThemeManager();
 });
 
-/*
- * Remove the loading indicator when the assistant replies.
- */
+document.addEventListener("htmx:historyRestore", function () {
+  window.themeManager = new ThemeManager();
+});
+
 document.body.addEventListener("htmx:wsAfterMessage", (event) => {
   const messageContent = document.getElementById("notifications");
   const input = document.getElementById("chat_message_input");
@@ -320,7 +298,6 @@ document.body.addEventListener("htmx:wsAfterMessage", (event) => {
   ) {
     const parentNode = loader.parentNode;
     if (parentNode) {
-      console.info("Removing loading indicator");
       const siblingOfParent = parentNode.previousSibling;
       parentNode.remove();
       if (siblingOfParent && siblingOfParent.parentNode) {

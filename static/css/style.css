@@ -161,7 +161,7 @@ img {
   width: 500px;
 }
 
-strong {
+article strong {
   @apply text-secondary;
   @apply font-bold;
   @apply mt-2 mb-2;

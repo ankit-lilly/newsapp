@@ -3,8 +3,8 @@ package partials
 import (
 	"fmt"
 	"github.com/ankit-lilly/newsapp/internal/services/providers"
-  "strings"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
+	"strings"
 )
 
 templ NavBar() {
@@ -30,7 +30,7 @@ func getStyle(currentPath, linkHref string) string {
 	if strings.TrimSpace(currentPath) == strings.TrimSpace(linkHref) {
 		return "font-bold mt-2 mb-2 menu-active"
 	}
-	return "font-bold mt-2 mb-2" 
+	return "font-bold mt-2 mb-2"
 }
 
 templ GetUserNav(currentPath string, isAuthorized bool) {

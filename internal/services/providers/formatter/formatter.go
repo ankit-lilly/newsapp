@@ -8,6 +8,31 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+func ReplaceSpacerSrcInImg(sel *goquery.Selection) *goquery.Selection {
+	if sel == nil || sel.Length() == 0 {
+		return sel
+	}
+
+	if goquery.NodeName(sel) != "img" {
+		return sel
+	}
+
+	src, exists := sel.Attr("src")
+	if !exists || !strings.Contains(src, "spacer") {
+		return sel
+	}
+
+	candidates := []string{"data-src-template", "data-src"}
+	for _, attr := range candidates {
+		if newSrc, ok := sel.Attr(attr); ok && strings.TrimSpace(newSrc) != "" {
+			sel.SetAttr("src", newSrc)
+			return sel // Once replaced, exit immediately.
+		}
+	}
+
+	return sel
+}
+
 /*
 This function takes a goquery.Selection and returns a formatted string of the HTML content.
 
@@ -27,8 +52,13 @@ func FormatNode(sel *goquery.Selection) string {
 		return html.EscapeString(sel.Text())
 
 	case tag == "img":
-		src, _ := sel.Attr("src")
-		alt, _ := sel.Attr("alt")
+		el := ReplaceSpacerSrcInImg(sel)
+		src, _ := el.Attr("src")
+		if strings.HasPrefix(src, "data:image") {
+			return ""
+		}
+
+		alt, _ := el.Attr("alt")
 		return fmt.Sprintf("<img src='%s' alt='%s' class='mt-4 p-2 max-w-full h-auto rounded shadow-sm'>", src, alt)
 
 	case tag == "a":

@@ -24,7 +24,7 @@ func NewDaveCheney() *DaveCheney {
 	return &DaveCheney{
 		sources.Source{
 			ID:         ID,
-			Name:       "Dave Cheney Blog",
+			Name:       "Dave Cheney",
 			BaseURL:    "https://dave.cheney.net",
 			Categories: categories,
 			Fetcher:    feed.NewRSSFetcher(ID),

@@ -98,6 +98,22 @@ func (p *Source) Parse(url string) (models.Article, error) {
 
 	var body strings.Builder
 	doc.Find(p.ParseConfig.ContentSelector).First().Children().Each(func(j int, el *goquery.Selection) {
+
+		if p.GetID() == "hackernoon" {
+			el.Find("noscript").Each(func(i int, s *goquery.Selection) {
+				noscriptContent := s.Text()
+				noscriptDoc, err := goquery.NewDocumentFromReader(strings.NewReader(noscriptContent))
+				if err == nil {
+					noscriptImg := noscriptDoc.Find("img").First()
+					if noscriptImg.Length() > 0 {
+						src, _ := noscriptImg.Attr("src")
+						alt, _ := noscriptImg.Attr("alt")
+
+						s.ReplaceWithHtml(fmt.Sprintf("<img src='%s' alt='%s'>", src, alt))
+					}
+				}
+			})
+		}
 		body.WriteString(formatter.FormatNode(el))
 	})
 
