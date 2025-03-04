@@ -89,7 +89,7 @@ func (p *Source) IsCategoryValid(category string) bool {
 }
 
 func (p *Source) Parse(url string) (models.Article, error) {
-	doc, err := fetchAndParse(url)
+	doc, err := p.FetchAndParse(url)
 	if err != nil {
 		return models.Article{}, err
 	}
@@ -137,7 +137,7 @@ func (p *Source) Parse(url string) (models.Article, error) {
 	}, nil
 }
 
-func fetchAndParse(url string) (*goquery.Document, error) {
+func (p *Source) FetchAndParse(url string) (*goquery.Document, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

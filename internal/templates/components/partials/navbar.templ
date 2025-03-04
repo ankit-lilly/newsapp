@@ -15,14 +15,12 @@ templ NavBar() {
 		hx-swap="innerHTML"
 	>
 		<div class="flex-1">
-			<a class="btn btn-ghost text-xl" href="/">
+			<a class="btn btn-ghost text-xl" href="/" preload="preload:init">
 				NewsApp
 			</a>
 		</div>
-		<div class="flex-none">
-			@DesktopNav()
-			@MobileNav()
-		</div>
+		@DesktopNav()
+		@MobileNav()
 	</div>
 }
 
@@ -70,7 +68,7 @@ templ GetUserNav(currentPath string, isAuthorized bool) {
 	}
 }
 
-templ NavItems(currentPath string) {
+templ NavItems(currentPath, platform string) {
 	for _, p := range providers.GetProviderCategories() {
 		if p.HasChildren {
 			<li>
@@ -85,7 +83,7 @@ templ NavItems(currentPath string) {
 									onclick="this.closest('details').removeAttribute('open')"
 									class={ getStyle(currentPath, fmt.Sprintf("/news/%s/%s", p.ID, value)) }
 									href={ templ.URL(fmt.Sprintf("/news/%s/%s", p.ID, value)) }
-									preload="mouseover"
+									preload="preload:init"
 								>{ key }</a>
 							</li>
 						}
@@ -99,24 +97,34 @@ templ NavItems(currentPath string) {
 				>
 					<a
 						href={ templ.URL(fmt.Sprintf("/news/%s", p.ID)) }
-						preload="mouseover"
+						preload="preload:init"
 					>{ p.Name }</a>
 				</summary>
 			</li>
 		}
 	}
-	@GetUserNav(currentPath, ctx.Value("isAuthorized").(bool))
 	<li>
-		@ui.ToggleTheme("light")
+		<details>
+			<summary class="font-bold mt-2 mb-2">Settings</summary>
+			<ul
+				tabindex="0"
+				class="p-2"
+			>
+				@GetUserNav(currentPath, ctx.Value("isAuthorized").(bool))
+				<li>
+					@ui.ToggleTheme(platform)
+				</li>
+			</ul>
+		</details>
 	</li>
 }
 
 templ DesktopNav() {
 	<div class="hidden lg:flex">
 		<ul
-			class="navbar menu menu-horizontal flex-wrap"
+			class="navbar menu menu-horizontal flex-wrap z-[100] gap-2"
 		>
-			@NavItems(ctx.Value("currentPath").(string))
+			@NavItems(ctx.Value("currentPath").(string), "desktop")
 		</ul>
 	</div>
 }
@@ -142,9 +150,9 @@ templ MobileNav() {
 			</div>
 			<ul
 				tabindex="0"
-				class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
+				class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[100] mt-3  w-[100vw] right-0 origin-top-right max-w-xs p-2 shadow"
 			>
-				@NavItems(ctx.Value("currentPath").(string))
+				@NavItems(ctx.Value("currentPath").(string), "mobile")
 			</ul>
 		</div>
 	</div>

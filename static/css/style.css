@@ -1,75 +1,13 @@
 @import "tailwindcss";
 @plugin 'daisyui';
-
-@plugin "daisyui/theme" {
-  name: "everforest";
-  default: false; /* set as default */
-  prefersdark: true; /* set as default dark mode (prefers-color-scheme:dark) */
-  /*color-scheme: light; /* Browser-provided UI color scheme */
-  /* Base backgrounds and foreground */
-  --color-base-100: #171c1f; /* crust – darkest background */
-  --color-base-200: #1c2225; /* mantle – slightly lighter */
-  --color-base-300: #232a2e; /* base – main background */
-  --color-base-content: #dddecf; /* text – primary content color */
-
-  /* Primary – now a vibrant orange for a bolder look */
-  --color-primary: #e69875; /* orange */
-  --color-primary-content: #171c1f; /* dark contrast (using crust) */
-
-  /* Secondary – switched to a complementary purple */
-  --color-secondary: #d6a0d1; /* purple */
-  --color-secondary-content: #171c1f;
-
-  /* Accent – remains blue for extra highlights */
-  --color-accent: #d05515;
-  --color-accent-content: #171c1f;
-
-  /* Neutral – using softbase for additional surfaces */
-  --color-neutral: #2b3538; /* softbase */
-  --color-neutral-content: #dddecf;
-
-  /* Info – a soft skye tone */
-  --color-info: #97c9c3; /* skye */
-  --color-info-content: #171c1f;
-
-  /* Success – a refreshing aqua tone */
-  --color-success: #93c9a1; /* aqua */
-  --color-success-content: #171c1f;
-
-  /* Warning – a mellow yellow for alerts */
-  --color-warning: #dbbc7f; /* yellow */
-  --color-warning-content: #171c1f;
-
-  /* Error – a vivid red for errors */
-  --color-error: #e67e80; /* red */
-  --color-error-content: #171c1f;
-
-  /* Border radius and sizing tokens */
-  --radius-selector: 1rem;
-  --radius-field: 0.25rem;
-  --radius-box: 0.5rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-
-  /* Effects */
-  --depth: 1;
-  --noise: 0;
-}
+@plugin '@tailwindcss/typography';
 
 @plugin "daisyui" {
   logs: true;
   root: ":root";
   include: button, badge, input, card;
   exclude: badge;
-  themes: lemonade --default, everforest --prefersdark;
-}
-
-@plugin "daisyui/theme" {
-  name: "lemonade";
-  default: true; /* set as default */
-  --color-secondary: oklch(0.53 0.2 337.67);
-  --color-accent: oklch(0.52 0.2 260.75);
+  themes: autumn --default, dracula --prefersdark;
 }
 
 ::view-transition-old(slide-it) {
@@ -127,10 +65,6 @@
   display: flex;
 }
 
-img {
-  margin-bottom: 20px;
-}
-
 .tooltip-wrapper button[data-tooltip] {
   position: relative;
 }
@@ -156,50 +90,15 @@ picture {
 }
 
 img {
+  @apply max-w-full h-auto;
   margin-bottom: 5px;
   display: flex;
-  width: 500px;
 }
 
 article strong {
-  @apply text-secondary;
   @apply font-bold;
-  @apply mt-2 mb-2;
-}
-
-article p,
-article ul,
-article ol {
-  @apply prose mt-1 mb-1;
-}
-
-article ul,
-article ol {
-  @apply list mb-2;
-}
-
-article li {
-  @apply my-1 pl-6 relative;
-}
-
-article ul > li::before {
-  content: "";
-  @apply absolute w-1.5 h-1.5 rounded-full bg-current left-2 top-2;
 }
 
 article code {
   @apply mockup-code w-full block px-2 py-2 my-2;
-}
-
-h3,
-h2 {
-  @apply text-secondary;
-}
-
-br::after {
-  content: "";
-  display: block;
-  height: 2px; /* Thickness of the line */
-  background-color: @apply accent;
-  margin-top: 0.5rem; /* Spacing above the line */
 }

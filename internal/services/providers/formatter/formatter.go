@@ -8,31 +8,6 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func ReplaceSpacerSrcInImg(sel *goquery.Selection) *goquery.Selection {
-	if sel == nil || sel.Length() == 0 {
-		return sel
-	}
-
-	if goquery.NodeName(sel) != "img" {
-		return sel
-	}
-
-	src, exists := sel.Attr("src")
-	if !exists || !strings.Contains(src, "spacer") {
-		return sel
-	}
-
-	candidates := []string{"data-src-template", "data-src"}
-	for _, attr := range candidates {
-		if newSrc, ok := sel.Attr(attr); ok && strings.TrimSpace(newSrc) != "" {
-			sel.SetAttr("src", newSrc)
-			return sel // Once replaced, exit immediately.
-		}
-	}
-
-	return sel
-}
-
 /*
 This function takes a goquery.Selection and returns a formatted string of the HTML content.
 
@@ -52,7 +27,7 @@ func FormatNode(sel *goquery.Selection) string {
 		return html.EscapeString(sel.Text())
 
 	case tag == "img":
-		el := ReplaceSpacerSrcInImg(sel)
+		el := replaceSpacerSrcInImg(sel)
 		src, _ := el.Attr("src")
 		if strings.HasPrefix(src, "data:image") {
 			return ""
@@ -64,19 +39,26 @@ func FormatNode(sel *goquery.Selection) string {
 	case tag == "a":
 		href, _ := sel.Attr("href")
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<a href='%s' class='link-accent link'>%s</a>", href, content)
+		return fmt.Sprintf("<a href='%s' class='link'>%s</a>", href, content)
 
 	case tag == "code":
 		content := processNodeContents(sel)
+		content = strings.TrimSpace(content)
+
+		// If the content is less than 15 characters, we consider it as a short code snippet.
+		if len(content) < 30 {
+			return fmt.Sprintf("<strong>%s</strong>", content)
+		}
+
 		return fmt.Sprintf("<code class='px-1 py-0.5 rounded text-sm font-mono'>%s</code>", content)
 
 	case tag == "ul":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<ul class='list-disc pl-5 mt-4 space-y-2'>%s</ul>", content)
+		return fmt.Sprintf("<ul class='list-disc pl-5 space-y-2'>%s</ul>", content)
 
 	case tag == "ol":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<ol class='list-decimal pl-5 mt-4 space-y-2'>%s</ol>", content)
+		return fmt.Sprintf("<ol class='list-decimal space-y-2'>%s</ol>", content)
 
 	case tag == "li":
 		content := processNodeContents(sel)
@@ -84,23 +66,23 @@ func FormatNode(sel *goquery.Selection) string {
 
 	case tag == "p":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<p class='text-lg mt-4'>%s</p>", content)
+		return fmt.Sprintf("<p>%s</p>", content)
 
 	case tag == "h1":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<h1 class='text-xl font-bold mt-6 mb-2'>%s</h1>", content)
+		return fmt.Sprintf("<h1 class='text-xl font-bold'>%s</h1>", content)
 
 	case tag == "h2":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<h2 class='text-xl font-semibold mt-5 mb-2'>%s</h2>", content)
+		return fmt.Sprintf("<h2 class='text-xl font-semibold'>%s</h2>", content)
 
 	case tag == "h3":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<h3 class='text-xl text-secondary font-medium mt-4 mb-2'>%s</h3>", content)
+		return fmt.Sprintf("<h3 class='text-xl font-medium'>%s</h3>", content)
 
 	case tag == "h4", tag == "h5", tag == "h6":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<%s class='font-medium text-secondary  mt-3 mb-2'>%s</%s>", tag, content, tag)
+		return fmt.Sprintf("<%s class='font-medium'>%s</%s>", tag, content, tag)
 
 	case tag == "pre":
 		content := processNodeContents(sel)
@@ -108,7 +90,7 @@ func FormatNode(sel *goquery.Selection) string {
 
 	case tag == "blockquote":
 		content := processNodeContents(sel)
-		return fmt.Sprintf("<blockquote class='border-l-4 border-gray-300 pl-4 italic mt-4 text-secondary'>%s</blockquote>", content)
+		return fmt.Sprintf("<blockquote class='border-l-4 border-gray-300 pl-4 italic mt-4 text-primary'>%s</blockquote>", content)
 
 	case tag == "table":
 		content := processNodeContents(sel)
@@ -146,7 +128,7 @@ func FormatNode(sel *goquery.Selection) string {
 		return "<hr class='my-4 border-t border-gray-300'>"
 
 	case tag == "br":
-		return "<br>"
+		return ""
 
 	case tag == "iframe":
 		src, _ := sel.Attr("src")
@@ -170,6 +152,10 @@ func FormatNode(sel *goquery.Selection) string {
 			attributes += fmt.Sprintf(" id='%s'", id)
 		}
 
+		if content == "" {
+			return ""
+		}
+
 		return fmt.Sprintf("<%s%s>%s</%s>", tag, attributes, content, tag)
 	}
 }
@@ -177,6 +163,9 @@ func FormatNode(sel *goquery.Selection) string {
 func processNodeContents(sel *goquery.Selection) string {
 	var contentBuilder strings.Builder
 	sel.Contents().Each(func(i int, s *goquery.Selection) {
+		if i > 0 {
+			contentBuilder.WriteString(" ")
+		}
 		contentBuilder.WriteString(FormatNode(s))
 	})
 	return contentBuilder.String()
@@ -195,4 +184,29 @@ func getAttributes(sel *goquery.Selection) string {
 	}
 
 	return attrBuilder.String()
+}
+
+func replaceSpacerSrcInImg(sel *goquery.Selection) *goquery.Selection {
+	if sel == nil || sel.Length() == 0 {
+		return sel
+	}
+
+	if goquery.NodeName(sel) != "img" {
+		return sel
+	}
+
+	src, exists := sel.Attr("src")
+	if !exists || !strings.Contains(src, "spacer") || strings.Contains(src, "cross.png") || strings.Contains(src, "check.png") {
+		return sel
+	}
+
+	candidates := []string{"data-src-template", "data-src"}
+	for _, attr := range candidates {
+		if newSrc, ok := sel.Attr(attr); ok && strings.TrimSpace(newSrc) != "" {
+			sel.SetAttr("src", newSrc)
+			return sel // Once replaced, exit immediately.
+		}
+	}
+
+	return sel
 }

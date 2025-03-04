@@ -6,6 +6,7 @@ import (
 	"embed"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/ankit-lilly/newsapp/internal/db"
 	"github.com/ankit-lilly/newsapp/internal/handlers"
@@ -74,7 +75,11 @@ func (a *App) Init(staticFiles embed.FS) error {
 	a.echo.Use(authMiddleware.JWT())
 	a.echo.GET("/static/*", echo.WrapHandler(http.FileServer(http.FS(staticFiles))))
 
-	llmHandler := llm.New(a.ollamaClient, "llama3.2:latest")
+	modelToUse := os.Getenv("MODEL_TO_USE")
+	if modelToUse == "" {
+		modelToUse = "granite3.2:8b"
+	}
+	llmHandler := llm.New(a.ollamaClient, modelToUse)
 	routes.RegisterRoutes(a.echo, a.db, llmHandler)
 
 	return nil

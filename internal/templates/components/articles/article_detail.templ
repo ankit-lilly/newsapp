@@ -14,26 +14,31 @@ func getClass(article models.Article) string {
 }
 
 templ Article(article models.Article) {
-	<div class="container mx-auto px-4" id="article-detail">
+	<div class="mx-auto w-full max-w-full md:max-w-5xl p-4" id="article-detail">
 		@BackButton()
-		<div class="mx-auto p-6">
-			<div class="flex justify-between items-center gap-4">
-				<div class="flex justify-evenly items-center gap-4">
+		<article class="w-full rounded mt-2">
+			<div class="flex gap-4">
+				<div class="flex items-center gap-4 flex-wrap">
 					<h1 class="text-xl font-bold mt-2 mb-2">{ article.Title }</h1>
-					@OriginalLink(article.Link)
-					@Summary(article.Portal, article.Link)
-					@Chat(article.Portal, article.Link)
-					if article.IsFavorited {
-						@FavoriteIcon()
-					}
-					<div id="neutrality_indicator"></div>
+					<div class="contents text-primary">
+						<div class="badge badge-primary">{ getPortalName(article.Portal) }</div>
+						@OriginalLink(article.Link)
+						@Summary(article.Portal, article.Link)
+						@Chat(article.Portal, article.Link)
+						if article.IsFavorited {
+							@FavoriteIcon()
+						}
+						<div id="neutrality_indicator"></div>
+					</div>
 				</div>
 			</div>
-			<div class="mt-4 prose" id="article-body">
+			<h2 class="text-sm text-secondary">{ article.PublishedAt }</h2>
+			<div class="divider w-full divider-accent"></div>
+			<div class="prose prose-lg max-w-none" id="article-body">
 				@templ.Raw(article.Content)
 			</div>
 			@favoriteButton(article)
-		</div>
+		</article>
 	</div>
 }
 

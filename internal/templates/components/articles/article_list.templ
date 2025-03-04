@@ -3,6 +3,7 @@ package articles
 import (
 	"fmt"
 	"github.com/ankit-lilly/newsapp/internal/models"
+	"github.com/ankit-lilly/newsapp/internal/services/providers"
 	"net/url"
 )
 
@@ -10,31 +11,24 @@ func getURL(portal string, page string) string {
 	return fmt.Sprintf("/news/%s/%s", portal, page)
 }
 
-templ Pager(portal, page string) {
-	<div id="pagerEl" hx-swap-oob="outerHTML:#pagerEl">
-		<div
-			hx-get={ getURL(portal, page) }
-			hx-trigger="intersect once"
-			hx-target="#main-el"
-			hx-swap="beforeend"
-		></div>
-	</div>
+
+func getPortalName(portal string) string {
+	p, err := providers.Get(portal)
+
+	if err != nil {
+		return portal
+	}
+	return p.GetName()
 }
 
 templ ArticleList(articles []models.Article) {
 	<div
 		class="flex flex-col items-center"
 		id="main-el"
-		hx-get=""
-		hx-vals='js:{"v": new Date().getTime()}'
-		hx-trigger="every 300s"
-		hx-swap="outerHTML"
-		hx-target="#main-el"
-		hx-indicator="#spinner"
 	>
-		<div class="w-full max-w-4xl rounded overflow-hidden mt-2">
+		<div class="w-full max-w-4xl rounded overflow-hidden mt-4 p-4 flex flex-col gap-5">
 			if len(articles) == 0 {
-				<div class="p-4 bg-base-200 text-base-content rounded">
+				<div class="p-4 text-base-content rounded">
 					<p>No articles found</p>
 				</div>
 			} else {
@@ -47,22 +41,43 @@ templ ArticleList(articles []models.Article) {
 }
 
 templ articleItem(article models.Article) {
-	<div class="px-6 py-4">
-		<h1 class="text-xl font-bold mt-2 mb-2 transform hover:-translate-y-1">
-			<a
-				hx-indicator="#spinner"
-				hx-swap="outerHTML"
-				hx-target="#main-el"
-				hx-params="none"
-				hx-disinherit="hx-vals"
-				href={ templ.URL(fmt.Sprintf("/articles/%s/%s", article.Portal, url.QueryEscape(article.Link))) }
-				preload="mouseover"
-			>
-				{ article.Title }
-			</a>
-		</h1>
-		<p class="text-base comic-neue-light-italic">
-			@templ.Raw(article.Description)
-		</p>
+	<div class="shadow-lg mt-3 mb-3 rounded-lg bg-base-200 p-3 transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+		<div class="px-6 py-4">
+			<div class="flex items-center mb-3 text-sm">
+				<div class="badge badge-primary">{ getPortalName(article.Portal) }</div>
+				<span class="mx-2">•</span>
+				<span class="font-medium">{ article.PublishedAt }</span>
+			</div>
+			<div class="prose prose-lg">
+				<h1 class="text-xl font-bold mt-2 mb-2 transform hover:-translate-y-1">
+					<a
+						hx-indicator="#spinner"
+						hx-swap="outerHTML"
+						hx-target="#main-el"
+						class="no-underline"
+						href={ templ.URL(fmt.Sprintf("/articles/%s/%s", article.Portal, url.QueryEscape(article.Link))) }
+						preload="preload:init"
+						preload-images="true"
+					>
+						{ article.Title }
+					</a>
+				</h1>
+				<p class="text-base">
+					@templ.Raw(article.Description)
+				</p>
+			</div>
+			<div class="flex justify-between items-center mt-4">
+				<a
+					href={ templ.URL(fmt.Sprintf("/articles/%s/%s", article.Portal, url.QueryEscape(article.Link))) }
+					class="btn btn-sm text-sm btn-primary"
+					hx-indicator="#spinner"
+					hx-swap="outerHTML"
+					hx-target="#main-el"
+					preload="preload:init"
+				>
+					Read more
+				</a>
+			</div>
+		</div>
 	</div>
 }

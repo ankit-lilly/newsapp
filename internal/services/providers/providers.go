@@ -5,7 +5,9 @@ import (
 	"sort"
 
 	"github.com/ankit-lilly/newsapp/internal/models"
+	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/acmqueue"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/davecheney"
+	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/devto"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/fiercepharma"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hackernoon"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/highscalability"
@@ -13,10 +15,9 @@ import (
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hindustan"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/martinfowler"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/natgeo"
+	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/newyorker"
 	scientificamerican "github.com/ankit-lilly/newsapp/internal/services/providers/sources/scientificAmerican"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/techcrunch"
-
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/verge"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/wired"
 )
 
@@ -94,12 +95,14 @@ func Init() {
 	hindustan := hindustan.NewHindustanTimes()
 	martinfowler := martinfowler.NewMartinFowler()
 	techcrunch := techcrunch.NewTechcrunch()
-	verge := verge.NewVerge()
 	wired := wired.NewWired()
 	natgeo := natgeo.NewNatGeo()
 	scientificamerican := scientificamerican.NewScientificAmerican()
 	highscalability := highscalability.NewHighScalability()
 	hackernoon := hackernoon.NewHackerNoon()
+	newyorker := newyorker.NewNewyorker()
+	acmqueue := acmqueue.NewACMQueue()
+	devto := devto.NewDevTo()
 
 	Register(thehindu)
 	Register(natgeo)
@@ -109,8 +112,10 @@ func Init() {
 	Register(hindustan)
 	Register(martinfowler)
 	Register(techcrunch)
-	Register(verge)
 	Register(scientificamerican)
 	Register(highscalability)
 	Register(hackernoon)
+	Register(newyorker)
+	Register(acmqueue)
+	Register(devto)
 }

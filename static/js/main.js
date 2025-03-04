@@ -140,13 +140,12 @@ class ThemeManager {
     ThemeManager.instance = this;
 
     this.themes = {
-      LIGHT: "lemonade",
-      DARK: "everforest",
+      LIGHT: "autumn",
+      DARK: "dracula",
     };
 
     this.handleControllerChange = this.handleControllerChange.bind(this);
     this.handleSystemThemeChange = this.handleSystemThemeChange.bind(this);
-
     this.init();
   }
 
@@ -179,7 +178,7 @@ class ThemeManager {
   }
 
   handleControllerChange(event) {
-    console.info("Why is this not working");
+    console.info("Why is this not working", this.themes);
     const theme = event.target.checked ? this.themes.DARK : this.themes.LIGHT;
     console.info(`Setting theme to ${theme}`);
     this.setTheme(theme);

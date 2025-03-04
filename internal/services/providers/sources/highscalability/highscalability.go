@@ -1,7 +1,9 @@
 package highscalability
 
 import (
+	"fmt"
 	"log/slog"
+	"math/rand"
 	"strings"
 
 	"github.com/ankit-lilly/newsapp/internal/models"
@@ -46,10 +48,8 @@ func NewHighScalability() *HighScalability {
 }
 
 func (t *HighScalability) FeedURL(category string) string {
-	if category == "" {
-		category = "/page/2"
-	}
-	return t.BaseURL + "/" + category
+	randomPage := rand.Intn(50) + 1
+	return fmt.Sprintf("%s/page/%d", t.BaseURL, randomPage)
 }
 
 func (t *HighScalability) Fetch(category string) ([]models.Article, error) {

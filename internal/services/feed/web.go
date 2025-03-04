@@ -38,7 +38,7 @@ func (f *WebFetcher) Fetch(url string) ([]models.Article, error) {
 	c.OnHTML(f.selectors.ArticleWrapper, func(e *colly.HTMLElement) {
 		article := models.Article{
 			Title:       e.ChildText(f.selectors.Title),
-			Description: e.ChildText(f.selectors.Description),
+			Description: truncate(e.ChildText(f.selectors.Description), 200),
 			Link:        e.ChildAttr(f.selectors.Link, "href"),
 			PublishedAt: e.ChildText(f.selectors.PublishedAt),
 			Portal:      f.portal,

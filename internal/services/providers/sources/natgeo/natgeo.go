@@ -20,7 +20,7 @@ func NewNatGeo() *NatGeo {
 	return &NatGeo{
 		sources.Source{
 			ID:         ID,
-			Name:       "National Geographic",
+			Name:       "Nat Geo",
 			BaseURL:    "https://www.nationalgeographic.com",
 			Categories: categories,
 			Fetcher: feed.NewWebFetcher(ID, feed.WebSelectors{

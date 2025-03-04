@@ -38,36 +38,12 @@ func (h *ArticleHandler) ListByCategory(c echo.Context) error {
 		return h.RenderError(c, err)
 	}
 
-	c.Echo().Logger.Info("High Scalability", category)
-
-	if portal != "highscalability" {
-		return h.Render(c, RenderProps{
-			Title:            "Posts",
-			Component:        articles.ArticleList(articleList),
-			WrapperComponent: pages.Index,
-		})
-	}
-
-	if category == "" {
-		category = "page/3"
-	}
-
-	categoryNum := strings.Split(category, "/")[1]
-
-	categoryNumInt, err := strconv.Atoi(categoryNum)
-
-	if err != nil {
-		return h.RenderError(c, err)
-	}
-
-	newCategory := fmt.Sprintf("page/%d", categoryNumInt+1)
-
 	return h.Render(c, RenderProps{
 		Title:            "Posts",
-		Component:        ui.Merge([]templ.Component{articles.ArticleList(articleList), articles.Pager(portal, newCategory)}),
+		Component:        articles.ArticleList(articleList),
 		WrapperComponent: pages.Index,
-		CacheStrategy:    "no-cache",
 	})
+
 }
 
 func (h *ArticleHandler) List(c echo.Context) error {
@@ -89,15 +65,6 @@ func (h *ArticleHandler) List(c echo.Context) error {
 		return h.RenderError(c, err)
 	}
 
-	if portalName == "highscalability" {
-		c.Echo().Logger.Info("High Scalability")
-		return h.Render(c, RenderProps{
-			Title:            "Posts",
-			Component:        ui.Merge([]templ.Component{articles.ArticleList(articleList), articles.Pager(portalName, "page/3")}),
-			WrapperComponent: pages.Index,
-			CacheStrategy:    "no-cache",
-		})
-	}
 	return h.Render(c, RenderProps{
 		Title:            "Posts",
 		Component:        articles.ArticleList(articleList),
@@ -146,6 +113,8 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 		Title:            articleDetail.Title,
 		Component:        articles.Article(*articleDetail),
 		WrapperComponent: pages.Index,
+		CacheStrategy:    "cache",
+		CacheDuration:    60 * 60,
 	})
 }
 

@@ -37,7 +37,7 @@ func NewHackerNoon() *HackerNoon {
 				DateSelector:     "div.dateTime",
 				TitleProcessor:   func(title string) string { return strings.TrimSpace(title) },
 				ContentFilter: sources.ContentFilter{
-					RemoveSelectors: []string{"button", ".natgeo-ad"},
+					RemoveSelectors: []string{"button", ".natgeo-ad", "a[href='#commentSection']"},
 				},
 			},
 		},

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -19,6 +20,7 @@ type RenderProps struct {
 	Component        templ.Component
 	WrapperComponent PageWrapperComp
 	CacheStrategy    string
+	CacheDuration    int64
 }
 
 func (bh *BaseHandler) View(c echo.Context, cmp templ.Component) error {
@@ -41,7 +43,11 @@ func (bh *BaseHandler) Render(c echo.Context, props RenderProps) error {
 	case "no-cache":
 		c.Response().Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	default:
-		c.Response().Header().Set("Cache-Control", "private, max-age=60")
+		if props.CacheDuration > 0 {
+			c.Response().Header().Set("Cache-Control", fmt.Sprintf("private, max-age=%d", props.CacheDuration))
+		} else {
+			c.Response().Header().Set("Cache-Control", "private, max-age=1500")
+		}
 	}
 
 	if ok && isHtmx {

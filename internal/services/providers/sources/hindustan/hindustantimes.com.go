@@ -23,7 +23,7 @@ func NewHindustanTimes() *HindustanTimes {
 	return &HindustanTimes{
 		sources.Source{
 			ID:         ID,
-			Name:       "Hindustan Times",
+			Name:       "HT",
 			BaseURL:    "https://hindustantimes.com",
 			Categories: categories,
 			Fetcher:    feed.NewRSSFetcher(ID),
