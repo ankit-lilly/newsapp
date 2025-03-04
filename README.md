@@ -41,3 +41,19 @@ Or you can just right click on the binary and then click on `Open` and then clic
 
 Otherwise you can go to `System Preferences -> Security & Privacy -> General` and then click on `Open Anyway`.  
 
+## Env variables
+
+You can change the llama model by setting the environment variable `MODEL_TO_USE` to the model you want to use.
+
+```bash
+MODEL_TO_USE=bert-base-uncased ./newsapp
+```
+
+The port can be changed by creatting a `.env` file in the root directory. You can find the sample `.env` file in the root directory.
+
+Note:
+
+You may get too many requests error from time to time due to rate limit on the various websites. You'll just have wait or click on some other menu. 
+
+It's using pre-load to load everything at once and then cache it. So, it should be faster after the first load. 
+
