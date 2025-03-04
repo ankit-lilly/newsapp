@@ -270,23 +270,6 @@ document.addEventListener("htmx:historyRestore", function () {
 });
 
 document.body.addEventListener("htmx:wsAfterMessage", (event) => {
-  const messageContent = document.getElementById("notifications");
-  const input = document.getElementById("chat_message_input");
-
-  if (input) {
-    input.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
-  }
-  if (messageContent) {
-    window.scrollTo({
-      top: messageContent.scrollHeight,
-      behavior: "smooth",
-    });
-  }
-
   const loader = document.getElementById("chatloader");
   if (
     loader &&

@@ -123,6 +123,21 @@ func FormatNode(sel *goquery.Selection) string {
 	case tag == "div":
 		content := processNodeContents(sel)
 		return fmt.Sprintf("<div>%s</div>", content)
+	case tag == "noscript":
+		noscriptContent := sel.Text()
+		noscriptDoc, err := goquery.NewDocumentFromReader(strings.NewReader(noscriptContent))
+
+		if err != nil {
+			return ""
+		}
+		noscriptImg := noscriptDoc.Find("img").First()
+		if noscriptImg.Length() > 0 {
+			src, _ := noscriptImg.Attr("src")
+			alt, _ := noscriptImg.Attr("alt")
+
+			return fmt.Sprintf("<img src='%s' alt='%s'>", src, alt)
+		}
+		return ""
 
 	case tag == "hr":
 		return "<hr class='my-4 border-t border-gray-300'>"

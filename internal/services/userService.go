@@ -61,13 +61,7 @@ func (s *UserService) UserExists(ctx context.Context, email string) (bool, error
 }
 
 func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
-	user, err := s.userRepo.GetUserByEmail(ctx, email)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return s.userRepo.GetUserByEmail(ctx, email)
 }
 
 func (s *UserService) ValidateUserCredentials(ctx context.Context, email, password string) (*models.User, error) {

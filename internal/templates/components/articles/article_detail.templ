@@ -33,7 +33,7 @@ templ Article(article models.Article) {
 				</div>
 			</div>
 			<h2 class="text-sm text-secondary">{ article.PublishedAt }</h2>
-			<div class="divider w-full divider-accent"></div>
+			<div class="divider w-full divider-primary"></div>
 			<div class="prose prose-lg max-w-none" id="article-body">
 				@templ.Raw(article.Content)
 			</div>
