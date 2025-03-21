@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"github.com/ankit-lilly/newsapp/internal/templates"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
-	"github.com/ankit-lilly/newsapp/internal/templates/pages"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,7 +17,7 @@ func (h *ErrorHandler) CustomHTTPErrorHandler(err error, c echo.Context) {
 		h.Render(c, RenderProps{
 			Title:            "Error",
 			Component:        ui.ErrorBlock(err.Error()),
-			WrapperComponent: pages.Index,
+			WrapperComponent: templates.Index,
 			CacheStrategy:    "no-cache",
 		})
 

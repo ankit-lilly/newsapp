@@ -222,3 +222,7 @@ func (s *ArticleService) DeleteFavoriteArticle(ctx context.Context, articleId, u
 func (s *ArticleService) IsFavorite(ctx context.Context, link string, userId int64) (int64, error) {
 	return s.articleRepo.IsFavorite(ctx, link, userId)
 }
+
+func (s *ArticleService) GetArticleRating(ctx context.Context, article string) (chan api.Message, chan error) {
+	return s.llm.GetRating(ctx, article)
+}

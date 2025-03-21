@@ -20,7 +20,7 @@ func NewMartinFowler() *MartinFowler {
 	return &MartinFowler{
 		sources.Source{
 			ID:         ID,
-			Name:       "Martin Fowler",
+			Name:       "M Fowler",
 			BaseURL:    "https://martinfowler.com",
 			Categories: categories,
 			Fetcher:    feed.NewRSSFetcher(ID),

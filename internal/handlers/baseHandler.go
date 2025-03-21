@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/a-h/templ"
+	"github.com/ankit-lilly/newsapp/internal/templates"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
-	"github.com/ankit-lilly/newsapp/internal/templates/pages"
 	"github.com/labstack/echo/v4"
 )
 
@@ -65,7 +65,7 @@ func (bh *BaseHandler) RenderError(c echo.Context, err error) error {
 	return bh.Render(c, RenderProps{
 		Title:            "Error",
 		Component:        ui.ErrorBlock(err.Error()),
-		WrapperComponent: pages.Index,
+		WrapperComponent: templates.Index,
 		CacheStrategy:    "no-cache",
 	})
 }

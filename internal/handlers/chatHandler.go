@@ -54,6 +54,23 @@ func (h *ChatHandler) HandleConnect(s *melody.Session) {
 
 	articleDetail, err := h.articleService.GetRawArticle(s.Request.Context(), portalName, link)
 
+	go func() {
+		slog.Info("Getting article rating")
+		outputChan, errorChan := h.articleService.GetArticleRating(s.Request.Context(), articleDetail)
+		for {
+			select {
+			case output := <-outputChan:
+				fmt.Println(output)
+				slog.Info("Rating of the article is:", output)
+				return
+			case err := <-errorChan:
+				fmt.Println(err)
+				slog.Error(err.Error(), err)
+				return
+			}
+		}
+	}()
+
 	if err != nil {
 		slog.Error(err.Error(), err)
 		h.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)

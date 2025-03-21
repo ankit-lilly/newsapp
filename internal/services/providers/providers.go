@@ -12,11 +12,12 @@ import (
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hackernoon"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/highscalability"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hindu"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hindustan"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/martinfowler"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/natgeo"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/newyorker"
 	scientificamerican "github.com/ankit-lilly/newsapp/internal/services/providers/sources/scientificAmerican"
+	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/signalsAndthreads"
+	softwareengineeringdaily "github.com/ankit-lilly/newsapp/internal/services/providers/sources/softwareEngineeringDaily"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/techcrunch"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/wired"
 )
@@ -92,7 +93,6 @@ func Init() {
 	thehindu := hindu.NewTheHinduCom()
 	fiercepharma := fiercepharma.NewFiercePharma()
 	davecheney := davecheney.NewDaveCheney()
-	hindustan := hindustan.NewHindustanTimes()
 	martinfowler := martinfowler.NewMartinFowler()
 	techcrunch := techcrunch.NewTechcrunch()
 	wired := wired.NewWired()
@@ -103,13 +103,14 @@ func Init() {
 	newyorker := newyorker.NewNewyorker()
 	acmqueue := acmqueue.NewACMQueue()
 	devto := devto.NewDevTo()
+	softwareengineeringdaily := softwareengineeringdaily.NewSFD()
+	signalsAndthreads := signalsAndthreads.NewSignalsAndThreads()
 
 	Register(thehindu)
 	Register(natgeo)
 	Register(fiercepharma)
 	Register(davecheney)
 	Register(wired)
-	Register(hindustan)
 	Register(martinfowler)
 	Register(techcrunch)
 	Register(scientificamerican)
@@ -118,4 +119,6 @@ func Init() {
 	Register(newyorker)
 	Register(acmqueue)
 	Register(devto)
+	Register(softwareengineeringdaily)
+	Register(signalsAndthreads)
 }

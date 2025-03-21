@@ -24,10 +24,10 @@ templ Summary(portal string, id string) {
 			<path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path>
 		</svg>
 	</div>
-	<dialog id="summary_dialog" class="modal modal-center sm:modal-middle">
+	<dialog id="summary_dialog" class="modal modal-center">
 		<div class="modal-box">
-			<article class="prose mt-4" id="summary">
-				<div class="text-center text-primary flex justify-center my-summary-loader-icon">
+			<article class="prose mt-4 max-h-[40vh] p-4 overflow-y-scroll" id="summary">
+				<div class="text-center text-primary flex justify-center items-center my-summary-loader-icon">
 					<span class="loading loading-ring loading-sm text-primary"></span>
 					<span class="loading loading-ring loading-md text-primary"></span>
 					<span class="loading loading-ring loading-lg text-primary"></span>

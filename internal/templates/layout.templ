@@ -1,12 +1,14 @@
-package layouts
+package templates
 
-import "github.com/ankit-lilly/newsapp/internal/templates/components/ui"
-import "github.com/ankit-lilly/newsapp/internal/templates/components/partials"
+import (
+	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
+	"github.com/ankit-lilly/newsapp/internal/templates/partials"
+)
 
-templ Base(title string) {
+templ base(title string) {
 	<!DOCTYPE html>
 	<html lang="en" data-theme="dracula">
-		@partials.Head()
+		@partials.Head(title)
 		<body
 			class="sample-transition comic-neue-regular"
 			hx-boost="true"
@@ -25,4 +27,10 @@ templ Base(title string) {
 			</main>
 		</body>
 	</html>
+}
+
+templ Index(title string, cmp templ.Component) {
+	@base(title) {
+		@cmp
+	}
 }

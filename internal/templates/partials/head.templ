@@ -1,6 +1,6 @@
 package partials
 
-templ Head() {
+templ Head(title string) {
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -30,12 +30,12 @@ templ Head() {
 		<link rel="icon" type="image/png" sizes="32x32" href="/static/dist/icons/favicon-32x32.png"/>
 		<link rel="icon" type="image/png" sizes="16x16" href="/static/dist/icons/favicon-16x16.png"/>
 		<link rel="manifest" href="/static/dist/site.webmanifest"/>
-		<title>RSS News Reader</title>
-		<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous" defer></script>
-		<script rel="preconnect" src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js" defer></script>
-		<script rel="preconnect" src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js" defer></script>
+		<title>{ title }</title>
+		<script rel="preconnect" type="text/javascript" src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous" defer></script>
+		<script rel="preconnect" type="text/javascript" src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js" defer></script>
+		<script rel="preconnect" type="text/javascript" src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js" defer></script>
 		<script rel="preconnect" type="text/javascript" src="https://unpkg.com/default-passive-events"></script>
-		<script rel="preconnect" src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js" defer></script>
-		<script rel="preconnect" src="/static/dist/js/main.js" defer></script>
+		<script rel="preconnect" type="text/javascript" src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js" defer></script>
+		<script rel="preconnect" type="text/javascript" src="/static/dist/js/main.js" defer></script>
 	</head>
 }

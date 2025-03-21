@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"embed"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -76,12 +77,14 @@ func (a *App) Init(staticFiles embed.FS) error {
 	a.echo.GET("/static/*", echo.WrapHandler(http.FileServer(http.FS(staticFiles))))
 
 	modelToUse := os.Getenv("MODEL_TO_USE")
+
 	if modelToUse == "" {
-		modelToUse = "granite3.2:8b"
+		modelToUse = "gemma2:2b"
 	}
+
+	slog.Info("Using model: ", modelToUse)
 	llmHandler := llm.New(a.ollamaClient, modelToUse)
 	routes.RegisterRoutes(a.echo, a.db, llmHandler)
 
 	return nil
-
 }

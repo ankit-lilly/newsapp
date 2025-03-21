@@ -13,7 +13,7 @@ install:
 run:
 	@echo "Running ${APP_NAME} in development mode"
 	@templ generate
-	@bun build static/js/main.js --outdir ./static/dist/js --minify
+	@bun build static/js/*.js --outdir ./static/dist/js --minify
 	@cp static/icons ./static/dist/icons -r
 	@cp static/site.webmanifest ./static/dist/site.webmanifest
 	@bunx concurrently -k "bunx @tailwindcss/cli -i static/css/style.css -o static/dist/css/style.css --minify --watch" "air -c .air.toml"
@@ -28,14 +28,14 @@ generate:
 	@echo "Generating files"
 	@templ generate
 	@bunx @tailwindcss/cli -i static/css/style.css -o static/dist/css/style.css --minify
-	@bun build static/js/main.js --outdir ./static/dist/js --minify
+	@bun build static/js/*.js --outdir ./static/dist/js --minify
 
 .PHONY: build
 build:
 	@echo "Building $(APP_NAME)..."
 	@templ generate
 	@bunx @tailwindcss/cli -i static/css/style.css -o static/dist/css/style.css --minify
-	@bun build static/js/main.js --outdir ./static/dist/js --minify
+	@bun build static/js/*.js --outdir ./static/dist/js --minify
 	@cp static/icons ./static/dist/icons -r
 	@cp static/site.webmanifest ./static/dist/site.webmanifest
 	@go build $(BUILD_FLAGS) -o $(APP_NAME) main.go

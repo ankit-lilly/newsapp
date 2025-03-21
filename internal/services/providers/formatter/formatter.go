@@ -120,6 +120,45 @@ func FormatNode(sel *goquery.Selection) string {
 		content := processNodeContents(sel)
 		return fmt.Sprintf("<span>%s</span>", content)
 
+	case tag == "audio":
+		var sourcesHTML string
+
+		src, exists := sel.Attr("src")
+		if !exists {
+			// Check if there's an <a> tag inside the audio element.
+			aTag := sel.Find("a")
+			if aTag.Length() > 0 {
+				src, exists = aTag.Attr("href")
+			}
+		}
+		if exists {
+			typ, ok := sel.Attr("type")
+			if !ok {
+				typ = detectAudioMimeType(src)
+			}
+			sourcesHTML = fmt.Sprintf("<source src='%s' type='%s'>", src, typ)
+		}
+		return fmt.Sprintf("<audio controls>%sYour browser does not support the audio element.</audio>", sourcesHTML)
+
+	case tag == "video":
+		var sourcesHTML string
+		src, exists := sel.Attr("src")
+		if !exists {
+			aTag := sel.Find("a")
+			if aTag.Length() > 0 {
+				src, exists = aTag.Attr("href")
+			}
+		}
+		if exists {
+			typ, ok := sel.Attr("type")
+			if !ok {
+				typ = detectVideoMimeType(src)
+			}
+
+			sourcesHTML = fmt.Sprintf("<source src='%s' type='%s'>", src, typ)
+		}
+		return fmt.Sprintf("<video controls>%sYour browser does not support the video element.</video>", sourcesHTML)
+
 	case tag == "div":
 		content := processNodeContents(sel)
 		return fmt.Sprintf("<div>%s</div>", content)
@@ -177,8 +216,9 @@ func FormatNode(sel *goquery.Selection) string {
 
 func processNodeContents(sel *goquery.Selection) string {
 	var contentBuilder strings.Builder
+	tag := goquery.NodeName(sel)
 	sel.Contents().Each(func(i int, s *goquery.Selection) {
-		if i > 0 {
+		if i > 0 && tag == "p" {
 			contentBuilder.WriteString(" ")
 		}
 		contentBuilder.WriteString(FormatNode(s))
@@ -224,4 +264,33 @@ func replaceSpacerSrcInImg(sel *goquery.Selection) *goquery.Selection {
 	}
 
 	return sel
+}
+
+// Helper functions to detect MIME types based on file extension.
+func detectAudioMimeType(src string) string {
+	lowerSrc := strings.ToLower(src)
+	switch {
+	case strings.HasSuffix(lowerSrc, ".mp3"):
+		return "audio/mpeg"
+	case strings.HasSuffix(lowerSrc, ".ogg"):
+		return "audio/ogg"
+	case strings.HasSuffix(lowerSrc, ".wav"):
+		return "audio/wav"
+	default:
+		return "audio/mpeg" // fallback
+	}
+}
+
+func detectVideoMimeType(src string) string {
+	lowerSrc := strings.ToLower(src)
+	switch {
+	case strings.HasSuffix(lowerSrc, ".mp4"):
+		return "video/mp4"
+	case strings.HasSuffix(lowerSrc, ".webm"):
+		return "video/webm"
+	case strings.HasSuffix(lowerSrc, ".ogv"):
+		return "video/ogg"
+	default:
+		return "video/mp4" // fallback
+	}
 }

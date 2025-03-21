@@ -61,8 +61,11 @@ func (r *articleRepository) CreateFavoriteArticle(ctx context.Context, article *
 
 func (r *articleRepository) GetFavoriteArticle(ctx context.Context, articleId, userId int64) (*models.Article, error) {
 	query := "SELECT id, title, content, portal, link, description, user_id, published_at FROM articles WHERE id = ? AND user_id = ? LIMIT 1"
+
 	rows := r.db.QueryRow(query, articleId, userId)
+
 	article := models.Article{}
+
 	if err := rows.Scan(&article.ID, &article.Title, &article.Content, &article.Portal, &article.Link, &article.Description, &article.UserID, &article.PublishedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
