@@ -63,12 +63,12 @@ templ Chat(portal string, id string) {
 		>
 			<div class="modal-box">
 				<button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onclick="info_dialog.close()">✕</button>
-				<div class="chat-box" id="notifications"></div>
+				<div class="chat-box max-h-[40vh] p-4 overflow-y-scroll" id="notifications"></div>
 				<div class="chat-input mt-2 flex justify-end">
 					<form
 						id="form"
 						class="w-full mt-4 p-4"
-						hx-swap="#notifications"
+						hx-swap="#notifications show:#notifications:bottom"
 						hx-target="#notifications"
 						hx-indicator="#spinner"
 						hx-on:submit="this.reset()"
@@ -79,8 +79,9 @@ templ Chat(portal string, id string) {
 							type="text"
 							id="chat_message_input"
 							placeholder="Ask something..."
-							class="input self-justify-right input-bordered input-accent w-full max-w-xs"
+							class="input self-justify-right input-bordered input-accent w-full max-w-xs text-primary"
 						/>
+						<button type="submit" class="btn btn-primary">Send</button>
 					</form>
 				</div>
 			</div>

@@ -39,7 +39,7 @@ func NewDevTo() *DevTo {
 				DateSelector:     "div.dateTime",
 				TitleProcessor:   func(title string) string { return strings.TrimSpace(title) },
 				ContentFilter: sources.ContentFilter{
-					RemoveSelectors: []string{"svg.highlight-action--fullscreen-on", "svg.highlight-action"},
+					RemoveSelectors: []string{"svg.highlight-action--fullscreen-on", "svg.highlight-action", "div.ltag__link"},
 				},
 			},
 		},

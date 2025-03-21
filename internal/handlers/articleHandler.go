@@ -11,9 +11,9 @@ import (
 	"github.com/a-h/templ"
 	"github.com/ankit-lilly/newsapp/internal/models"
 	"github.com/ankit-lilly/newsapp/internal/services"
+	"github.com/ankit-lilly/newsapp/internal/templates"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/articles"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
-	"github.com/ankit-lilly/newsapp/internal/templates/pages"
 	"github.com/labstack/echo/v4"
 )
 
@@ -41,7 +41,7 @@ func (h *ArticleHandler) ListByCategory(c echo.Context) error {
 	return h.Render(c, RenderProps{
 		Title:            "Posts",
 		Component:        articles.ArticleList(articleList),
-		WrapperComponent: pages.Index,
+		WrapperComponent: templates.Index,
 	})
 
 }
@@ -66,9 +66,9 @@ func (h *ArticleHandler) List(c echo.Context) error {
 	}
 
 	return h.Render(c, RenderProps{
-		Title:            "Posts",
+		Title:            "NewsApp",
 		Component:        articles.ArticleList(articleList),
-		WrapperComponent: pages.Index,
+		WrapperComponent: templates.Index,
 	})
 }
 
@@ -89,7 +89,7 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 		return h.Render(c, RenderProps{
 			Title:            articleDetail.Title,
 			Component:        articles.Article(*articleDetail),
-			WrapperComponent: pages.Index,
+			WrapperComponent: templates.Index,
 		})
 	}
 
@@ -112,7 +112,7 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 	return h.Render(c, RenderProps{
 		Title:            articleDetail.Title,
 		Component:        articles.Article(*articleDetail),
-		WrapperComponent: pages.Index,
+		WrapperComponent: templates.Index,
 		CacheStrategy:    "cache",
 		CacheDuration:    60 * 60,
 	})
@@ -259,7 +259,7 @@ func (h *ArticleHandler) ListFavoriteArticles(c echo.Context) error {
 	return h.Render(c, RenderProps{
 		Title:            "Favorite Articles",
 		Component:        articles.ArticleList(articleList),
-		WrapperComponent: pages.Index,
+		WrapperComponent: templates.Index,
 		CacheStrategy:    "no-cache",
 	})
 }

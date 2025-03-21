@@ -3,13 +3,8 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"github.com/ankit-lilly/newsapp/internal/models"
 	"log/slog"
-)
-
-var (
-	NoRecordsFound = errors.New("user not found")
 )
 
 type UserRepository interface {

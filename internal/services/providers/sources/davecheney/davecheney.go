@@ -1,7 +1,5 @@
 package davecheney
 
-//https://dave.cheney.net/feed/atom
-
 import (
 	"fmt"
 	"strings"
@@ -24,7 +22,7 @@ func NewDaveCheney() *DaveCheney {
 	return &DaveCheney{
 		sources.Source{
 			ID:         ID,
-			Name:       "Dave Cheney",
+			Name:       "D Cheney",
 			BaseURL:    "https://dave.cheney.net",
 			Categories: categories,
 			Fetcher:    feed.NewRSSFetcher(ID),
@@ -52,7 +50,6 @@ func (t *DaveCheney) Fetch(category string) ([]models.Article, error) {
 		return nil, err
 	}
 
-	//Fiercepharma has title with anchor tags
 	for i, article := range articles {
 		doc, err := goquery.NewDocumentFromReader(strings.NewReader(article.Title))
 		if err != nil {

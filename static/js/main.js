@@ -20,6 +20,32 @@ window.htmx.defineExtension("stream", {
 
     detail.requestConfig.swap = "none";
 
+    let autoScroll = true;
+    const tolerance = 20; // Pixel tolerance for being "at the bottom".
+
+    const modalBox = element.closest(".prose");
+
+    if (modalBox) {
+      modalBox.addEventListener("scroll", () => {
+        // Check if the user is near the bottom if not then disable autoscroll.
+        if (
+          modalBox.scrollTop + modalBox.clientHeight >=
+          modalBox.scrollHeight - tolerance
+        ) {
+          autoScroll = true;
+        } else {
+          autoScroll = false;
+        }
+      });
+    }
+
+    // Only scroll if autoScroll flag is true.
+    const scrollToBottom = () => {
+      if (autoScroll && modalBox) {
+        modalBox.scrollTop = modalBox.scrollHeight;
+      }
+    };
+
     detail.xhr.addEventListener("readystatechange", () => {
       if (detail.xhr.readyState === 2 || detail.xhr.readyState === 3) {
         if (isFirstChunk) {
@@ -34,7 +60,7 @@ window.htmx.defineExtension("stream", {
         lastLength = detail.xhr.responseText.length;
 
         smd.parser_write(parser, newContent);
-        //element.append(newContent)
+        scrollToBottom();
       }
 
       if (detail.xhr.readyState === 4) {
@@ -232,7 +258,7 @@ class ThemeManager {
 function focusChatInput() {
   const input = document.getElementById("chat_message_input");
   if (input) {
-    input.focus();
+ //   input.focus();
   }
 }
 

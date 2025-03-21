@@ -2,6 +2,10 @@ package llm
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+
+	"github.com/ankit-lilly/newsapp/internal/prompts"
 	"github.com/ollama/ollama/api"
 )
 
@@ -64,6 +68,73 @@ func (llm *LLMHandler) GenerateRequest(ctx context.Context, system, prompt strin
 	}()
 
 	return output, errChan
+}
+
+type ArticleQuality struct {
+	Content string
+	Rating  int
+}
+
+func (llm *LLMHandler) GetRating(ctx context.Context, content string) (chan api.Message, chan error) {
+
+	format := json.RawMessage(`{
+    "type": "object",
+    "properties": {
+      "summary": {
+        "type": "string"
+      },
+      "rating": {
+        "type": "number"
+      },
+      "keywords": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "summary",
+      "rating", 
+      "keywords"
+    ]
+
+  }`)
+
+	stream := false
+	req := &api.ChatRequest{
+		Model:  llm.model,
+		Format: format,
+		Stream: &stream,
+		Messages: []api.Message{
+			{
+				Role:    "system",
+				Content: prompts.ARTICLE_QUALITY,
+			},
+			{
+				Role:    "user",
+				Content: fmt.Sprintf("Evaluate the quality of the following article: %q", content),
+			},
+		},
+	}
+
+	outputChan := make(chan api.Message)
+	errorsChan := make(chan error, 1)
+
+	chatResponseCallback := func(resp api.ChatResponse) error {
+		if resp.Done {
+			defer close(outputChan)
+			outputChan <- resp.Message
+		}
+		return nil
+	}
+	err := llm.ollama.Chat(ctx, req, chatResponseCallback)
+	if err != nil {
+		defer close(errorsChan)
+		errorsChan <- err
+	}
+
+	return outputChan, errorsChan
 }
 
 func (llm *LLMHandler) ChatRequest(ctx context.Context, messages []api.Message) (<-chan error, <-chan api.Message) {

@@ -99,6 +99,10 @@ article strong {
   @apply font-bold;
 }
 
+#summary h2 {
+  @apply text-xl;
+}
+
 article code {
   @apply mockup-code w-full block px-2 py-2 my-2;
 }

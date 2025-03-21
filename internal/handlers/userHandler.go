@@ -8,9 +8,9 @@ import (
 
 	"github.com/ankit-lilly/newsapp/internal/models"
 	"github.com/ankit-lilly/newsapp/internal/services"
+	"github.com/ankit-lilly/newsapp/internal/templates"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
 	"github.com/ankit-lilly/newsapp/internal/templates/components/users"
-	"github.com/ankit-lilly/newsapp/internal/templates/pages"
 	"github.com/ankit-lilly/newsapp/pkg/auth"
 	"github.com/labstack/echo/v4"
 )
@@ -33,7 +33,7 @@ func (h *UserHandler) LoginView(c echo.Context) error {
 	return h.Render(c, RenderProps{
 		Title:            "Login",
 		Component:        users.Login(),
-		WrapperComponent: pages.Index,
+		WrapperComponent: templates.Index,
 	})
 }
 
@@ -41,7 +41,7 @@ func (h *UserHandler) RegisterView(c echo.Context) error {
 	return h.Render(c, RenderProps{
 		Title:            "Register",
 		Component:        users.Register(),
-		WrapperComponent: pages.Index,
+		WrapperComponent: templates.Index,
 	})
 }
 

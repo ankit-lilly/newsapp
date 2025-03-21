@@ -20,7 +20,7 @@ func NewScientificAmerican() *ScientificAmerican {
 	return &ScientificAmerican{
 		sources.Source{
 			ID:         ID,
-			Name:       "Scientific American",
+			Name:       "SciAm",
 			BaseURL:    "https://www.scientificamerican.com",
 			Categories: categories,
 			Fetcher:    feed.NewRSSFetcher(ID),

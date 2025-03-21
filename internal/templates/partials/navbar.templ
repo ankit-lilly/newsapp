@@ -14,7 +14,7 @@ templ NavBar() {
 		hx-indicator="#spinner"
 		hx-swap="innerHTML"
 	>
-		<div class="flex-1">
+		<div class="">
 			<a class="btn btn-ghost text-xl" href="/" preload="preload:init">
 				NewsApp
 			</a>
@@ -80,7 +80,7 @@ templ NavItems(currentPath, platform string) {
 						for key, value := range p.Categories {
 							<li>
 								<a
-									onclick="this.closest('details').removeAttribute('open')"
+									onclick="document.querySelectorAll('details').forEach(el => el.removeAttribute('open'))"
 									class={ getStyle(currentPath, fmt.Sprintf("/news/%s/%s", p.ID, value)) }
 									href={ templ.URL(fmt.Sprintf("/news/%s/%s", p.ID, value)) }
 									preload="preload:init"
