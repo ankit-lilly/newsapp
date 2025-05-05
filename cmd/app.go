@@ -7,7 +7,6 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"os"
 
 	"github.com/ankit-lilly/newsapp/internal/db"
 	"github.com/ankit-lilly/newsapp/internal/handlers"
@@ -26,6 +25,7 @@ type App struct {
 	db           *sql.DB
 	ollamaClient *api.Client
 	jwtService   *auth.JwtService
+	config       *config.Config
 }
 
 func NewApp(cfg *config.Config) *App {
@@ -52,6 +52,7 @@ func NewApp(cfg *config.Config) *App {
 		db:           databaseConn,
 		ollamaClient: ollamaClient,
 		jwtService:   auth.NewJwtService(),
+		config:       cfg,
 	}
 }
 
@@ -76,14 +77,8 @@ func (a *App) Init(staticFiles embed.FS) error {
 	a.echo.Use(authMiddleware.JWT())
 	a.echo.GET("/static/*", echo.WrapHandler(http.FileServer(http.FS(staticFiles))))
 
-	modelToUse := os.Getenv("MODEL_TO_USE")
-
-	if modelToUse == "" {
-		modelToUse = "gemma2:2b"
-	}
-
-	slog.Info("Using model: ", modelToUse)
-	llmHandler := llm.New(a.ollamaClient, modelToUse)
+	slog.Info("Using model: ", a.config.ModelToUse)
+	llmHandler := llm.New(a.ollamaClient, a.config.ModelToUse)
 	routes.RegisterRoutes(a.echo, a.db, llmHandler)
 
 	return nil

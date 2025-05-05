@@ -46,15 +46,9 @@ and then click on `Open Anyway`.
 
 ## Env variables
 
-You can change the llama model by setting the environment variable
-`MODEL_TO_USE` to the model you want to use.
 
-```bash
-MODEL_TO_USE=bert-base-uncased ./newsapp
-```
-
-The port can be changed by creatting a `.env` file in the root directory. You
-can find the sample `.env` file in the root directory.
+The app uses environment variables to for configuration. You can take a look at sample
+`.env` file in the root directory.
 
 Note:
 

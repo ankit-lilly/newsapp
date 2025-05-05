@@ -65,9 +65,15 @@ func (h *ArticleHandler) List(c echo.Context) error {
 		return h.RenderError(c, err)
 	}
 
+	if portalName == "" {
+		portalName = "NewsApp"
+	}
+
+	component := ui.Merge([]templ.Component{articles.ArticleList(articleList), templates.Title(portalName)})
+
 	return h.Render(c, RenderProps{
 		Title:            "NewsApp",
-		Component:        articles.ArticleList(articleList),
+		Component:        component,
 		WrapperComponent: templates.Index,
 	})
 }
@@ -111,7 +117,7 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 
 	return h.Render(c, RenderProps{
 		Title:            articleDetail.Title,
-		Component:        articles.Article(*articleDetail),
+		Component:        ui.Merge([]templ.Component{articles.Article(*articleDetail), templates.Title(articleDetail.Title)}),
 		WrapperComponent: templates.Index,
 		CacheStrategy:    "cache",
 		CacheDuration:    60 * 60,
@@ -258,7 +264,7 @@ func (h *ArticleHandler) ListFavoriteArticles(c echo.Context) error {
 
 	return h.Render(c, RenderProps{
 		Title:            "Favorite Articles",
-		Component:        articles.ArticleList(articleList),
+		Component:        ui.Merge([]templ.Component{articles.ArticleList(articleList), templates.Title("Favorites")}),
 		WrapperComponent: templates.Index,
 		CacheStrategy:    "no-cache",
 	})

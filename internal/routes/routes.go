@@ -28,7 +28,6 @@ func RegisterRoutes(e *echo.Echo, db *sql.DB, llmHandler *llm.LLMHandler) {
 	e.DELETE("/articles/:id", articleHandler.DeleteFavoriteArticle)
 	e.GET("/favorites", articleHandler.ListFavoriteArticles)
 
-	// ----- User Routes -----
 	userRepository := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService, auth.NewJwtService())
@@ -39,7 +38,6 @@ func RegisterRoutes(e *echo.Echo, db *sql.DB, llmHandler *llm.LLMHandler) {
 	e.POST("/register", userHandler.Register)
 	e.DELETE("/logout", userHandler.Logout)
 
-	// ----- Chat Routes (WebSocket) -----
 	ws := melody.New()
 	chatHandler := handlers.NewChatHandler(articleService, ws)
 	e.GET("/articles/:portal/:id/chat", chatHandler.Chat)

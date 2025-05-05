@@ -13,6 +13,7 @@ type Config struct {
 	DatabaseURL  string
 	APP_PORT     string
 	CookieDomain string
+	ModelToUse   string
 }
 
 func LoadConfig() *Config {
@@ -27,6 +28,7 @@ func LoadConfig() *Config {
 		AppName:      getEnv("APP_NAME", "newsapp"),
 		DatabaseURL:  getEnv("DATABASE_URL", "articles.db"),
 		CookieDomain: getEnv("COOKIE_DOMAIN", "localhost"),
+		ModelToUse:   getEnv("MODEL_TO_USE", "gemma3"),
 	}
 }
 

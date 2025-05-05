@@ -2,12 +2,13 @@ package devto
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
+	"sync"
 
 	"github.com/ankit-lilly/newsapp/internal/models"
 	"github.com/ankit-lilly/newsapp/internal/services/feed"
 	"github.com/ankit-lilly/newsapp/internal/services/providers/sources"
+	"golang.org/x/sync/errgroup"
 )
 
 type DevTo struct {
@@ -47,11 +48,38 @@ func NewDevTo() *DevTo {
 }
 
 func (t *DevTo) FeedURL(category string) string {
-	pages := []string{"top/week", "top/month", "top/year", "top/infinity"}
-	randomPage := pages[rand.Intn(len(pages))]
-	return fmt.Sprintf("%s/%s", t.BaseURL, randomPage)
+	return fmt.Sprintf("%s/%s", t.BaseURL, category)
 }
 
 func (t *DevTo) Fetch(category string) ([]models.Article, error) {
-	return t.Fetcher.Fetch(t.FeedURL(category))
+
+	pages := []string{"top/week", "top/month", "top/year", "top/infinity", "/"}
+
+	var (
+		mu      sync.Mutex
+		results []models.Article
+		eg      errgroup.Group
+	)
+
+	for _, category := range pages {
+		eg.Go(func() error {
+			articles, err := t.Fetcher.Fetch(t.FeedURL(category))
+
+			if err != nil {
+				return err
+			}
+
+			mu.Lock()
+			results = append(results, articles...)
+			mu.Unlock()
+
+			return nil
+		})
+	}
+
+	if err := eg.Wait(); err != nil {
+		return nil, err
+	}
+
+	return results, nil
 }

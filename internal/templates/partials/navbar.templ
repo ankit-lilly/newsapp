@@ -14,13 +14,13 @@ templ NavBar() {
 		hx-indicator="#spinner"
 		hx-swap="innerHTML"
 	>
+		@MobileNav()
 		<div class="">
 			<a class="btn btn-ghost text-xl" href="/" preload="preload:init">
 				NewsApp
 			</a>
 		</div>
 		@DesktopNav()
-		@MobileNav()
 	</div>
 }
 
@@ -150,7 +150,7 @@ templ MobileNav() {
 			</div>
 			<ul
 				tabindex="0"
-				class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[100] mt-3  w-[100vw] right-0 origin-top-right max-w-xs p-2 shadow"
+				class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1000] mt-3 w-[100vw] left-0 origin-top-left max-w-xs p-2 shadow"
 			>
 				@NavItems(ctx.Value("currentPath").(string), "mobile")
 			</ul>
