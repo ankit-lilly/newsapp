@@ -39,10 +39,10 @@ type WebsocketMessage struct {
 
 func (h *ChatHandler) HandleConnect(s *melody.Session) {
 	sessionid := s.Request.Header.Get("Sec-WebSocket-Key")
-	slog.Debug("Connected to chat, sessionid:", sessionid)
+	slog.Debug("Connected to chat, sessionid:", "debug", sessionid)
 	link, portalName, err := h.extractKeysFromSession(s)
 	if err != nil {
-		slog.Error(err.Error(), err)
+		slog.Error(err.Error(), "error", err)
 		h.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}
@@ -61,18 +61,18 @@ func (h *ChatHandler) HandleConnect(s *melody.Session) {
 			select {
 			case output := <-outputChan:
 				fmt.Println(output)
-				slog.Info("Rating of the article is:", output)
+				slog.Info("Rating of the article is:", "info", output)
 				return
 			case err := <-errorChan:
 				fmt.Println(err)
-				slog.Error(err.Error(), err)
+				slog.Error(err.Error(), "error", err)
 				return
 			}
 		}
 	}()
 
 	if err != nil {
-		slog.Error(err.Error(), err)
+		slog.Error(err.Error(), "error", err)
 		h.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}
@@ -115,7 +115,7 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 		return
 	}
 
-	slog.Info("Received message:", wsMessage)
+	slog.Info("Received message:", "info", wsMessage)
 
 	historyRaw, ok := s.Keys["history"]
 	if !ok {
@@ -138,12 +138,12 @@ func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
 	a.WebSocketResponse(s.Request.Context(), articles.User("user", wsMessage.Chat_mesage), s)
 	a.WebSocketResponse(s.Request.Context(), articles.AssistantLoader(), s)
 
-	slog.Debug("Chat history:", history)
+	slog.Debug("Chat history:", "debug", history)
 
 	resp, err := a.articleService.SendChatRequest(s.Request.Context(), history)
 
 	if err != nil {
-		slog.Error(err.Error(), err)
+		slog.Error(err.Error(), "error", err)
 		a.WebSocketResponse(s.Request.Context(), articles.Assistant("assistant", "I'm sorry, I'm having trouble processing your request. Please try again."), s)
 		return
 	}

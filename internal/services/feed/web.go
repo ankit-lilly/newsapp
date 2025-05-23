@@ -48,7 +48,7 @@ func (f *WebFetcher) Fetch(url string) ([]models.Article, error) {
 
 	err := c.Visit(url)
 	if err != nil {
-		slog.Error("Failed to scrape website", err)
+		slog.Error("Failed to scrape website", "error", err)
 		return nil, fmt.Errorf("failed to scrape website: %w", err)
 	}
 

@@ -77,7 +77,7 @@ func (a *App) Init(staticFiles embed.FS) error {
 	a.echo.Use(authMiddleware.JWT())
 	a.echo.GET("/static/*", echo.WrapHandler(http.FileServer(http.FS(staticFiles))))
 
-	slog.Info("Using model: ", a.config.ModelToUse)
+	slog.Info("Using model: ", "info", a.config.ModelToUse)
 	llmHandler := llm.New(a.ollamaClient, a.config.ModelToUse)
 	routes.RegisterRoutes(a.echo, a.db, llmHandler)
 

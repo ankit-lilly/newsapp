@@ -50,7 +50,7 @@ func (t *SignalsAndThreads) FeedURL(category string) string {
 }
 
 func (t *SignalsAndThreads) Fetch(category string) ([]models.Article, error) {
-	slog.Info("Fetching articles", category)
+	slog.Info("Fetching articles", "info", category)
 	articles, err := t.Fetcher.Fetch(t.FeedURL(category))
 
 	if err != nil {
