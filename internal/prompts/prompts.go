@@ -95,5 +95,4 @@ func GetChatPrompt(content string) []api.Message {
 			Content: fmt.Sprintf(CHAT_USER, content),
 		},
 	}
-
 }

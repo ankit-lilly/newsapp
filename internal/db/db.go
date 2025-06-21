@@ -12,7 +12,6 @@ import (
 var db *sql.DB
 
 func Init(dbName string) error {
-	fmt.Println(dbName)
 	var err error
 	db, err = sql.Open("sqlite3", dbName)
 	if err != nil {

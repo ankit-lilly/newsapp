@@ -45,7 +45,5 @@ changelog:
 checksum:
   name_template: 'checksums.txt'
 
-# Removed deprecated snapshot.name_template
-
 release:
   prerelease: auto

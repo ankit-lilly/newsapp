@@ -24,10 +24,10 @@ func NewHackerNoon() *HackerNoon {
 			BaseURL:    "https://hackernoon.com",
 			Categories: categories,
 			Fetcher: feed.NewWebFetcher(ID, feed.WebSelectors{
-				ArticleWrapper: "article.carousel-card",
-				Title:          "div.title-wrapper > h2",
+				ArticleWrapper: "article",
+				Title:          "h2",
 				Description:    "",
-				Link:           "div.title-wrapper a",
+				Link:           "a",
 				PublishedAt:    "small.date",
 			}),
 			ParseConfig: sources.ParseConfig{
@@ -37,7 +37,7 @@ func NewHackerNoon() *HackerNoon {
 				DateSelector:     "div.dateTime",
 				TitleProcessor:   func(title string) string { return strings.TrimSpace(title) },
 				ContentFilter: sources.ContentFilter{
-					RemoveSelectors: []string{"button", ".natgeo-ad", "a[href='#commentSection']"},
+					RemoveSelectors: []string{"button", "a[href='#commentSection']"},
 				},
 			},
 		},
@@ -45,7 +45,7 @@ func NewHackerNoon() *HackerNoon {
 }
 
 func (t *HackerNoon) FeedURL(category string) string {
-	return t.BaseURL + "/c/programming"
+	return t.BaseURL + "/c"
 }
 
 func (t *HackerNoon) Fetch(category string) ([]models.Article, error) {

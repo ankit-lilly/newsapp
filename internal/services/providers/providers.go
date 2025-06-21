@@ -46,8 +46,10 @@ type ProviderCategory struct {
 // Registry is a map of provider ID to the provider instance.
 var Registry = map[string]Providers{}
 
-func Register(p Providers) {
-	Registry[p.GetID()] = p
+func Register(providers []Providers) {
+	for _, p := range providers {
+		Registry[p.GetID()] = p
+	}
 }
 
 func Get(id string) (Providers, error) {
@@ -106,19 +108,21 @@ func Init() {
 	softwareengineeringdaily := softwareengineeringdaily.NewSFD()
 	signalsAndthreads := signalsAndthreads.NewSignalsAndThreads()
 
-	Register(thehindu)
-	Register(natgeo)
-	Register(fiercepharma)
-	Register(davecheney)
-	Register(wired)
-	Register(martinfowler)
-	Register(techcrunch)
-	Register(scientificamerican)
-	Register(highscalability)
-	Register(hackernoon)
-	Register(newyorker)
-	Register(acmqueue)
-	Register(devto)
-	Register(softwareengineeringdaily)
-	Register(signalsAndthreads)
+	Register([]Providers{
+		thehindu,
+		natgeo,
+		fiercepharma,
+		davecheney,
+		wired,
+		martinfowler,
+		techcrunch,
+		scientificamerican,
+		highscalability,
+		hackernoon,
+		newyorker,
+		acmqueue,
+		devto,
+		softwareengineeringdaily,
+		signalsAndthreads,
+	})
 }

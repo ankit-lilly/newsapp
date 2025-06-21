@@ -277,7 +277,7 @@ func detectAudioMimeType(src string) string {
 	case strings.HasSuffix(lowerSrc, ".wav"):
 		return "audio/wav"
 	default:
-		return "audio/mpeg" // fallback
+		return "audio/mpeg"
 	}
 }
 
@@ -291,6 +291,6 @@ func detectVideoMimeType(src string) string {
 	case strings.HasSuffix(lowerSrc, ".ogv"):
 		return "video/ogg"
 	default:
-		return "video/mp4" // fallback
+		return "video/mp4"
 	}
 }
