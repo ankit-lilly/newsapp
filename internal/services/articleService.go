@@ -10,11 +10,11 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"github.com/ankit-lilly/newsapp/internal/models"
-	"github.com/ankit-lilly/newsapp/internal/prompts"
-	"github.com/ankit-lilly/newsapp/internal/repositories"
-	"github.com/ankit-lilly/newsapp/internal/services/llm"
-	"github.com/ankit-lilly/newsapp/internal/services/providers"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/prompts"
+	"github.com/ankit-lilly/newsmaxxing/internal/repositories"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/llm"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers"
 	"github.com/ollama/ollama/api"
 	"jaytaylor.com/html2text"
 )
@@ -143,7 +143,6 @@ func (s *ArticleService) GetRandomArticles(ctx context.Context) ([]models.Articl
 	)
 
 	for _, provider := range providers.Registry {
-		provider := provider
 
 		eg.Go(func() error {
 			var category string

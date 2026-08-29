@@ -3,13 +3,13 @@ package routes
 import (
 	"database/sql"
 
-	"github.com/ankit-lilly/newsapp/internal/handlers"
-	"github.com/ankit-lilly/newsapp/internal/repositories"
-	"github.com/ankit-lilly/newsapp/internal/services"
-	"github.com/ankit-lilly/newsapp/internal/services/llm"
-	"github.com/ankit-lilly/newsapp/internal/services/providers"
-	"github.com/ankit-lilly/newsapp/pkg/auth"
-	"github.com/labstack/echo/v4"
+	"github.com/ankit-lilly/newsmaxxing/internal/handlers"
+	"github.com/ankit-lilly/newsmaxxing/internal/repositories"
+	"github.com/ankit-lilly/newsmaxxing/internal/services"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/llm"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers"
+	"github.com/ankit-lilly/newsmaxxing/pkg/auth"
+	"github.com/labstack/echo/v5"
 	"github.com/olahol/melody"
 )
 
@@ -19,7 +19,7 @@ func RegisterRoutes(e *echo.Echo, db *sql.DB, llmHandler *llm.LLMHandler) {
 	articleService := services.NewArticleService(articleRepository, llmHandler, providers.Registry["thehindu"])
 	articleHandler := handlers.NewArticleHandler(articleService)
 
-	e.GET("/", articleHandler.List).Name = "homePage"
+	e.GET("/", articleHandler.List)
 	e.GET("/news/:portal", articleHandler.List)
 	e.GET("/news/:portal/:category", articleHandler.ListByCategory)
 	e.GET("/articles/:portal/:id", articleHandler.GetArticleByID)
@@ -32,9 +32,9 @@ func RegisterRoutes(e *echo.Echo, db *sql.DB, llmHandler *llm.LLMHandler) {
 	userService := services.NewUserService(userRepository)
 	userHandler := handlers.NewUserHandler(userService, auth.NewJwtService())
 
-	e.GET("/login", userHandler.LoginView).Name = "loginPage"
+	e.GET("/login", userHandler.LoginView)
 	e.POST("/login", userHandler.Login)
-	e.GET("/register", userHandler.RegisterView).Name = "registerPage"
+	e.GET("/register", userHandler.RegisterView)
 	e.POST("/register", userHandler.Register)
 	e.DELETE("/logout", userHandler.Logout)
 

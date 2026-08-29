@@ -9,12 +9,12 @@ import (
 	"strings"
 
 	"github.com/a-h/templ"
-	"github.com/ankit-lilly/newsapp/internal/models"
-	"github.com/ankit-lilly/newsapp/internal/services"
-	"github.com/ankit-lilly/newsapp/internal/templates"
-	"github.com/ankit-lilly/newsapp/internal/templates/components/articles"
-	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
-	"github.com/labstack/echo/v4"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/services"
+	"github.com/ankit-lilly/newsmaxxing/internal/templates"
+	"github.com/ankit-lilly/newsmaxxing/internal/templates/components/articles"
+	"github.com/ankit-lilly/newsmaxxing/internal/templates/components/ui"
+	"github.com/labstack/echo/v5"
 )
 
 type ArticleHandler struct {
@@ -28,7 +28,7 @@ func NewArticleHandler(articleService *services.ArticleService) *ArticleHandler 
 	}
 }
 
-func (h *ArticleHandler) ListByCategory(c echo.Context) error {
+func (h *ArticleHandler) ListByCategory(c *echo.Context) error {
 	category := c.Param("category")
 	portal := c.Param("portal")
 
@@ -46,7 +46,7 @@ func (h *ArticleHandler) ListByCategory(c echo.Context) error {
 
 }
 
-func (h *ArticleHandler) List(c echo.Context) error {
+func (h *ArticleHandler) List(c *echo.Context) error {
 	var (
 		portalName  string
 		articleList []models.Article
@@ -66,19 +66,19 @@ func (h *ArticleHandler) List(c echo.Context) error {
 	}
 
 	if portalName == "" {
-		portalName = "NewsApp"
+		portalName = "NewsMaxxing"
 	}
 
 	component := ui.Merge([]templ.Component{articles.ArticleList(articleList), templates.Title(portalName)})
 
 	return h.Render(c, RenderProps{
-		Title:            "NewsApp",
+		Title:            "NewsMaxxing",
 		Component:        component,
 		WrapperComponent: templates.Index,
 	})
 }
 
-func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
+func (h *ArticleHandler) GetArticleByID(c *echo.Context) error {
 
 	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
@@ -124,7 +124,7 @@ func (h *ArticleHandler) GetArticleByID(c echo.Context) error {
 	})
 }
 
-func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
+func (h *ArticleHandler) GetArticleSummary(c *echo.Context) error {
 
 	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
@@ -148,14 +148,17 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 			}
 
 			if _, err := fmt.Fprintf(w, "%s", content); err != nil {
-				c.Echo().Logger.Error(err)
+				c.Logger().Error("failed to write summary response", "error", err)
 				return h.View(c, ui.ErrorBlock(err.Error()))
 			}
-			c.Response().Flush()
+			if err := http.NewResponseController(w).Flush(); err != nil {
+				c.Logger().Error("failed to flush summary response", "error", err)
+				return err
+			}
 
 		case err, ok := <-errChan:
 			if ok && err != nil {
-				c.Echo().Logger.Error(err.Error())
+				c.Logger().Error("article summary failed", "error", err)
 				return h.View(c, ui.ErrorBlock(err.Error()))
 			} else {
 				errChan = nil
@@ -171,7 +174,7 @@ func (h *ArticleHandler) GetArticleSummary(c echo.Context) error {
 	return nil
 }
 
-func (h *ArticleHandler) CreateFavoriteArticle(c echo.Context) error {
+func (h *ArticleHandler) CreateFavoriteArticle(c *echo.Context) error {
 
 	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 
@@ -182,8 +185,8 @@ func (h *ArticleHandler) CreateFavoriteArticle(c echo.Context) error {
 	userId, ok := c.Get("userId").(int64)
 
 	if !ok {
-		c.Echo().Logger.Error("User id not found in context", ok)
-		h.RedirectToLogin(c)
+		c.Logger().Error("user ID not found in context")
+		return h.RedirectToLogin(c)
 	}
 
 	article, err := h.articleService.CreateFavoriteArticle(c.Request().Context(), portalName, link, userId)
@@ -200,7 +203,7 @@ func (h *ArticleHandler) CreateFavoriteArticle(c echo.Context) error {
 
 }
 
-func (h *ArticleHandler) DeleteFavoriteArticle(c echo.Context) error {
+func (h *ArticleHandler) DeleteFavoriteArticle(c *echo.Context) error {
 
 	articleId, err := strconv.ParseInt(c.Param("id"), 10, 64)
 
@@ -215,14 +218,14 @@ func (h *ArticleHandler) DeleteFavoriteArticle(c echo.Context) error {
 	userId, ok := c.Get("userId").(int64)
 
 	if !ok {
-		c.Echo().Logger.Error("User id not found in context", ok)
-		h.RedirectToLogin(c)
+		c.Logger().Error("user ID not found in context")
+		return h.RedirectToLogin(c)
 	}
 
 	article, err := h.articleService.GetFavoriteArticle(c.Request().Context(), articleId, userId)
 
 	if err == nil && article == nil {
-		c.Echo().Logger.Error("Article not found", articleId, err, userId, articleId)
+		c.Logger().Error("article not found", "article_id", articleId, "user_id", userId)
 		return h.View(c, ui.ErrorBlock("Article not found"))
 	}
 
@@ -243,7 +246,7 @@ func (h *ArticleHandler) DeleteFavoriteArticle(c echo.Context) error {
 	})
 }
 
-func (h *ArticleHandler) ListFavoriteArticles(c echo.Context) error {
+func (h *ArticleHandler) ListFavoriteArticles(c *echo.Context) error {
 
 	if !h.isAuthorized(c) {
 		return h.RedirectToLogin(c)
@@ -252,7 +255,7 @@ func (h *ArticleHandler) ListFavoriteArticles(c echo.Context) error {
 	userId, ok := c.Get("userId").(int64)
 
 	if !ok {
-		c.Echo().Logger.Error("User id not found in context", ok)
+		c.Logger().Error("user ID not found in context")
 		return h.View(c, ui.ErrorBlock("Unauthorized"))
 	}
 
@@ -270,7 +273,7 @@ func (h *ArticleHandler) ListFavoriteArticles(c echo.Context) error {
 	})
 }
 
-func (h *ArticleHandler) parseAndValidateIdAndPortal(c echo.Context) (string, string, error) {
+func (h *ArticleHandler) parseAndValidateIdAndPortal(c *echo.Context) (string, string, error) {
 	encodedLink := strings.TrimSpace(c.Param("id"))
 	portalName := strings.TrimSpace(c.Param("portal"))
 
@@ -283,8 +286,8 @@ func (h *ArticleHandler) parseAndValidateIdAndPortal(c echo.Context) (string, st
 
 	link, err := url.QueryUnescape(encodedLink)
 	if err != nil {
-		c.Echo().Logger.Error(err.Error())
-		return "", "", errors.New("Invalid link")
+		c.Logger().Error("failed to decode article link", "error", err)
+		return "", "", errors.New("invalid link")
 	}
 
 	return link, portalName, nil

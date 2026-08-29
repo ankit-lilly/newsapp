@@ -3,9 +3,9 @@ package sources
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	"github.com/ankit-lilly/newsapp/internal/models"
-	"github.com/ankit-lilly/newsapp/internal/services/feed"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/formatter"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/feed"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/formatter"
 	"net/http"
 	"strings"
 )

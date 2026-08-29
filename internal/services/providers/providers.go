@@ -4,22 +4,18 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/ankit-lilly/newsapp/internal/models"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/acmqueue"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/davecheney"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/devto"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/fiercepharma"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hackernoon"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/highscalability"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/hindu"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/martinfowler"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/natgeo"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/newyorker"
-	scientificamerican "github.com/ankit-lilly/newsapp/internal/services/providers/sources/scientificAmerican"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/signalsAndthreads"
-	softwareengineeringdaily "github.com/ankit-lilly/newsapp/internal/services/providers/sources/softwareEngineeringDaily"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/techcrunch"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources/wired"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/davecheney"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/fiercepharma"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/highscalability"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/hindu"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/martinfowler"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/natgeo"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/newyorker"
+	scientificamerican "github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/scientificAmerican"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/signalsAndthreads"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/techcrunch"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/wired"
 )
 
 /*
@@ -101,11 +97,7 @@ func Init() {
 	natgeo := natgeo.NewNatGeo()
 	scientificamerican := scientificamerican.NewScientificAmerican()
 	highscalability := highscalability.NewHighScalability()
-	hackernoon := hackernoon.NewHackerNoon()
 	newyorker := newyorker.NewNewyorker()
-	acmqueue := acmqueue.NewACMQueue()
-	devto := devto.NewDevTo()
-	softwareengineeringdaily := softwareengineeringdaily.NewSFD()
 	signalsAndthreads := signalsAndthreads.NewSignalsAndThreads()
 
 	Register([]Providers{
@@ -118,11 +110,7 @@ func Init() {
 		techcrunch,
 		scientificamerican,
 		highscalability,
-		hackernoon,
 		newyorker,
-		acmqueue,
-		devto,
-		softwareengineeringdaily,
 		signalsAndthreads,
 	})
 }

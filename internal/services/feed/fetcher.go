@@ -1,7 +1,7 @@
 package feed
 
 import (
-	"github.com/ankit-lilly/newsapp/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
 )
 
 type Fetcher interface {

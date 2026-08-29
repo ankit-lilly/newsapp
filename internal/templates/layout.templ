@@ -1,8 +1,8 @@
 package templates
 
 import (
-	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
-	"github.com/ankit-lilly/newsapp/internal/templates/partials"
+	"github.com/ankit-lilly/newsmaxxing/internal/templates/components/ui"
+	"github.com/ankit-lilly/newsmaxxing/internal/templates/partials"
 )
 
 templ Title(title string) {
@@ -42,20 +42,21 @@ templ base(title string) {
 			<script type="text/javascript" src="https://unpkg.com/htmx-ext-remove-me@2.0.0/remove-me.js" defer></script>
 			<script type="text/javascript" src="https://unpkg.com/default-passive-events" defer></script>
 			<script type="text/javascript" src="https://unpkg.com/htmx.org@1.9.12/dist/ext/ws.js" defer></script>
-			<script type="text/javascript" src="/static/dist/js/main.js" defer></script>
+			<script type="module" src="/static/dist/js/main.js"></script>
 		</head>
 		<body
-			class="sample-transition comic-neue-regular"
+			class="sample-transition comic-neue-regular min-h-screen bg-base-100 text-base-content"
 			hx-boost="true"
 			hx-swap="outerHTML"
 			hx-ext="preload"
 		>
 			@partials.NavBar()
-			<main class="pt-8" id="main-content" hx-ext="remove-me">
+			<main class="mx-auto min-h-[calc(100vh-4rem)] w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8" id="main-content" hx-ext="remove-me">
 				<div id="flash"></div>
 				@ui.Spinner()
 				<div
 					id="container"
+					class="w-full"
 				>
 					{ children... }
 				</div>

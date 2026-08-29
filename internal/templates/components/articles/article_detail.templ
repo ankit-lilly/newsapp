@@ -2,7 +2,7 @@ package articles
 
 import (
 	"fmt"
-	"github.com/ankit-lilly/newsapp/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
 	"net/url"
 )
 
@@ -14,7 +14,7 @@ func getClass(article models.Article) string {
 }
 
 templ Article(article models.Article) {
-	<div class="mx-auto w-full max-w-full md:max-w-5xl p-4" id="article-detail">
+	<div class="w-full" id="article-detail">
 		@BackButton()
 		<article class="w-full rounded mt-2">
 			<div class="flex gap-4">

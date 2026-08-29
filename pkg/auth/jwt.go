@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ankit-lilly/newsapp/pkg/config"
+	"github.com/ankit-lilly/newsmaxxing/pkg/config"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 )
 
 const (
@@ -55,15 +55,13 @@ func (s *JwtService) GenerateToken(user User) (string, time.Time, error) {
 	expirationTime := now.Add(s.TokenExpiration)
 
 	claims := &JwtClaims{
-		Username: user.Username,
-		Id:       user.ID,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: &jwt.NumericDate{Time: expirationTime},
-			IssuedAt:  &jwt.NumericDate{Time: now},
-			NotBefore: &jwt.NumericDate{Time: now},
-			Issuer:    s.AppName,
-			Subject:   fmt.Sprintf("%d", user.ID),
-		},
+		Username:  user.Username,
+		Id:        user.ID,
+		ExpiresAt: &jwt.NumericDate{Time: expirationTime},
+		IssuedAt:  &jwt.NumericDate{Time: now},
+		NotBefore: &jwt.NumericDate{Time: now},
+		Issuer:    s.AppName,
+		Subject:   fmt.Sprintf("%d", user.ID),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -76,7 +74,7 @@ func (s *JwtService) GenerateToken(user User) (string, time.Time, error) {
 }
 
 func (s *JwtService) ValidateToken(tokenString string) (*JwtClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(t *jwt.Token) (any, error) {
 		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
@@ -100,7 +98,7 @@ func (s *JwtService) ValidateToken(tokenString string) (*JwtClaims, error) {
 }
 
 // Cookie Management
-func (s *JwtService) GenerateTokenAndSetCookie(user User, c echo.Context) error {
+func (s *JwtService) GenerateTokenAndSetCookie(user User, c *echo.Context) error {
 	token, exp, err := s.GenerateToken(user)
 	if err != nil {
 		return fmt.Errorf("generate token: %w", err)
@@ -110,7 +108,7 @@ func (s *JwtService) GenerateTokenAndSetCookie(user User, c echo.Context) error 
 	return nil
 }
 
-func (s *JwtService) setTokenCookie(token string, expiration time.Time, c echo.Context) {
+func (s *JwtService) setTokenCookie(token string, expiration time.Time, c *echo.Context) {
 	cookie := &http.Cookie{
 		Name:     accessTokenCookieName,
 		Value:    token,
@@ -125,7 +123,7 @@ func (s *JwtService) setTokenCookie(token string, expiration time.Time, c echo.C
 	c.SetCookie(cookie)
 }
 
-func (s *JwtService) Logout(c echo.Context) error {
+func (s *JwtService) Logout(c *echo.Context) error {
 	cookie := &http.Cookie{
 		Name:     accessTokenCookieName,
 		Value:    "",

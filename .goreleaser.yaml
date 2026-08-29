@@ -1,5 +1,6 @@
 # .goreleaser.yaml
 version: 2
+project_name: newsmaxxing
 
 before:
   hooks:
@@ -18,7 +19,7 @@ builds:
       - arm64
     ldflags:
       - -s -w
-    binary: newsapp
+    binary: newsmaxxing
 
 archives:
   - id: default

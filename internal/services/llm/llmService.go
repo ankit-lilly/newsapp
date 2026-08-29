@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ankit-lilly/newsapp/internal/prompts"
+	"github.com/ankit-lilly/newsmaxxing/internal/prompts"
 	"github.com/ollama/ollama/api"
 )
 

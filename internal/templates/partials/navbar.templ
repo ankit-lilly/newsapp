@@ -2,158 +2,234 @@ package partials
 
 import (
 	"fmt"
-	"github.com/ankit-lilly/newsapp/internal/services/providers"
-	"github.com/ankit-lilly/newsapp/internal/templates/components/ui"
+	"sort"
 	"strings"
+
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers"
+	"github.com/ankit-lilly/newsmaxxing/internal/templates/components/ui"
 )
 
+type navigationLink struct {
+	Name     string
+	Group    string
+	Href     string
+	Keywords string
+}
+
+func getStyle(currentPath, linkHref string) string {
+	style := "rounded-lg"
+	if strings.TrimSpace(currentPath) == strings.TrimSpace(linkHref) {
+		return style + " menu-active"
+	}
+	return style
+}
+
+func getSortedCategories(categories map[string]string) []navigationLink {
+	links := make([]navigationLink, 0, len(categories))
+	for name, slug := range categories {
+		links = append(links, navigationLink{Name: name, Href: slug})
+	}
+	sort.Slice(links, func(i, j int) bool {
+		return links[i].Name < links[j].Name
+	})
+	return links
+}
+
+func getSearchLinks() []navigationLink {
+	links := []navigationLink{{
+		Name:     "All news",
+		Group:    "NewsMaxxing",
+		Href:     "/",
+		Keywords: "home all random news",
+	}}
+	for _, provider := range providers.GetProviderCategories() {
+		if provider.HasChildren {
+			for _, category := range getSortedCategories(provider.Categories) {
+				links = append(links, navigationLink{
+					Name:     category.Name,
+					Group:    provider.Name,
+					Href:     fmt.Sprintf("/news/%s/%s", provider.ID, category.Href),
+					Keywords: provider.Name + " " + category.Name,
+				})
+			}
+			continue
+		}
+		links = append(links, navigationLink{
+			Name:     provider.Name,
+			Group:    "Source",
+			Href:     fmt.Sprintf("/news/%s", provider.ID),
+			Keywords: provider.Name,
+		})
+	}
+	return links
+}
+
 templ NavBar() {
-	<div
-		class="navbar bg-base-100"
+	<header
+		class="sticky top-0 z-50 border-b border-base-300 bg-base-100/95 backdrop-blur"
 		hx-target="#container"
 		hx-indicator="#spinner"
 		hx-swap="innerHTML"
 	>
-		@MobileNav()
-		<div class="">
-			<a class="btn btn-ghost text-xl" href="/" preload="preload:init">
-				NewsApp
-			</a>
-		</div>
-		@DesktopNav()
-	</div>
-}
-
-func getStyle(currentPath, linkHref string) string {
-	if strings.TrimSpace(currentPath) == strings.TrimSpace(linkHref) {
-		return "font-bold mt-2 mb-2 menu-active"
-	}
-	return "font-bold mt-2 mb-2"
-}
-
-templ GetUserNav(currentPath string, isAuthorized bool) {
-	if isAuthorized {
-		<li>
-			<summary class={ getStyle(currentPath, "/favorites") }>
-				<a href="/favorites">Favorites</a>
-			</summary>
-		</li>
-		<li>
-			<summary class={ getStyle(currentPath, "/logout") }>
-				<a
-					hx-delete="/logout"
-					href="/logout"
-				>Logout</a>
-			</summary>
-		</li>
-	} else {
-		<li>
-			<summary
-				class={ getStyle(currentPath, "/login") }
-			>
-				<a
-					href="/login"
-				>Login</a>
-			</summary>
-		</li>
-		<li>
-			<summary
-				class={ getStyle(currentPath, "/register") }
-			>
-				<a
-					href="/register"
-				>Register</a>
-			</summary>
-		</li>
-	}
-}
-
-templ NavItems(currentPath, platform string) {
-	for _, p := range providers.GetProviderCategories() {
-		if p.HasChildren {
-			<li>
-				<details>
-					<summary
-						class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.ID)) }
-					>{ p.Name }</summary>
-					<ul class="p-2">
-						for key, value := range p.Categories {
-							<li>
-								<a
-									onclick="document.querySelectorAll('details').forEach(el => el.removeAttribute('open'))"
-									class={ getStyle(currentPath, fmt.Sprintf("/news/%s/%s", p.ID, value)) }
-									href={ templ.URL(fmt.Sprintf("/news/%s/%s", p.ID, value)) }
-									preload="preload:init"
-								>{ key }</a>
-							</li>
-						}
-					</ul>
-				</details>
-			</li>
-		} else {
-			<li class>
-				<summary
-					class={ getStyle(currentPath, fmt.Sprintf("/news/%s", p.ID)) }
-				>
-					<a
-						href={ templ.URL(fmt.Sprintf("/news/%s", p.ID)) }
-						preload="preload:init"
-					>{ p.Name }</a>
-				</summary>
-			</li>
-		}
-	}
-	<li>
-		<details>
-			<summary class="font-bold mt-2 mb-2">Settings</summary>
-			<ul
-				tabindex="0"
-				class="p-2"
-			>
-				@GetUserNav(currentPath, ctx.Value("isAuthorized").(bool))
-				<li>
-					@ui.ToggleTheme(platform)
-				</li>
-			</ul>
-		</details>
-	</li>
-}
-
-templ DesktopNav() {
-	<div class="hidden lg:flex">
-		<ul
-			class="navbar menu menu-horizontal flex-wrap z-[100] gap-2"
-		>
-			@NavItems(ctx.Value("currentPath").(string), "desktop")
-		</ul>
-	</div>
-}
-
-templ MobileNav() {
-	<div class="lg:hidden">
-		<div class="dropdown">
-			<div tabindex="0" role="button" class="btn btn-ghost">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="h-5 w-5"
-					fill="none"
-					viewBox="0 0 24 24"
-					stroke="currentColor"
-				>
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M4 6h16M4 12h8m-8 6h16"
-					></path>
-				</svg>
+		<div class="navbar mx-auto min-h-16 w-full max-w-5xl px-4 sm:px-6">
+			<div class="navbar-start min-w-0 flex-1">
+				<a class="btn btn-ghost gap-2 px-2 text-xl" href="/" preload="preload:init" aria-label="NewsMaxxing home">
+					<svg class="size-6 text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+						<path stroke-linecap="round" stroke-linejoin="round" d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+					</svg>
+					<span class="truncate">NewsMaxxing</span>
+				</a>
 			</div>
-			<ul
-				tabindex="0"
-				class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1000] mt-3 w-[100vw] left-0 origin-top-left max-w-xs p-2 shadow"
-			>
-				@NavItems(ctx.Value("currentPath").(string), "mobile")
-			</ul>
+			<div class="navbar-end w-auto gap-1 sm:gap-2">
+				<button
+					type="button"
+					class="btn btn-ghost h-10 min-h-10 gap-2 border border-base-300 px-3 sm:w-56 sm:justify-start"
+					data-command-trigger
+					aria-label="Search sources"
+				>
+					<svg class="size-5 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+						<circle cx="11" cy="11" r="8"></circle>
+						<path stroke-linecap="round" d="m21 21-4.3-4.3"></path>
+					</svg>
+					<span class="hidden flex-1 text-left font-normal text-base-content/60 sm:inline">Search sources...</span>
+					<kbd class="kbd kbd-sm hidden lg:inline-flex" data-command-shortcut>Ctrl K</kbd>
+				</button>
+				@SourcesMenu(ctx.Value("currentPath").(string))
+				<div class="hidden sm:block">
+					@ui.ToggleTheme("desktop")
+				</div>
+				@AccountMenu(ctx.Value("currentPath").(string), ctx.Value("isAuthorized").(bool))
+			</div>
 		</div>
-	</div>
+		@SearchModal(ctx.Value("currentPath").(string))
+	</header>
+}
+
+templ SourcesMenu(currentPath string) {
+	<details class="dropdown dropdown-end">
+		<summary class="btn btn-ghost min-h-10 gap-2 px-2 sm:px-3">
+			<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M4 5h16M4 12h16M4 19h16"></path>
+			</svg>
+			<span class="hidden sm:inline">Sources</span>
+			<svg class="hidden size-4 sm:block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+				<path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"></path>
+			</svg>
+		</summary>
+		<ul class="menu dropdown-content z-[60] mt-3 max-h-[70vh] w-72 overflow-y-auto rounded-box border border-base-300 bg-base-100 p-2 shadow-xl">
+			<li><a class={ getStyle(currentPath, "/") } href="/" preload="preload:init" onclick="this.closest('.dropdown').removeAttribute('open')">All news</a></li>
+			for _, provider := range providers.GetProviderCategories() {
+				if provider.HasChildren {
+					<li>
+						<details>
+							<summary>{ provider.Name }</summary>
+							<ul>
+								for _, category := range getSortedCategories(provider.Categories) {
+									<li>
+										<a
+											class={ getStyle(currentPath, fmt.Sprintf("/news/%s/%s", provider.ID, category.Href)) }
+											href={ templ.URL(fmt.Sprintf("/news/%s/%s", provider.ID, category.Href)) }
+											preload="preload:init"
+											onclick="this.closest('.dropdown').removeAttribute('open')"
+										>{ category.Name }</a>
+									</li>
+								}
+							</ul>
+						</details>
+					</li>
+				} else {
+					<li>
+						<a
+							class={ getStyle(currentPath, fmt.Sprintf("/news/%s", provider.ID)) }
+							href={ templ.URL(fmt.Sprintf("/news/%s", provider.ID)) }
+							preload="preload:init"
+							onclick="this.closest('.dropdown').removeAttribute('open')"
+						>{ provider.Name }</a>
+					</li>
+				}
+			}
+		</ul>
+	</details>
+}
+
+templ AccountMenu(currentPath string, isAuthorized bool) {
+	<details class="dropdown dropdown-end">
+		<summary class="btn btn-square btn-ghost min-h-10" aria-label="Account and settings">
+			<svg class="size-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+				<circle cx="12" cy="8" r="4"></circle>
+				<path stroke-linecap="round" stroke-linejoin="round" d="M4 21a8 8 0 0 1 16 0"></path>
+			</svg>
+		</summary>
+		<ul class="menu dropdown-content z-[60] mt-3 w-52 rounded-box border border-base-300 bg-base-100 p-2 shadow-xl">
+			if isAuthorized {
+				<li><a class={ getStyle(currentPath, "/favorites") } href="/favorites" onclick="this.closest('.dropdown').removeAttribute('open')">Favorites</a></li>
+				<li><a hx-delete="/logout" href="/logout" onclick="this.closest('.dropdown').removeAttribute('open')">Logout</a></li>
+			} else {
+				<li><a class={ getStyle(currentPath, "/login") } href="/login" onclick="this.closest('.dropdown').removeAttribute('open')">Login</a></li>
+				<li><a class={ getStyle(currentPath, "/register") } href="/register" onclick="this.closest('.dropdown').removeAttribute('open')">Register</a></li>
+			}
+			<li class="sm:hidden">
+				<div class="flex justify-between">
+					<span>Theme</span>
+					@ui.ToggleTheme("mobile")
+				</div>
+			</li>
+		</ul>
+	</details>
+}
+
+templ SearchModal(currentPath string) {
+	<dialog id="source-search-modal" class="modal modal-middle">
+		<div class="modal-box max-w-2xl p-0">
+			<div class="flex items-center gap-3 border-b border-base-300 px-4">
+				<svg class="size-5 shrink-0 text-base-content/60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+					<circle cx="11" cy="11" r="8"></circle>
+					<path stroke-linecap="round" d="m21 21-4.3-4.3"></path>
+				</svg>
+				<input
+					id="source-search-input"
+					type="search"
+					class="input h-14 w-full border-0 px-0 text-base focus:outline-none"
+					placeholder="Search sources and sections..."
+					autocomplete="off"
+					aria-label="Search sources and sections"
+				/>
+				<form method="dialog">
+					<button class="btn btn-ghost btn-sm" aria-label="Close search">Esc</button>
+				</form>
+			</div>
+			<ul id="source-search-results" class="menu max-h-[60vh] flex-nowrap overflow-y-auto p-2">
+				for _, link := range getSearchLinks() {
+					<li
+						class="command-source-item"
+						data-command-value={ strings.ToLower(link.Name + " " + link.Group + " " + link.Keywords) }
+					>
+						<a
+							class={ getStyle(currentPath, link.Href) }
+							href={ templ.URL(link.Href) }
+							preload="preload:init"
+						>
+							<span class="flex-1">
+								<span class="block font-medium">{ link.Name }</span>
+								<span class="block text-xs text-base-content/60">{ link.Group }</span>
+							</span>
+							<svg class="size-4 text-base-content/40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6"></path>
+							</svg>
+						</a>
+					</li>
+				}
+				<li id="source-search-empty" class="hidden p-8 text-center text-base-content/60">No sources found.</li>
+			</ul>
+			<div class="hidden items-center gap-4 border-t border-base-300 px-4 py-3 text-xs text-base-content/60 sm:flex">
+				<span class="flex items-center gap-1"><kbd class="kbd kbd-xs">↑</kbd><kbd class="kbd kbd-xs">↓</kbd> navigate</span>
+				<span class="flex items-center gap-1"><kbd class="kbd kbd-xs">Enter</kbd> open</span>
+				<span class="ml-auto">Search by source or section</span>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop">
+			<button aria-label="Close search">close</button>
+		</form>
+	</dialog>
 }

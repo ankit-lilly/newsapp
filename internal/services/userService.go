@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ankit-lilly/newsapp/internal/models"
-	"github.com/ankit-lilly/newsapp/internal/repositories"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/repositories"
 )
 
 var (

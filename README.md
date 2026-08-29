@@ -1,6 +1,8 @@
+# NewsMaxxing
+
 ## What
 
-Playing around with HTMX, templ and Go.
+Playing around with HTMX, templ, Echo v5, and Go.
 
 This is a simple news reader that parses the RSS feeds from various portals and
 then allows reader to read the news by scraping the content from the original
@@ -11,20 +13,33 @@ contents of the article.
 
 ## Running
 
-```
+The only local runtime requirement is Go. The install step downloads the
+standalone Tailwind CSS executable, DaisyUI plugin, and streaming-markdown
+browser module; Bun, Node.js, and npm are not required.
+
+Templ is pinned in `go.mod` as a tool dependency and runs through
+`go tool templ`, so no global Templ CLI installation is needed.
+
+```bash
 make install
 make build
 
-./newsapp
+./newsmaxxing
 ```
 
-It looks tries to connect to Ollama at `http://localhost:11434".
+For development with Go and CSS hot reload:
+
+```bash
+make run
+```
+
+It tries to connect to Ollama at `http://localhost:11434`.
 
 If you have a different host for Ollama then you can set the environment
 variable `OLLAMA_HOST` to the correct host.
 
 ```bash
-OLLAMA_HOST=http://yourhost:11434 ./newsapp
+OLLAMA_HOST=http://yourhost:11434 ./newsmaxxing
 ```
 
 Otherwise you could just download prebuilt binary from the releases.

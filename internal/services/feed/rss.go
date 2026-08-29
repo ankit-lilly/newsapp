@@ -2,7 +2,7 @@ package feed
 
 import (
 	"fmt"
-	"github.com/ankit-lilly/newsapp/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
 	"github.com/mmcdole/gofeed"
 	"strings"
 )

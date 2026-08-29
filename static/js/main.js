@@ -1,4 +1,4 @@
-import * as smd from "streaming-markdown";
+import * as smd from "./smd.min.js";
 
 window.htmx.defineExtension("stream", {
   onEvent(name, evt) {
@@ -101,10 +101,7 @@ window.htmx.defineExtension("button-states", {
         button.dataset.originalClasses = originalClasses;
 
         button.disabled = true;
-
-        if (originalText?.trim()) {
-          button.classList.add("opacity-75", "cursor-not-allowed");
-        }
+        button.classList.add("opacity-75", "cursor-not-allowed");
         break;
       }
 
@@ -113,9 +110,8 @@ window.htmx.defineExtension("button-states", {
         button.disabled = false;
 
         // Restore original text and classes
-        if (button.dataset.originalText) {
+        if (button.dataset.originalClasses) {
           button.className = button.dataset.originalClasses;
-          delete button.dataset.originalText;
           delete button.dataset.originalClasses;
         }
         break;
@@ -126,7 +122,7 @@ window.htmx.defineExtension("button-states", {
         // Handle errors and timeouts
         button.disabled = false;
 
-        if (button.dataset.originalText) {
+        if (button.dataset.originalClasses) {
           button.className = button.dataset.originalClasses;
           delete button.dataset.originalClasses;
         }
@@ -252,6 +248,104 @@ class ThemeManager {
   }
 }
 
+function setupCommandSearch() {
+  const modal = document.getElementById("source-search-modal");
+  const input = document.getElementById("source-search-input");
+  if (!modal || !input || modal.dataset.commandReady) return;
+
+  modal.dataset.commandReady = "true";
+  const items = Array.from(modal.querySelectorAll(".command-source-item"));
+  const emptyState = document.getElementById("source-search-empty");
+  let activeIndex = -1;
+
+  const visibleItems = () =>
+    items.filter((item) => !item.classList.contains("hidden"));
+
+  const selectItem = (index) => {
+    items.forEach((item) => {
+      item.querySelector("a")?.classList.remove("bg-base-200");
+    });
+
+    const visible = visibleItems();
+    if (!visible.length) {
+      activeIndex = -1;
+      return;
+    }
+
+    activeIndex = (index + visible.length) % visible.length;
+    const link = visible[activeIndex].querySelector("a");
+    link?.classList.add("bg-base-200");
+    link?.scrollIntoView({ block: "nearest" });
+  };
+
+  const filterItems = () => {
+    const terms = input.value
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    items.forEach((item) => {
+      const value = item.dataset.commandValue || "";
+      item.classList.toggle(
+        "hidden",
+        !terms.every((term) => value.includes(term))
+      );
+    });
+    emptyState?.classList.toggle("hidden", visibleItems().length !== 0);
+    activeIndex = -1;
+  };
+
+  const openModal = () => {
+    if (!modal.open) modal.showModal();
+    input.value = "";
+    filterItems();
+    requestAnimationFrame(() => input.focus());
+  };
+
+  document.querySelectorAll("[data-command-trigger]").forEach((trigger) => {
+    trigger.addEventListener("click", openModal);
+  });
+
+  document.querySelectorAll("[data-command-shortcut]").forEach((shortcut) => {
+    shortcut.textContent = /Mac|iPhone|iPad/.test(navigator.platform)
+      ? "⌘ K"
+      : "Ctrl K";
+  });
+
+  input.addEventListener("input", filterItems);
+  modal.addEventListener("click", (event) => {
+    if (event.target.closest("a")) modal.close();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      if (modal.open) {
+        modal.close();
+      } else {
+        openModal();
+      }
+      return;
+    }
+
+    if (
+      !modal.open ||
+      !["ArrowDown", "ArrowUp", "Enter"].includes(event.key)
+    ) {
+      return;
+    }
+    event.preventDefault();
+
+    if (event.key === "ArrowDown") selectItem(activeIndex + 1);
+    if (event.key === "ArrowUp") selectItem(activeIndex - 1);
+    if (event.key === "Enter") {
+      const visible = visibleItems();
+      const selected = visible[activeIndex < 0 ? 0 : activeIndex];
+      selected?.querySelector("a")?.click();
+    }
+  });
+}
+
 /**
  * Focus the chat input if it exists.
  */
@@ -278,6 +372,7 @@ function attachChatModalListener() {
  */
 document.addEventListener("DOMContentLoaded", () => {
   attachChatModalListener();
+  setupCommandSearch();
   // Create the theme manager and store it globally.
   window.themeManager = new ThemeManager();
 });
@@ -288,6 +383,7 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 document.addEventListener("htmx:afterSettle", () => {
   attachChatModalListener();
+  setupCommandSearch();
   window.themeManager = new ThemeManager();
 });
 

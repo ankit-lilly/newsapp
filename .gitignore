@@ -1,6 +1,9 @@
-node_modules
 temp
-dist
+static/dist
+static/css/tailwindcss
+static/css/daisyui.mjs
+static/css/daisyui-theme.mjs
+static/js/smd.min.js
 .idea
 .vscode
 *.db
@@ -8,4 +11,4 @@ dist
 tmp
 .env
 *templ.go
-newsapp
+newsmaxxing

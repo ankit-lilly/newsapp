@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/ankit-lilly/newsapp/pkg/auth"
+	"github.com/ankit-lilly/newsmaxxing/pkg/auth"
 	"github.com/golang-jwt/jwt/v5"
-	echojwt "github.com/labstack/echo-jwt/v4"
-	"github.com/labstack/echo/v4"
+	echojwt "github.com/labstack/echo-jwt/v5"
+	"github.com/labstack/echo/v5"
 )
 
 type AuthMiddleware struct {
@@ -24,7 +24,7 @@ func NewAuthMiddleware(jwtService *auth.JwtService) *AuthMiddleware {
 // JWT returns the JWT middleware configuration
 func (m *AuthMiddleware) JWT() echo.MiddlewareFunc {
 	config := echojwt.Config{
-		NewClaimsFunc: func(c echo.Context) jwt.Claims {
+		NewClaimsFunc: func(c *echo.Context) jwt.Claims {
 			return new(auth.JwtClaims)
 		},
 		TokenLookup:            fmt.Sprintf("cookie:%s", "access-token"),
@@ -37,17 +37,18 @@ func (m *AuthMiddleware) JWT() echo.MiddlewareFunc {
 	return echojwt.WithConfig(config)
 }
 
-func (m *AuthMiddleware) jwtSuccessHandler(c echo.Context) {
-	token, ok := c.Get("user").(*jwt.Token)
-	if !ok {
-		c.Echo().Logger.Error("Token not found in context")
-		return
+func (m *AuthMiddleware) jwtSuccessHandler(c *echo.Context) error {
+	token, err := echo.ContextGet[*jwt.Token](c, "user")
+	if err != nil {
+		c.Logger().Error("token not found in context", "error", err)
+		return err
 	}
 
 	claims, ok := token.Claims.(*auth.JwtClaims)
 	if !ok {
-		c.Echo().Logger.Error("Failed to get claims from token")
-		return
+		err := fmt.Errorf("unexpected JWT claims type %T", token.Claims)
+		c.Logger().Error("failed to get claims from token", "error", err)
+		return err
 	}
 
 	c.Set("userId", claims.Id)
@@ -55,15 +56,17 @@ func (m *AuthMiddleware) jwtSuccessHandler(c echo.Context) {
 	c.Set("isAuthorized", true)
 	c.Set("currentPath", c.Request().URL.Path)
 
-	c.Logger().Info("User is authorized", c.Path())
+	c.Logger().Info("user is authorized", "path", c.Path(), "user_id", claims.Id)
 
 	switch c.Path() {
 	case "/login", "/register":
-		c.Redirect(http.StatusTemporaryRedirect, c.Echo().Reverse("homePage"))
+		return c.Redirect(http.StatusTemporaryRedirect, "/")
 	}
+
+	return nil
 }
 
-func (m *AuthMiddleware) jwtErrorHandler(c echo.Context, err error) error {
+func (m *AuthMiddleware) jwtErrorHandler(c *echo.Context, err error) error {
 	slog.Error("JWT validation failed",
 		"error", err,
 		"ip", c.RealIP(),

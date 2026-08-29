@@ -11,11 +11,11 @@ import (
 	"strings"
 
 	"github.com/a-h/templ"
-	"github.com/ankit-lilly/newsapp/internal/prompts"
-	"github.com/ankit-lilly/newsapp/internal/services"
+	"github.com/ankit-lilly/newsmaxxing/internal/prompts"
+	"github.com/ankit-lilly/newsmaxxing/internal/services"
 
-	"github.com/ankit-lilly/newsapp/internal/templates/components/articles"
-	"github.com/labstack/echo/v4"
+	"github.com/ankit-lilly/newsmaxxing/internal/templates/components/articles"
+	"github.com/labstack/echo/v5"
 	"github.com/olahol/melody"
 	"github.com/ollama/ollama/api"
 )
@@ -94,7 +94,7 @@ func (h *ChatHandler) HandleDisconnect(s *melody.Session) {
 	s.Write([]byte("disconnected"))
 }
 
-func (h *ChatHandler) Chat(c echo.Context) error {
+func (h *ChatHandler) Chat(c *echo.Context) error {
 	link, portalName, err := h.parseAndValidateIdAndPortal(c)
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func (h *ChatHandler) Chat(c echo.Context) error {
 	chatMessageHandlerMap["portal"] = portalName
 	chatMessageHandlerMap["articleid"] = link
 
-	return h.ws.HandleRequestWithKeys(c.Response().Writer, c.Request(), chatMessageHandlerMap)
+	return h.ws.HandleRequestWithKeys(c.Response(), c.Request(), chatMessageHandlerMap)
 }
 
 func (a *ChatHandler) HandleChatMessage(s *melody.Session, msg []byte) {
@@ -180,7 +180,7 @@ func (h *ChatHandler) extractKeysFromSession(s *melody.Session) (string, string,
 	return articleid, portal, nil
 }
 
-func (h *ChatHandler) parseAndValidateIdAndPortal(c echo.Context) (string, string, error) {
+func (h *ChatHandler) parseAndValidateIdAndPortal(c *echo.Context) (string, string, error) {
 	encodedLink := strings.TrimSpace(c.Param("id"))
 	portalName := strings.TrimSpace(c.Param("portal"))
 
@@ -193,8 +193,8 @@ func (h *ChatHandler) parseAndValidateIdAndPortal(c echo.Context) (string, strin
 
 	link, err := url.QueryUnescape(encodedLink)
 	if err != nil {
-		c.Echo().Logger.Error(err.Error())
-		return "", "", errors.New("Invalid link")
+		c.Logger().Error("failed to decode article link", "error", err)
+		return "", "", errors.New("invalid link")
 	}
 
 	return link, portalName, nil

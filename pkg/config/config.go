@@ -25,7 +25,7 @@ func LoadConfig() *Config {
 		APP_PORT:     getEnv("APP_PORT", "8080"),
 		JwtSecret:    getEnv("JWT_SECRET", "secret"),
 		IsDev:        getEnv("IS_DEV", "true") == "true",
-		AppName:      getEnv("APP_NAME", "newsapp"),
+		AppName:      getEnv("APP_NAME", "NewsMaxxing"),
 		DatabaseURL:  getEnv("DATABASE_URL", "articles.db"),
 		CookieDomain: getEnv("COOKIE_DOMAIN", "localhost"),
 		ModelToUse:   getEnv("MODEL_TO_USE", "gemma3"),

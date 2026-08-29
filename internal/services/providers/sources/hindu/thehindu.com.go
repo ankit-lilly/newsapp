@@ -2,9 +2,9 @@ package hindu
 
 import (
 	"fmt"
-	"github.com/ankit-lilly/newsapp/internal/models"
-	"github.com/ankit-lilly/newsapp/internal/services/feed"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/feed"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources"
 )
 
 const ID = "thehindu"

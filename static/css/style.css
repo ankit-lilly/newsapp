@@ -1,12 +1,14 @@
 @import "tailwindcss";
-@plugin 'daisyui';
+@source "../../internal/templates/**/*.templ";
+@source "../js/*.js";
+@source not "./tailwindcss";
+@source not "./daisyui{,*}.mjs";
+
 @plugin '@tailwindcss/typography';
 
-@plugin "daisyui" {
+@plugin "./daisyui.mjs" {
   logs: true;
   root: ":root";
-  include: button, badge, input, card;
-  exclude: badge;
   themes: autumn --default, dracula --prefersdark;
 }
 

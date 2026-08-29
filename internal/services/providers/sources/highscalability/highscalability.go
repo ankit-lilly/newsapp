@@ -6,9 +6,9 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/ankit-lilly/newsapp/internal/models"
-	"github.com/ankit-lilly/newsapp/internal/services/feed"
-	"github.com/ankit-lilly/newsapp/internal/services/providers/sources"
+	"github.com/ankit-lilly/newsmaxxing/internal/models"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/feed"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources"
 )
 
 type HighScalability struct {

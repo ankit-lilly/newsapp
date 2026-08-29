@@ -7,16 +7,18 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"os"
+	"time"
 
-	"github.com/ankit-lilly/newsapp/internal/db"
-	"github.com/ankit-lilly/newsapp/internal/handlers"
-	"github.com/ankit-lilly/newsapp/internal/middlewares"
-	"github.com/ankit-lilly/newsapp/internal/routes"
-	"github.com/ankit-lilly/newsapp/internal/services/llm"
-	"github.com/ankit-lilly/newsapp/internal/services/providers"
-	"github.com/ankit-lilly/newsapp/pkg/auth"
-	"github.com/ankit-lilly/newsapp/pkg/config"
-	"github.com/labstack/echo/v4"
+	"github.com/ankit-lilly/newsmaxxing/internal/db"
+	"github.com/ankit-lilly/newsmaxxing/internal/handlers"
+	"github.com/ankit-lilly/newsmaxxing/internal/middlewares"
+	"github.com/ankit-lilly/newsmaxxing/internal/routes"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/llm"
+	"github.com/ankit-lilly/newsmaxxing/internal/services/providers"
+	"github.com/ankit-lilly/newsmaxxing/pkg/auth"
+	"github.com/ankit-lilly/newsmaxxing/pkg/config"
+	"github.com/labstack/echo/v5"
 	"github.com/ollama/ollama/api"
 )
 
@@ -29,15 +31,16 @@ type App struct {
 }
 
 func NewApp(cfg *config.Config) *App {
-	e := echo.New()
-	e.HideBanner = true
-
+	logLevel := slog.LevelInfo
 	if cfg.IsDev {
-		e.Debug = true
+		logLevel = slog.LevelDebug
 	}
+	e := echo.NewWithConfig(echo.Config{
+		Logger: slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})),
+	})
 
 	if err := db.Init(cfg.DatabaseURL); err != nil {
-		e.Logger.Fatalf("failed to initialize database: %v", err)
+		log.Fatalf("failed to initialize database: %v", err)
 	}
 
 	databaseConn := db.GetDB()
@@ -56,18 +59,19 @@ func NewApp(cfg *config.Config) *App {
 	}
 }
 
-func (a *App) Start(port string) error {
-	return a.echo.Start(":" + port)
-}
-
-func (a *App) Shutdown(ctx context.Context) error {
-	return a.echo.Shutdown(ctx)
+func (a *App) Start(ctx context.Context, port string) error {
+	startConfig := echo.StartConfig{
+		Address:         ":" + port,
+		GracefulTimeout: 20 * time.Second,
+		HideBanner:      true,
+	}
+	return startConfig.Start(ctx, a.echo)
 }
 
 func (a *App) Init(staticFiles embed.FS) error {
 	providers.Init()
 
-	errorHandler := handlers.ErrorHandler{}
+	errorHandler := handlers.ErrorHandler{BaseHandler: &handlers.BaseHandler{}}
 	a.echo.HTTPErrorHandler = errorHandler.CustomHTTPErrorHandler
 
 	authMiddleware := middlewares.NewAuthMiddleware(a.jwtService)
