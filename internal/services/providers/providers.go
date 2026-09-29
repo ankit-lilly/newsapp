@@ -6,7 +6,6 @@ import (
 
 	"github.com/ankit-lilly/newsmaxxing/internal/models"
 	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/davecheney"
-	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/fiercepharma"
 	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/highscalability"
 	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/hindu"
 	"github.com/ankit-lilly/newsmaxxing/internal/services/providers/sources/martinfowler"
@@ -89,7 +88,7 @@ Init registers all the providers.
 
 func Init() {
 	thehindu := hindu.NewTheHinduCom()
-	fiercepharma := fiercepharma.NewFiercePharma()
+	//	fiercepharma := fiercepharma.NewFiercePharma()
 	davecheney := davecheney.NewDaveCheney()
 	martinfowler := martinfowler.NewMartinFowler()
 	techcrunch := techcrunch.NewTechcrunch()
@@ -103,7 +102,7 @@ func Init() {
 	Register([]Providers{
 		thehindu,
 		natgeo,
-		fiercepharma,
+		//		fiercepharma,
 		davecheney,
 		wired,
 		martinfowler,

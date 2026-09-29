@@ -1,9 +1,6 @@
 temp
 static/dist
 static/css/tailwindcss
-static/css/daisyui.mjs
-static/css/daisyui-theme.mjs
-static/js/smd.min.js
 .idea
 .vscode
 *.db
